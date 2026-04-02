@@ -1,59 +1,84 @@
-# LocMnsFront
+# LOC MNS — Front-end Angular
 
-This project was generated using [Angular CLI](https://github.com/angular/angular-cli) version 21.2.6.
+Application web de gestion du parc informatique et matériel de Metz Numeric School (MNS).
+Développée dans le cadre de la formation Concepteur Développeur d'Applications (CDA) 2025-2026.
 
-## Development server
+---
 
-To start a local development server, run:
+## 📋 Description du projet
 
+LOC MNS permet de gérer l'ensemble du parc informatique et matériel mis à disposition
+des étudiants, stagiaires et intervenants de MNS.
+
+### Fonctionnalités principales
+- Authentification et gestion des rôles (Gestionnaire / Emprunteur / Super Admin)
+- Gestion des équipements (CRUD, états, catégories)
+- Gestion des emprunts (demande, validation, refus, retour)
+- Signalement d'événements (panne, dysfonctionnement, prolongation)
+- Système d'alertes et notifications
+- Planning des réservations
+- Export des données (CSV, XML)
+- Gestion documentaire (notices, fiches techniques)
+
+---
+
+## 🛠️ Stack technique
+
+- Angular 
+- TypeScript 
+- Tailwind CSS 
+- PrimeNG 
+- Node.js 
+- npm 
+
+---
+
+## ⚙️ Prérequis
+
+- Node.js v20+ LTS
+- npm
+- Angular CLI : `npm install -g @angular/cli`
+
+---
+
+## 🚀 Installation et lancement
 ```bash
+# Cloner le dépôt
+git clone https://github.com/tgodfrin/Projet_fil_rouge_Front.git
+
+# Aller dans le dossier
+cd Projet_fil_rouge_Front/loc-mns-front
+
+# Installer les dépendances
+npm install
+
+# Lancer le serveur de développement
 ng serve
 ```
 
-Once the server is running, open your browser and navigate to `http://localhost:4200/`. The application will automatically reload whenever you modify any of the source files.
+Accéder à l'application : **http://localhost:4200**
 
-## Code scaffolding
+---
 
-Angular CLI includes powerful code scaffolding tools. To generate a new component, run:
-
-```bash
-ng generate component component-name
+## 🌿 Stratégie Git
+```
+main                        → version stable et validée
+  └── develop               → branche de travail principal
+        ├── feature/login
+        ├── feature/equipment
+        └── feature/loan
 ```
 
-For a complete list of available schematics (such as `components`, `directives`, or `pipes`), run:
+---
 
-```bash
-ng generate --help
-```
+## 🔗 Liens utiles
 
-## Building
+- Back-end Spring Boot : [lien vers le dépôt back]
+- Maquettes Figma : [lien vers Figma]
+- Tableau Trello : [lien vers Trello]
 
-To build the project run:
+---
 
-```bash
-ng build
-```
+## 👤 Auteur
 
-This will compile your project and store the build artifacts in the `dist/` directory. By default, the production build optimizes your application for performance and speed.
-
-## Running unit tests
-
-To execute unit tests with the [Vitest](https://vitest.dev/) test runner, use the following command:
-
-```bash
-ng test
-```
-
-## Running end-to-end tests
-
-For end-to-end (e2e) testing, run:
-
-```bash
-ng e2e
-```
-
-Angular CLI does not come with an end-to-end testing framework by default. You can choose one that suits your needs.
-
-## Additional Resources
-
-For more information on using the Angular CLI, including detailed command references, visit the [Angular CLI Overview and Command Reference](https://angular.dev/tools/cli) page.
+GODFRIN Thomas — Formation CDA — Metz Numeric School 2025-2026
