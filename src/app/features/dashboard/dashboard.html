@@ -1,0 +1,65 @@
+<div class="dashboard">
+
+  <!-- TITRE -->
+  <div class="page-title">Tableau de bord</div>
+
+  <!-- KPIs -->
+  <div class="kpi-grid">
+    @for (kpi of kpis; track kpi.label) {
+      <div class="kpi-card">
+        <div class="kpi-value" [style.color]="kpi.color">{{ kpi.value }}</div>
+        <div class="kpi-label">{{ kpi.label }}</div>
+      </div>
+    }
+  </div>
+
+  <!-- ALERTES -->
+  @for (alerte of alertes; track alerte.titre) {
+    <div class="alerte-banner"
+      [class.danger]="alerte.type === 'danger'"
+      [class.warning]="alerte.type === 'warning'">
+      <div class="alerte-content">
+        <div class="alerte-titre">{{ alerte.titre }}</div>
+        <div class="alerte-detail">{{ alerte.detail }}</div>
+      </div>
+      <button class="btn"
+        [class.btn-danger]="alerte.type === 'danger'"
+        [class.btn-ghost]="alerte.type === 'warning'">
+        {{ alerte.btnLabel }}
+      </button>
+    </div>
+  }
+
+  <!-- DEMANDES RÉCENTES -->
+  <div class="section-label">Demandes récentes</div>
+  <div class="table">
+
+    <!-- EN-TÊTE -->
+    <div class="table-head">
+      <div class="th">Utilisateur</div>
+      <div class="th">Matériel</div>
+      <div class="th">Statut</div>
+    </div>
+
+    <!-- LIGNES -->
+    @for (demande of demandes; track demande.utilisateur) {
+      <div class="table-row">
+        <div>
+          <div class="td-main">{{ demande.utilisateur }}</div>
+          <div class="td-muted">{{ demande.dates }}</div>
+        </div>
+        <div class="td-main">{{ demande.materiel }}</div>
+        <div>
+          <span class="badge"
+            [class.b-warning]="demande.statut === 'warning'"
+            [class.b-danger]="demande.statut === 'danger'">
+            <span class="badge-dot"></span>
+            {{ demande.label }}
+          </span>
+        </div>
+      </div>
+    }
+
+  </div>
+
+</div>
