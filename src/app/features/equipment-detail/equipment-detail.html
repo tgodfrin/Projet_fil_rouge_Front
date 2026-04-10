@@ -1,0 +1,111 @@
+<div class="equipment-detail">
+
+  <!-- EN-TÊTE -->
+  <div class="page-header">
+    <div class="page-title">Détail équipement</div>
+    <button class="btn btn-primary">+ Nouvel emprunt</button>
+  </div>
+
+  <!-- FICHE ÉQUIPEMENT -->
+  <div class="fiche">
+
+    <!-- ICÔNE -->
+    <div class="fiche-icon">💻</div>
+
+    <!-- INFOS PRINCIPALES -->
+    <div class="fiche-info">
+      <div class="fiche-nom">{{ equipement.nom }}</div>
+      <div class="fiche-ref">{{ equipement.reference }}</div>
+      <span class="badge"
+        [class.b-success]="equipement.statut === 'disponible'"
+        [class.b-warning]="equipement.statut === 'en-pret'"
+        [class.b-danger]="equipement.statut === 'hors-service'">
+        <span class="badge-dot"></span>
+        {{ getStatutLabel(equipement.statut) }}
+      </span>
+    </div>
+
+    <!-- DÉTAILS -->
+    <div class="fiche-details">
+      <div class="detail-item">
+        <div class="detail-label">Famille</div>
+        <div class="detail-value">{{ equipement.famille }}</div>
+      </div>
+      <div class="detail-item">
+        <div class="detail-label">Localisation</div>
+        <div class="detail-value">{{ equipement.localisation }}</div>
+      </div>
+      <div class="detail-item">
+        <div class="detail-label">Date d'acquisition</div>
+        <div class="detail-value">{{ equipement.dateAcquisition }}</div>
+      </div>
+      <div class="detail-item">
+        <div class="detail-label">Description</div>
+        <div class="detail-value">{{ equipement.description }}</div>
+      </div>
+    </div>
+
+  </div>
+
+  <!-- ONGLETS -->
+  <div class="tabs">
+    <div class="tab" [class.active]="ongletActif === 'infos'"      (click)="changerOnglet('infos')">Infos</div>
+    <div class="tab" [class.active]="ongletActif === 'historique'" (click)="changerOnglet('historique')">Historique</div>
+    <div class="tab" [class.active]="ongletActif === 'documents'"  (click)="changerOnglet('documents')">Documents</div>
+  </div>
+
+  <!-- CONTENU ONGLET INFOS -->
+  @if (ongletActif === 'infos') {
+    <div class="onglet-content">
+      <p class="info-text">Toutes les informations de cet équipement sont affichées dans la fiche ci-dessus.</p>
+    </div>
+  }
+
+  <!-- CONTENU ONGLET HISTORIQUE -->
+  @if (ongletActif === 'historique') {
+    <div class="table">
+      <div class="table-head">
+        <div class="th">Utilisateur</div>
+        <div class="th">Début</div>
+        <div class="th">Fin prévue</div>
+        <div class="th">Statut</div>
+      </div>
+      @for (emprunt of historique; track emprunt.utilisateur) {
+        <div class="table-row">
+          <div class="td-main">{{ emprunt.utilisateur }}</div>
+          <div class="td-muted">{{ emprunt.debut }}</div>
+          <div class="td-muted">{{ emprunt.fin }}</div>
+          <div>
+            <span class="badge"
+              [class.b-success]="emprunt.statut === 'termine'"
+              [class.b-danger]="emprunt.statut === 'en-retard'">
+              <span class="badge-dot"></span>
+              {{ emprunt.label }}
+            </span>
+          </div>
+        </div>
+      }
+    </div>
+  }
+
+  <!-- CONTENU ONGLET DOCUMENTS -->
+  @if (ongletActif === 'documents') {
+    <div class="table">
+      <div class="table-head">
+        <div class="th">Nom</div>
+        <div class="th">Type</div>
+        <div class="th"></div>
+      </div>
+      @for (doc of documents; track doc.nom) {
+        <div class="table-row">
+          <div class="td-main">{{ doc.nom }}</div>
+          <div class="td-muted">{{ doc.type }}</div>
+          <div>
+            <a class="btn btn-ghost btn-sm" [href]="doc.url">Voir</a>
+          </div>
+        </div>
+      }
+    </div>
+  }
+
+</div>
