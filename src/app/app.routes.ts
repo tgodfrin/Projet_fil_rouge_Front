@@ -26,6 +26,6 @@ export const routes: Routes = [
         path: 'equipements/:id',
         component: EquipmentDetailComponent
       }
-    ]
+    ]  
   }
 ];
