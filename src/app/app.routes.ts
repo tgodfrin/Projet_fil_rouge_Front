@@ -3,6 +3,7 @@ import { LayoutComponent } from './layout/layout';
 import { DashboardComponent } from './features/dashboard/dashboard';
 import { EquipmentComponent } from './features/equipment/equipment';
 import { EquipmentDetailComponent } from './features/equipment-detail/equipment-detail';
+import { LoanComponent } from './features/loan/loan';
 
 export const routes: Routes = [
   {
@@ -25,7 +26,10 @@ export const routes: Routes = [
       {
         path: 'equipements/:id',
         component: EquipmentDetailComponent
-      }
+      },
+      { path: 'emprunts',
+        component: LoanComponent 
+      },
     ]  
   }
 ];
