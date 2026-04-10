@@ -1,0 +1,110 @@
+<div class="planning-page">
+
+  <!-- En-tête -->
+  <div class="page-header">
+    <div class="page-title">Planning</div>
+    <div class="header-right">
+
+      <!-- Sélecteur de date -->
+      <input class="date-picker" type="date" [value]="selectedDate()" (change)="onDateChange($event)" />
+
+      <!-- Navigation semaine/mois -->
+      <div class="week-nav">
+        <button class="btn-nav" (click)="prevWeek()">Préc.</button>
+        <span class="period-label">
+          @if (viewMode() === 'SEMAINE') {
+          {{ weekLabel() }}
+          } @else {
+          {{ monthLabel() }}
+          }
+        </span>
+        <button class="btn-nav" (click)="nextWeek()">Suiv.</button>
+      </div>
+
+      <!-- Toggle vue -->
+      <div class="view-toggle">
+        <button class="toggle-btn" [class.active]="viewMode() === 'SEMAINE'" (click)="setViewMode('SEMAINE')">
+          Semaine
+        </button>
+        <button class="toggle-btn" [class.active]="viewMode() === 'MOIS'" (click)="setViewMode('MOIS')">
+          Mois
+        </button>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- Filtres catégories -->
+  <div class="category-filters">
+    @for (cat of categories; track cat) {
+    <button class="filter-btn" [class.active]="activeCategory() === cat" (click)="setCategory(cat)">
+      {{ cat }}
+    </button>
+    }
+  </div>
+
+  <!-- Vue SEMAINE -->
+  @if (viewMode() === 'SEMAINE') {
+  <div class="planning-grid">
+    <div class="grid-head">
+      <div class="col-label">Matériel</div>
+      @for (day of weekDays(); track day.index) {
+      <div class="col-day" [class.today]="day.isToday">{{ day.label }}</div>
+      }
+    </div>
+
+    @if (filteredRows().length === 0) {
+    <div class="empty-state">Aucun équipement pour cette catégorie.</div>
+    } @else {
+    @for (row of filteredRows(); track row.equipmentName) {
+    <div class="grid-row">
+      <div class="row-label">
+        <span class="row-name">{{ row.equipmentName }}</span>
+        <span class="row-category">{{ row.category }}</span>
+      </div>
+      @for (day of weekDays(); track day.index) {
+      @if (!isCovered(row, day.index)) {
+      @if (getEventAt(row, day.index); as event) {
+      <div class="cell event-cell" [class.today-col]="day.isToday" [style.grid-column]="'span ' + getSpan(event)">
+        {{ event.borrowerName }}
+      </div>
+      } @else {
+      <div class="cell" [class.today-col]="day.isToday"></div>
+      }
+      }
+      }
+    </div>
+    }
+    }
+  </div>
+  }
+
+  <!-- Vue MOIS -->
+  @if (viewMode() === 'MOIS') {
+  <div class="month-grid">
+
+    <!-- Jours de la semaine -->
+    <div class="month-head">
+      @for (d of ['Lun', 'Mar', 'Mer', 'Jeu', 'Ven', 'Sam', 'Dim']; track d) {
+      <div class="month-head-cell">{{ d }}</div>
+      }
+    </div>
+
+    <!-- Cases du mois -->
+    <div class="month-body">
+      @for (day of monthDays(); track $index) {
+      <div class="month-cell" [class.empty]="!day.date" [class.today]="day.date?.toDateString() === today">
+        @if (day.date && day.dayNum) {
+        <div class="month-day-num">{{ day.dayNum }}</div>
+        @for (event of getMonthDayEvents(day.date); track event.id) {
+        <div class="month-event">{{ event.borrowerName }}</div>
+        }
+        }
+      </div>
+      }
+    </div>
+
+  </div>
+  }
+
+</div>

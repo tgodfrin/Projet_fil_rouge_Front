@@ -5,6 +5,7 @@ import { EquipmentComponent } from './features/equipment/equipment';
 import { EquipmentDetailComponent } from './features/equipment-detail/equipment-detail';
 import { LoanComponent } from './features/loan/loan';
 import { UserListComponent } from './features/user-list/user-list';
+import { PlanningComponent } from './features/planning/planning';
 
 export const routes: Routes = [
   {
@@ -28,11 +29,17 @@ export const routes: Routes = [
         path: 'equipements/:id',
         component: EquipmentDetailComponent
       },
-      { path: 'emprunts',
+      { 
+        path: 'emprunts',
         component: LoanComponent 
       },
-      { path: 'utilisateurs', 
+      { 
+        path: 'utilisateurs', 
         component: UserListComponent
+      },
+      { 
+        path: 'planning',
+        component: PlanningComponent
       },
     ]  
   }
