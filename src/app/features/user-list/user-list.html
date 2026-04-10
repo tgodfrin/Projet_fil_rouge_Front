@@ -1,0 +1,83 @@
+<div class="user-list-page">
+
+    <!-- En-tête -->
+    <div class="page-header">
+        <div class="page-title">Utilisateurs</div>
+        <button class="btn-add">+ Ajouter un utilisateur</button>
+    </div>
+
+    <!-- Filtres + recherche -->
+    <div class="toolbar">
+        <div class="filters">
+            <button class="filter-btn" [class.active]="activeFilter() === 'TOUS'" (click)="setFilter('TOUS')">
+                Tous <span class="count">{{ countByRole('TOUS') }}</span>
+            </button>
+            <button class="filter-btn" [class.active]="activeFilter() === 'COLLABORATEUR'"
+                (click)="setFilter('COLLABORATEUR')">
+                Collaborateurs <span class="count">{{ countByRole('COLLABORATEUR') }}</span>
+            </button>
+            <button class="filter-btn" [class.active]="activeFilter() === 'INTERVENANT'"
+                (click)="setFilter('INTERVENANT')">
+                Intervenants <span class="count">{{ countByRole('INTERVENANT') }}</span>
+            </button>
+            <button class="filter-btn" [class.active]="activeFilter() === 'STAGIAIRE'" (click)="setFilter('STAGIAIRE')">
+                Stagiaires <span class="count">{{ countByRole('STAGIAIRE') }}</span>
+            </button>
+            <button class="filter-btn" [class.active]="activeFilter() === 'GESTIONNAIRE'"
+                (click)="setFilter('GESTIONNAIRE')">
+                Gestionnaires <span class="count">{{ countByRole('GESTIONNAIRE') }}</span>
+            </button>
+        </div>
+        <input class="search-input" type="text" placeholder="Rechercher un utilisateur..." (input)="onSearch($event)" />
+    </div>
+
+    <!-- Tableau -->
+    @if (filteredUsers().length === 0) {
+    <div class="empty-state">Aucun utilisateur trouvé.</div>
+    } @else {
+    <div class="table-container">
+        <table class="user-table">
+            <thead>
+                <tr>
+                    <th>Utilisateur</th>
+                    <th>Email</th>
+                    <th>Rôle</th>
+                    <th>Emprunts actifs</th>
+                    <th>Membre depuis</th>
+                    <th></th>
+                </tr>
+            </thead>
+            <tbody>
+                @for (user of filteredUsers(); track user.id) {
+                <tr>
+                    <td>
+                        <div class="user-cell">
+                            <div class="avatar">{{ getInitials(user) }}</div>
+                            <span class="user-name">{{ user.firstName }} {{ user.lastName }}</span>
+                        </div>
+                    </td>
+                    <td class="text-muted">{{ user.email }}</td>
+                    <td>
+                        <span class="badge" [ngClass]="getRoleClass(user.role)">
+                            {{ getRoleLabel(user.role) }}
+                        </span>
+                    </td>
+                    <td>
+                        @if (user.activeLoans > 0) {
+                        <span class="loans-count">{{ user.activeLoans }} en cours</span>
+                        } @else {
+                        <span class="text-muted">—</span>
+                        }
+                    </td>
+                    <td class="text-muted">{{ formatDate(user.createdAt) }}</td>
+                    <td>
+                        <button class="btn-ghost">Voir</button>
+                    </td>
+                </tr>
+                }
+            </tbody>
+        </table>
+    </div>
+    }
+
+</div>
