@@ -1,6 +1,5 @@
 <div class="dashboard">
 
-  <!-- TITRE -->
   <div class="page-title">Tableau de bord</div>
 
   <!-- KPIs -->
@@ -18,48 +17,45 @@
     <div class="alerte-banner"
       [class.danger]="alerte.type === 'danger'"
       [class.warning]="alerte.type === 'warning'">
-      <div class="alerte-content">
-        <div class="alerte-titre">{{ alerte.titre }}</div>
-        <div class="alerte-detail">{{ alerte.detail }}</div>
-      </div>
+      <div class="alerte-titre">{{ alerte.titre }}</div>
       <button class="btn"
         [class.btn-danger]="alerte.type === 'danger'"
-        [class.btn-ghost]="alerte.type === 'warning'">
+        [class.btn-ghost]="alerte.type === 'warning'"
+        (click)="navigate(alerte.route)">
         {{ alerte.btnLabel }}
       </button>
     </div>
   }
 
-  <!-- DEMANDES RÉCENTES -->
-  <div class="section-label">Demandes récentes</div>
+  <!-- NOTIFICATIONS -->
+  <div class="section-label">Notifications</div>
+<div class="table-wrapper">
   <div class="table">
 
-    <!-- EN-TÊTE -->
     <div class="table-head">
       <div class="th">Utilisateur</div>
       <div class="th">Matériel</div>
+      <div class="th">Dates</div>
       <div class="th">Statut</div>
     </div>
 
-    <!-- LIGNES -->
-    @for (demande of demandes; track demande.utilisateur) {
+    @for (notif of notifications; track notif.utilisateur) {
       <div class="table-row">
-        <div>
-          <div class="td-main">{{ demande.utilisateur }}</div>
-          <div class="td-muted">{{ demande.dates }}</div>
-        </div>
-        <div class="td-main">{{ demande.materiel }}</div>
+        <div class="td-main">{{ notif.utilisateur }}</div>
+        <div class="td-main">{{ notif.materiel }}</div>
+        <div class="td-muted">{{ notif.dates }}</div>
         <div>
           <span class="badge"
-            [class.b-warning]="demande.statut === 'warning'"
-            [class.b-danger]="demande.statut === 'danger'">
+            [class.b-warning]="notif.statut === 'warning'"
+            [class.b-danger]="notif.statut === 'danger'">
             <span class="badge-dot"></span>
-            {{ demande.label }}
+            {{ notif.label }}
           </span>
         </div>
       </div>
     }
 
   </div>
+</div>
 
 </div>
