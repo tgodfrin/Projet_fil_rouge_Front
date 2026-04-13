@@ -1,0 +1,85 @@
+<div class="alert-page">
+
+  <!-- En-tête -->
+  <div class="page-header">
+    <div>
+      <div class="page-title">Alertes</div>
+      @if (unreadCount() > 0) {
+        <div class="unread-hint">{{ unreadCount() }} non lue(s)</div>
+      }
+    </div>
+    @if (unreadCount() > 0) {
+      <button class="btn-mark-all" (click)="markAllAsRead()">
+        Tout marquer comme lu
+      </button>
+    }
+  </div>
+
+  <!-- KPI -->
+  <div class="kpi-grid">
+    <div class="kpi-card">
+      <div class="kpi-val danger">{{ countByType('TOUTES') }}</div>
+      <div class="kpi-lbl">Total alertes</div>
+    </div>
+    <div class="kpi-card">
+      <div class="kpi-val warning">{{ retardCount() }}</div>
+      <div class="kpi-lbl">Retards</div>
+    </div>
+    <div class="kpi-card">
+      <div class="kpi-val danger">{{ incidentCount() }}</div>
+      <div class="kpi-lbl">Incidents</div>
+    </div>
+  </div>
+
+  <!-- Tabs -->
+  <div class="tabs">
+    <button class="tab" [class.active]="activeTab() === 'TOUTES'" (click)="setTab('TOUTES')">
+      Toutes <span class="tab-count">{{ countByType('TOUTES') }}</span>
+    </button>
+    <button class="tab" [class.active]="activeTab() === 'RETARD'" (click)="setTab('RETARD')">
+      Retards <span class="tab-count warning">{{ retardCount() }}</span>
+    </button>
+    <button class="tab" [class.active]="activeTab() === 'INCIDENT'" (click)="setTab('INCIDENT')">
+      Incidents <span class="tab-count danger">{{ incidentCount() }}</span>
+    </button>
+  </div>
+
+  <!-- Liste des alertes -->
+  @if (filteredAlerts().length === 0) {
+    <div class="empty-state">Aucune alerte pour ce filtre.</div>
+  } @else {
+    <div class="alert-list">
+      @for (alert of filteredAlerts(); track alert.id) {
+        <div
+          class="alert-card"
+          [class.retard]="alert.type === 'RETARD'"
+          [class.incident]="alert.type === 'INCIDENT'"
+          [class.read]="alert.read">
+
+          <div class="alert-body">
+            <div class="alert-title">
+              {{ alert.type === 'RETARD' ? 'Retard' : 'Incident' }}
+              — {{ alert.equipmentName }}
+            </div>
+            <div class="alert-sub">
+              {{ alert.borrowerName }} — {{ alert.description }}
+            </div>
+            <div class="alert-date">{{ formatDate(alert.date) }}</div>
+          </div>
+
+          <div class="alert-right">
+            <span class="badge" [class.badge-warning]="alert.type === 'RETARD'" [class.badge-danger]="alert.type === 'INCIDENT'">
+              {{ alert.type === 'RETARD' ? 'Retard' : 'Incident' }}
+            </span>
+            @if (!alert.read) {
+              <div class="unread-dot"></div>
+            }
+            <button class="btn-ghost" (click)="markAsRead(alert)">Voir</button>
+          </div>
+
+        </div>
+      }
+    </div>
+  }
+
+</div>

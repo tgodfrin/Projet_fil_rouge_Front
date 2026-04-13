@@ -6,6 +6,7 @@ import { EquipmentDetailComponent } from './features/equipment-detail/equipment-
 import { LoanComponent } from './features/loan/loan';
 import { UserListComponent } from './features/user-list/user-list';
 import { PlanningComponent } from './features/planning/planning';
+import { AlertListComponent } from './features/alert-list/alert-list';
 
 export const routes: Routes = [
   {
@@ -40,6 +41,10 @@ export const routes: Routes = [
       { 
         path: 'planning',
         component: PlanningComponent
+      },
+      { 
+        path: 'alertes',
+        component: AlertListComponent
       },
     ]  
   }
