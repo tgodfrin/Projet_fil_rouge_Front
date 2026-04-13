@@ -2,16 +2,26 @@
   display: flex;
   height: 100vh;
   background: var(--grey-50);
+  overflow: hidden;
 }
 
-// SIDEBAR
+// ── Overlay mobile ────────────────────────────────────
+.overlay {
+  display: none;
+}
+
+// ── Sidebar ───────────────────────────────────────────
 .sidebar {
-  width: 200px;
-  min-width: 200px;
+  width: 220px;
+  min-width: 220px;
   background: var(--secondary);
   display: flex;
   flex-direction: column;
-  padding: 0;
+  z-index: 50;
+
+  @media (max-width: 768px) {
+    display: none;
+  }
 }
 
 .sidebar-logo {
@@ -55,6 +65,7 @@
 .sidebar-link {
   display: flex;
   align-items: center;
+  gap: 0.6rem;
   padding: 10px 18px;
   font-size: 13px;
   color: rgba(255,255,255,0.55);
@@ -76,35 +87,12 @@
   }
 }
 
-// HEADER
-.main-wrapper {
-  display: flex;
-  flex-direction: column;
-  flex: 1;
-  overflow: hidden;
-}
-
-.header {
-  height: 60px;
-  background: var(--white);
-  border-bottom: 1px solid var(--grey-200);
+.sidebar-bottom {
   display: flex;
   align-items: center;
-  justify-content: space-between;
-  padding: 0 28px;
-  box-shadow: var(--shadow-sm);
-}
-
-.header-title {
-  font-size: 18px;
-  font-weight: 700;
-  color: var(--grey-900);
-}
-
-.header-user {
-  display: flex;
-  align-items: center;
-  gap: 10px;
+  gap: 0.75rem;
+  padding: 16px 18px;
+  border-top: 1px solid rgba(255,255,255,0.08);
 }
 
 .user-avatar {
@@ -118,6 +106,7 @@
   justify-content: center;
   font-size: 13px;
   font-weight: 700;
+  flex-shrink: 0;
 }
 
 .user-info {
@@ -127,18 +116,96 @@
   .user-name {
     font-size: 13px;
     font-weight: 700;
-    color: var(--grey-900);
+    color: rgba(255,255,255,0.9);
   }
 
   .user-role {
     font-size: 11px;
-    color: var(--grey-400);
+    color: rgba(255,255,255,0.45);
   }
 }
 
-// CONTENU
+// ── Main wrapper ──────────────────────────────────────
+.main-wrapper {
+  display: flex;
+  flex-direction: column;
+  flex: 1;
+  overflow: hidden;
+}
+
+// ── Topbar mobile uniquement ──────────────────────────
+.header {
+  display: none;
+
+  @media (max-width: 768px) {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    height: 56px;
+    padding: 0 16px;
+    background: var(--secondary);
+    flex-shrink: 0;
+  }
+}
+
+.header-title {
+  font-size: 16px;
+  font-weight: 900;
+  color: white;
+}
+
+.header-accent {
+  color: var(--primary);
+}
+
+// ── Contenu ───────────────────────────────────────────
 .content {
   flex: 1;
   overflow-y: auto;
-  padding: 28px;
+
+  @media (max-width: 768px) {
+    padding-bottom: 70px;
+  }
+}
+
+// ── Bottom nav mobile uniquement ──────────────────────
+.bottom-nav {
+  display: none;
+
+  @media (max-width: 768px) {
+    display: flex;
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    height: 60px;
+    background: white;
+    border-top: 1px solid var(--grey-200);
+    z-index: 30;
+    padding: 6px 0 10px;
+  }
+}
+
+.bnav-item {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 2px;
+  text-decoration: none;
+  cursor: pointer;
+
+  .bnav-icon { font-size: 1.1rem; }
+
+  .bnav-label {
+    font-size: 0.6rem;
+    font-weight: 500;
+    color: var(--grey-400);
+  }
+
+  &.active .bnav-label {
+    color: var(--primary);
+    font-weight: 700;
+  }
 }
