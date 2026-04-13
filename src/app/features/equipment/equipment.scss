@@ -2,13 +2,20 @@
   display: flex;
   flex-direction: column;
   gap: 16px;
+  padding: 2rem;
+
+  @media (max-width: 768px) {
+    padding: 1rem;
+  }
 }
 
-// EN-TÊTE
+// ── En-tête ───────────────────────────────────────────
 .page-header {
   display: flex;
   align-items: center;
   justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 0.75rem;
 }
 
 .page-title {
@@ -17,7 +24,7 @@
   color: var(--grey-900);
 }
 
-// BOUTONS
+// ── Boutons ───────────────────────────────────────────
 .btn {
   padding: 8px 16px;
   border-radius: var(--r-sm);
@@ -26,27 +33,24 @@
   border: none;
   cursor: pointer;
   font-family: var(--font);
+  transition: opacity 0.2s;
 
-  &.btn-primary {
-    background: var(--primary);
-    color: white;
-  }
+  &:hover { opacity: 0.85; }
+  &:disabled { opacity: 0.4; cursor: default; }
 
-  &.btn-ghost {
-    background: var(--grey-100);
-    color: var(--grey-700);
-  }
-
-  &.btn-sm {
-    padding: 4px 10px;
-    font-size: 11px;
-  }
+  &.btn-primary { background: var(--primary); color: white; }
+  &.btn-ghost   { background: var(--grey-100); color: var(--grey-700); }
+  &.btn-sm      { padding: 4px 10px; font-size: 11px; }
 }
 
-// BARRE DE RECHERCHE
+// ── Recherche ─────────────────────────────────────────
 .search-bar {
   display: flex;
   gap: 8px;
+
+  @media (max-width: 480px) {
+    flex-direction: column;
+  }
 }
 
 .search-input {
@@ -60,10 +64,8 @@
   color: var(--grey-900);
   background: white;
 
-  &:focus {
-    outline: none;
-    border-color: var(--primary);
-  }
+  &:focus { outline: none; border-color: var(--primary); }
+  &::placeholder { color: var(--grey-400); }
 }
 
 .filter-select {
@@ -77,13 +79,10 @@
   background: white;
   cursor: pointer;
 
-  &:focus {
-    outline: none;
-    border-color: var(--primary);
-  }
+  &:focus { outline: none; border-color: var(--primary); }
 }
 
-// BADGES
+// ── Badges filtre ─────────────────────────────────────
 .badges-row {
   display: flex;
   gap: 8px;
@@ -101,9 +100,7 @@
   cursor: pointer;
   transition: opacity 0.2s;
 
-  &:hover {
-    opacity: 0.85;
-  }
+  &:hover { opacity: 0.85; }
 
   &.active {
     outline: 2px solid currentColor;
@@ -141,18 +138,23 @@
   }
 }
 
-// TABLEAU
-.table {
-  background: white;
+// ── Tableau ───────────────────────────────────────────
+.table-wrapper {
+  overflow-x: auto;
   border-radius: var(--r-md);
   border: 1px solid var(--grey-200);
-  overflow: hidden;
   box-shadow: var(--shadow-sm);
+}
+
+.table {
+  background: white;
+  min-width: 520px;
+  width: 100%;
 }
 
 .table-head {
   display: grid;
-  grid-template-columns: 1fr 80px 100px 100px 60px;
+  grid-template-columns: 2fr 1fr 1fr 1fr 60px;
   padding: 10px 16px;
   background: var(--grey-50);
   border-bottom: 1px solid var(--grey-200);
@@ -168,18 +170,13 @@
 
 .table-row {
   display: grid;
-  grid-template-columns: 1fr 80px 100px 100px 60px;
+  grid-template-columns: 2fr 1fr 1fr 1fr 60px;
   padding: 10px 16px;
   border-bottom: 1px solid var(--grey-100);
   align-items: center;
 
-  &:last-child {
-    border-bottom: none;
-  }
-
-  &:hover {
-    background: var(--grey-50);
-  }
+  &:last-child { border-bottom: none; }
+  &:hover { background: var(--grey-50); }
 }
 
 .td-main {
@@ -194,10 +191,66 @@
   margin-top: 2px;
 }
 
-// ÉTAT VIDE
+// ── État vide ─────────────────────────────────────────
 .empty-state {
   padding: 32px;
   text-align: center;
   font-size: 13px;
   color: var(--grey-400);
+}
+
+// ── Pagination ────────────────────────────────────────
+.pagination {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 0.75rem;
+
+  @media (max-width: 480px) {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+}
+
+.pagination-info {
+  font-size: 12px;
+  color: var(--grey-400);
+}
+
+.pagination-controls {
+  display: flex;
+  gap: 4px;
+  flex-wrap: wrap;
+}
+
+.page-btn {
+  min-width: 32px;
+  height: 32px;
+  padding: 0 8px;
+  border: 1px solid var(--grey-200);
+  border-radius: var(--r-sm);
+  background: white;
+  color: var(--grey-700);
+  font-size: 12px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s;
+  font-family: var(--font);
+
+  &:hover:not(:disabled) {
+    border-color: var(--primary);
+    color: var(--primary);
+  }
+
+  &.active {
+    background: var(--primary);
+    border-color: var(--primary);
+    color: white;
+  }
+
+  &:disabled {
+    opacity: 0.4;
+    cursor: default;
+  }
 }
