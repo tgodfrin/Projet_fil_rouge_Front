@@ -1,1 +1,56 @@
-<p>user-profile works!</p>
+<div class="profile-page">
+
+  <!-- Avatar + nom -->
+  <div class="profile-header">
+    <div class="avatar">{{ profile().initials }}</div>
+    <div class="profile-identity">
+      <div class="profile-name">{{ profile().firstName }} {{ profile().lastName }}</div>
+      <span class="role-badge">{{ profile().role }}</span>
+    </div>
+  </div>
+
+  <!-- Stats -->
+  <div class="stats-grid">
+    @for (stat of stats(); track stat.label) {
+      <div class="stat-card">
+        <div class="stat-val">{{ stat.value }}</div>
+        <div class="stat-lbl">{{ stat.label }}</div>
+      </div>
+    }
+  </div>
+
+  <!-- Informations -->
+  <div class="section-label">Informations</div>
+  <div class="info-card">
+    <div class="info-row">
+      <span class="info-key">Email</span>
+      <span class="info-val">{{ profile().email }}</span>
+    </div>
+    <div class="info-row">
+      <span class="info-key">Téléphone</span>
+      <span class="info-val">{{ profile().phone }}</span>
+    </div>
+    <div class="info-row">
+      <span class="info-key">Rôle</span>
+      <span class="info-val">{{ profile().role }}</span>
+    </div>
+    <div class="info-row">
+      <span class="info-key">Membre depuis</span>
+      <span class="info-val">{{ formatDate(profile().memberSince) }}</span>
+    </div>
+  </div>
+
+  <!-- Actions -->
+  <div class="section-label">Compte</div>
+  <div class="actions-card">
+    <button class="action-row">
+      <span>🔑 Changer le mot de passe</span>
+      <span class="arrow">›</span>
+    </button>
+    <button class="action-row danger">
+      <span>🚪 Se déconnecter</span>
+      <span class="arrow">›</span>
+    </button>
+  </div>
+
+</div>
