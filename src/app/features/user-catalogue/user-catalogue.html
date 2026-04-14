@@ -1,1 +1,52 @@
-<p>user-catalogue works!</p>
+<div class="catalogue-page">
+
+  <div class="page-title">Catalogue</div>
+
+  <!-- Recherche -->
+  <div class="search-bar">
+    <span class="search-icon">🔍</span>
+    <input
+      type="text"
+      class="search-input"
+      placeholder="Rechercher un matériel..."
+      (input)="onSearch($event)"
+    />
+  </div>
+
+  <!-- Filtres catégories -->
+  <div class="chip-row">
+    @for (cat of categories; track cat) {
+      <button class="chip" [class.active]="activeCategory() === cat" (click)="setCategory(cat)">
+        {{ cat }}
+      </button>
+    }
+  </div>
+
+  <!-- Liste -->
+  @if (filteredItems().length === 0) {
+    <div class="empty-state">Aucun matériel pour ce filtre.</div>
+  } @else {
+    <div class="items-list">
+      @for (item of filteredItems(); track item.id) {
+        <div class="item-card">
+          <div class="item-icon">{{ getCategoryIcon(item.category) }}</div>
+          <div class="item-info">
+            <div class="item-name">{{ item.name }}</div>
+            <div class="item-ref">{{ item.ref }}</div>
+          </div>
+          <div class="item-right">
+            <span class="badge" [ngClass]="getStatusClass(item.status)">
+              <span class="badge-dot"></span>{{ getStatusLabel(item.status) }}
+            </span>
+            @if (item.status === 'DISPONIBLE') {
+              <button class="btn-borrow">Emprunter</button>
+            } @else {
+              <button class="btn-unavailable" disabled>Indispo.</button>
+            }
+          </div>
+        </div>
+      }
+    </div>
+  }
+
+</div>
