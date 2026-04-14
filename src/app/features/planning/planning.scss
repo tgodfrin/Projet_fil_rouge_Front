@@ -139,7 +139,17 @@
 }
 
 // ── Grille semaine ────────────────────────────────────
+// ── Responsive wrapper ────────────────────────────────
+.planning-scroll-wrapper {
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
+  width: 100%;
+  border-radius: var(--r-md);
+}
+
+// ── Grille semaine ────────────────────────────────────
 .planning-grid {
+  min-width: 700px;        // ← ajoute cette ligne
   background: white;
   border: 1px solid var(--grey-200);
   border-radius: var(--r-md);

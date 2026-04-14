@@ -7,8 +7,8 @@ export interface PlanningEvent {
   borrowerName: string;
   equipmentName: string;
   category: string;
-  startDay: number;
-  endDay: number;
+  startDate: string; // 'YYYY-MM-DD'
+  endDate: string;   // 'YYYY-MM-DD'
 }
 
 export interface PlanningRow {
@@ -25,7 +25,6 @@ export interface PlanningRow {
   styleUrl: './planning.scss'
 })
 export class PlanningComponent {
-
   viewMode = signal<'SEMAINE' | 'MOIS'>('SEMAINE');
   weekOffset = signal(0);
   selectedDate = signal<string>(this.getTodayString());
@@ -40,42 +39,42 @@ export class PlanningComponent {
       equipmentName: 'MacBook M3',
       category: 'PC',
       events: [
-        { id: 1, borrowerName: 'Marc D.', equipmentName: 'MacBook M3', category: 'PC', startDay: 0, endDay: 1 }
+        { id: 1, borrowerName: 'Marc D.', equipmentName: 'MacBook M3', category: 'PC', startDate: '2026-04-14', endDate: '2026-04-15' }
       ]
     },
     {
       equipmentName: 'HP EliteBook',
       category: 'PC',
       events: [
-        { id: 2, borrowerName: 'Tom V.', equipmentName: 'HP EliteBook', category: 'PC', startDay: 2, endDay: 4 }
+        { id: 2, borrowerName: 'Tom V.', equipmentName: 'HP EliteBook', category: 'PC', startDate: '2026-04-16', endDate: '2026-04-18' }
       ]
     },
     {
       equipmentName: 'Meta Quest 3',
       category: 'VR',
       events: [
-        { id: 3, borrowerName: 'Kevin L.', equipmentName: 'Meta Quest 3', category: 'VR', startDay: 1, endDay: 3 }
+        { id: 3, borrowerName: 'Kevin L.', equipmentName: 'Meta Quest 3', category: 'VR', startDate: '2026-04-15', endDate: '2026-04-17' }
       ]
     },
     {
       equipmentName: 'iPad Pro 12.9"',
       category: 'Tablette',
       events: [
-        { id: 4, borrowerName: 'Sophie R.', equipmentName: 'iPad Pro 12.9"', category: 'Tablette', startDay: 2, endDay: 5 }
+        { id: 4, borrowerName: 'Sophie R.', equipmentName: 'iPad Pro 12.9"', category: 'Tablette', startDate: '2026-04-16', endDate: '2026-04-19' }
       ]
     },
     {
       equipmentName: 'Dell UltraSharp 27"',
       category: 'Écran',
       events: [
-        { id: 5, borrowerName: 'Julie F.', equipmentName: 'Dell UltraSharp 27"', category: 'Écran', startDay: 0, endDay: 0 }
+        { id: 5, borrowerName: 'Julie F.', equipmentName: 'Dell UltraSharp 27"', category: 'Écran', startDate: '2026-04-14', endDate: '2026-04-14' }
       ]
     },
     {
       equipmentName: 'Clavier Keychron K2',
       category: 'Périphérique',
       events: [
-        { id: 6, borrowerName: 'Alice M.', equipmentName: 'Clavier Keychron K2', category: 'Périphérique', startDay: 4, endDay: 6 }
+        { id: 6, borrowerName: 'Alice M.', equipmentName: 'Clavier Keychron K2', category: 'Périphérique', startDate: '2026-04-18', endDate: '2026-04-20' }
       ]
     }
   ]);
@@ -116,7 +115,6 @@ export class PlanningComponent {
     const firstDay = new Date(year, month, 1);
     const lastDay = new Date(year, month + 1, 0);
 
-    // Remplir les cases vides avant le 1er
     const startPad = (firstDay.getDay() + 6) % 7;
     const days: { date: Date | null; dayNum: number | null }[] = [];
 
@@ -133,11 +131,10 @@ export class PlanningComponent {
     return base.toLocaleDateString('fr-FR', { month: 'long', year: 'numeric' });
   });
 
-  // Emprunts du mois pour un jour donné
   getMonthDayEvents(date: Date): PlanningEvent[] {
-    const dayIndex = date.getDay() === 0 ? 6 : date.getDay() - 1;
+    const dateStr = this.toDateStr(date);
     return this.filteredRows().flatMap(r =>
-      r.events.filter(e => e.startDay <= dayIndex && e.endDay >= dayIndex)
+      r.events.filter(e => dateStr >= e.startDate && dateStr <= e.endDate)
     );
   }
 
@@ -159,10 +156,10 @@ export class PlanningComponent {
   nextWeek(): void { this.weekOffset.update(v => v + 1); }
 
   onDateChange(event: Event): void {
-  const value = (event.target as HTMLInputElement).value;
-  this.selectedDate.set(value);
-  this.weekOffset.set(0);
-}
+    const value = (event.target as HTMLInputElement).value;
+    this.selectedDate.set(value);
+    this.weekOffset.set(0);
+  }
 
   setViewMode(mode: 'SEMAINE' | 'MOIS'): void {
     this.viewMode.set(mode);
@@ -171,20 +168,44 @@ export class PlanningComponent {
 
   // ── Utilitaires ───────────────────────────────────────
 
-  getEventAt(row: PlanningRow, dayIndex: number): PlanningEvent | null {
-    return row.events.find(e => e.startDay === dayIndex) ?? null;
+  // Retourne l'event qui COMMENCE sur cette date
+  getEventAt(row: PlanningRow, date: Date): PlanningEvent | null {
+    const dateStr = this.toDateStr(date);
+    return row.events.find(e => e.startDate === dateStr) ?? null;
   }
 
-  isCovered(row: PlanningRow, dayIndex: number): boolean {
-    return row.events.some(e => dayIndex > e.startDay && dayIndex <= e.endDay);
+  // Retourne true si la date est au MILIEU ou à la FIN d'un event (pas le début)
+  isCovered(row: PlanningRow, date: Date): boolean {
+    const dateStr = this.toDateStr(date);
+    return row.events.some(e => dateStr > e.startDate && dateStr <= e.endDate);
   }
 
-  getSpan(event: PlanningEvent): number {
-    return event.endDay - event.startDay + 1;
+  // Calcule le nombre de colonnes à occuper, en s'arrêtant à la fin de la semaine
+  getSpan(event: PlanningEvent, fromDate: Date): number {
+    const [ey, em, ed] = event.endDate.split('-').map(Number);
+    const endDate = new Date(ey, em - 1, ed);
+
+    const dayIndex = (fromDate.getDay() + 6) % 7; // 0=Lun, 6=Dim
+    const weekEndDate = new Date(fromDate);
+    weekEndDate.setDate(fromDate.getDate() + (6 - dayIndex));
+
+    const effectiveEnd = endDate <= weekEndDate ? endDate : weekEndDate;
+    const diffMs = effectiveEnd.getTime() - fromDate.getTime();
+    const diffDays = Math.round(diffMs / (1000 * 60 * 60 * 24));
+    return Math.max(1, diffDays + 1);
+  }
+
+  // Formate une date en 'YYYY-MM-DD' en heure locale (évite les décalages UTC)
+  private toDateStr(date: Date): string {
+    const y = date.getFullYear();
+    const m = String(date.getMonth() + 1).padStart(2, '0');
+    const d = String(date.getDate()).padStart(2, '0');
+    return `${y}-${m}-${d}`;
   }
 
   getTodayString(): string {
-    return new Date().toISOString().split('T')[0];
+    const d = new Date();
+    return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`;
   }
 
   getWeekNumber(date: Date): number {
