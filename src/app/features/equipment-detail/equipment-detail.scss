@@ -2,22 +2,28 @@
   display: flex;
   flex-direction: column;
   gap: 16px;
+  padding: 2rem;
+
+  @media (max-width: 768px) {
+    padding: 1rem;
+  }
 }
 
-// EN-TÊTE
+// ── En-tête ───────────────────────────────────────────
 .page-header {
   display: flex;
   align-items: center;
   justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 0.75rem;
 }
 
-.page-title {
-  font-size: 20px;
-  font-weight: 800;
-  color: var(--grey-900);
+.header-actions {
+  display: flex;
+  gap: 0.5rem;
 }
 
-// BOUTONS
+// ── Boutons ───────────────────────────────────────────
 .btn {
   padding: 8px 16px;
   border-radius: var(--r-sm);
@@ -27,24 +33,34 @@
   cursor: pointer;
   font-family: var(--font);
   text-decoration: none;
+  transition: opacity 0.2s;
 
-  &.btn-primary {
-    background: var(--primary);
-    color: white;
-  }
+  &:hover { opacity: 0.85; }
 
-  &.btn-ghost {
-    background: var(--grey-100);
-    color: var(--grey-700);
-  }
-
-  &.btn-sm {
-    padding: 4px 10px;
-    font-size: 11px;
-  }
+  &.btn-sm { padding: 4px 10px; font-size: 11px; }
 }
 
-// FICHE
+.btn-retour {
+  background: var(--grey-100);
+  color: var(--grey-700);
+}
+
+.btn-edit {
+  background: var(--info-bg);
+  color: var(--info-text);
+}
+
+.btn-delete {
+  background: var(--danger-bg);
+  color: var(--danger-text);
+}
+
+.btn-ghost {
+  background: var(--grey-100);
+  color: var(--grey-700);
+}
+
+// ── Fiche ─────────────────────────────────────────────
 .fiche {
   background: white;
   border-radius: var(--r-lg);
@@ -52,8 +68,20 @@
   box-shadow: var(--shadow-sm);
   padding: 24px;
   display: flex;
-  gap: 24px;
+  flex-direction: column;
+  gap: 20px;
+}
+
+.fiche-top {
+  display: flex;
+  gap: 20px;
   align-items: flex-start;
+
+  @media (max-width: 480px) {
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+  }
 }
 
 .fiche-icon {
@@ -71,12 +99,11 @@
 .fiche-info {
   display: flex;
   flex-direction: column;
-  gap: 8px;
-  min-width: 180px;
+  gap: 6px;
 }
 
 .fiche-nom {
-  font-size: 18px;
+  font-size: 20px;
   font-weight: 800;
   color: var(--grey-900);
 }
@@ -89,9 +116,18 @@
 
 .fiche-details {
   display: grid;
-  grid-template-columns: 1fr 1fr;
+  grid-template-columns: repeat(4, 1fr);
   gap: 16px;
-  flex: 1;
+  padding-top: 16px;
+  border-top: 1px solid var(--grey-100);
+
+  @media (max-width: 768px) {
+    grid-template-columns: repeat(2, 1fr);
+  }
+
+  @media (max-width: 400px) {
+    grid-template-columns: 1fr;
+  }
 }
 
 .detail-item {
@@ -114,7 +150,7 @@
   color: var(--grey-900);
 }
 
-// BADGES
+// ── Badges ────────────────────────────────────────────
 .badge {
   display: inline-flex;
   align-items: center;
@@ -149,7 +185,7 @@
   }
 }
 
-// ONGLETS
+// ── Onglets ───────────────────────────────────────────
 .tabs {
   display: flex;
   gap: 2px;
@@ -157,6 +193,10 @@
   border-radius: var(--r-sm);
   padding: 3px;
   width: fit-content;
+
+  @media (max-width: 480px) {
+    width: 100%;
+  }
 }
 
 .tab {
@@ -168,37 +208,69 @@
   cursor: pointer;
   transition: all 0.2s;
 
-  &:hover {
-    color: var(--grey-700);
-  }
+  &:hover { color: var(--grey-700); }
 
   &.active {
     background: white;
     color: var(--primary);
     box-shadow: var(--shadow-sm);
   }
+
+  @media (max-width: 480px) {
+    flex: 1;
+    text-align: center;
+  }
 }
 
-// CONTENU ONGLET
+// ── Onglet infos : caractéristiques ──────────────────
 .onglet-content {
-  background: white;
-  border-radius: var(--r-md);
-  border: 1px solid var(--grey-200);
-  padding: 20px;
-}
-
-.info-text {
-  font-size: 13px;
-  color: var(--grey-500);
-}
-
-// TABLEAU
-.table {
   background: white;
   border-radius: var(--r-md);
   border: 1px solid var(--grey-200);
   overflow: hidden;
   box-shadow: var(--shadow-sm);
+}
+
+.carac-grid {
+  display: flex;
+  flex-direction: column;
+}
+
+.carac-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 10px 16px;
+  border-bottom: 1px solid var(--grey-100);
+
+  &:last-child { border-bottom: none; }
+  &:hover { background: var(--grey-50); }
+}
+
+.carac-label {
+  font-size: 12px;
+  color: var(--grey-400);
+  font-weight: 500;
+}
+
+.carac-valeur {
+  font-size: 12px;
+  font-weight: 700;
+  color: var(--grey-900);
+}
+
+// ── Tableaux historique / documents ──────────────────
+.table-wrapper {
+  overflow-x: auto;
+  border-radius: var(--r-md);
+  border: 1px solid var(--grey-200);
+  box-shadow: var(--shadow-sm);
+}
+
+.table {
+  background: white;
+  min-width: 400px;
+  width: 100%;
 }
 
 .table-head {
@@ -209,14 +281,6 @@
   border-bottom: 1px solid var(--grey-200);
 }
 
-.th {
-  font-size: 10px;
-  font-weight: 700;
-  text-transform: uppercase;
-  letter-spacing: 0.8px;
-  color: var(--grey-400);
-}
-
 .table-row {
   display: grid;
   grid-template-columns: 1fr 100px 100px 100px;
@@ -224,13 +288,20 @@
   border-bottom: 1px solid var(--grey-100);
   align-items: center;
 
-  &:last-child {
-    border-bottom: none;
-  }
+  &:last-child { border-bottom: none; }
+  &:hover { background: var(--grey-50); }
 
-  &:hover {
-    background: var(--grey-50);
+  &.table-row-doc {
+    grid-template-columns: 1fr 1fr 80px;
   }
+}
+
+.th {
+  font-size: 10px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.8px;
+  color: var(--grey-400);
 }
 
 .td-main {
