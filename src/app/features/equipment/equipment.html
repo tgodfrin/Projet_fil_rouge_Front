@@ -1,80 +1,105 @@
 <div class="equipment">
 
-  <!-- EN-TÊTE -->
   <div class="page-header">
     <div class="page-title">Équipements</div>
     <button class="btn btn-primary">+ Ajouter</button>
   </div>
 
-  <!-- BARRE DE RECHERCHE + FILTRES -->
   <div class="search-bar">
     <input
       class="search-input"
       type="text"
       placeholder="Rechercher un matériel..."
       [(ngModel)]="recherche"
+      (ngModelChange)="onFiltreChange()"
     />
-    <select class="filter-select">
-      <option>Toutes familles</option>
-      <option>PC</option>
-      <option>VR</option>
-      <option>Tablette</option>
-      <option>Écran</option>
-      <option>Audio</option>
+    <select
+      class="filter-select"
+      [(ngModel)]="familles"
+      (ngModelChange)="onFiltreChange()">
+      @for (f of famillesDisponibles; track f) {
+        <option [value]="f">{{ f === 'toutes' ? 'Toutes familles' : f }}</option>
+      }
     </select>
   </div>
 
-  <!-- BADGES DE COMPTAGE -->
   <div class="badges-row">
-    <span class="badge b-neutral"   [class.active]="filtreActif === 'tous'"         (click)="filtreActif = 'tous'">Tous ({{ totalTous }})</span>
-    <span class="badge b-success"   [class.active]="filtreActif === 'disponible'"   (click)="filtreActif = 'disponible'">Disponible ({{ totalDisponibles }})</span>
-    <span class="badge b-warning"   [class.active]="filtreActif === 'en-pret'"      (click)="filtreActif = 'en-pret'">En prêt ({{ totalEnPret }})</span>
-    <span class="badge b-danger"    [class.active]="filtreActif === 'hors-service'" (click)="filtreActif = 'hors-service'">Hors service ({{ totalHorsService }})</span>
+    <span class="badge b-neutral"  [class.active]="filtreActif === 'tous'"         (click)="filtreActif = 'tous'; onFiltreChange()">Tous ({{ totalTous }})</span>
+    <span class="badge b-success"  [class.active]="filtreActif === 'disponible'"   (click)="filtreActif = 'disponible'; onFiltreChange()">Disponible ({{ totalDisponibles }})</span>
+    <span class="badge b-warning"  [class.active]="filtreActif === 'en-pret'"      (click)="filtreActif = 'en-pret'; onFiltreChange()">En prêt ({{ totalEnPret }})</span>
+    <span class="badge b-danger"   [class.active]="filtreActif === 'hors-service'" (click)="filtreActif = 'hors-service'; onFiltreChange()">Hors service ({{ totalHorsService }})</span>
   </div>
 
-  <!-- TABLEAU -->
-  <div class="table">
+  <div class="table-wrapper">
+    <div class="table">
 
-    <!-- EN-TÊTE -->
-    <div class="table-head">
-      <div class="th">Matériel</div>
-      <div class="th">Famille</div>
-      <div class="th">Localisation</div>
-      <div class="th">Statut</div>
-      <div class="th"></div>
+      <div class="table-head">
+        <div class="th">Matériel</div>
+        <div class="th">Famille</div>
+        <div class="th">Localisation</div>
+        <div class="th">Statut</div>
+        <div class="th"></div>
+      </div>
+
+      @for (eq of equipementsPagines; track eq.reference) {
+        <div class="table-row">
+          <div>
+            <div class="td-main">{{ eq.nom }}</div>
+            <div class="td-muted">{{ eq.reference }}</div>
+          </div>
+          <div class="td-muted">{{ eq.famille }}</div>
+          <div class="td-muted">{{ eq.localisation }}</div>
+          <div>
+            <span class="badge"
+              [class.b-success]="eq.statut === 'disponible'"
+              [class.b-warning]="eq.statut === 'en-pret'"
+              [class.b-danger]="eq.statut === 'hors-service'">
+              <span class="badge-dot"></span>
+              {{ getStatutLabel(eq.statut) }}
+            </span>
+          </div>
+          <div>
+            <button class="btn btn-ghost btn-sm">Voir</button>
+          </div>
+        </div>
+      }
+
+      @if (equipementsFiltres.length === 0) {
+        <div class="empty-state">Aucun équipement trouvé.</div>
+      }
+
     </div>
-
-    <!-- LIGNES -->
-    @for (eq of equipementsFiltres; track eq.reference) {
-      <div class="table-row">
-        <div>
-          <div class="td-main">{{ eq.nom }}</div>
-          <div class="td-muted">{{ eq.reference }}</div>
-        </div>
-        <div class="td-muted">{{ eq.famille }}</div>
-        <div class="td-muted">{{ eq.localisation }}</div>
-        <div>
-          <span class="badge"
-            [class.b-success]="eq.statut === 'disponible'"
-            [class.b-warning]="eq.statut === 'en-pret'"
-            [class.b-danger]="eq.statut === 'hors-service'">
-            <span class="badge-dot"></span>
-            {{ getStatutLabel(eq.statut) }}
-          </span>
-        </div>
-        <div>
-          <button class="btn btn-ghost btn-sm">Voir</button>
-        </div>
-      </div>
-    }
-
-    <!-- ÉTAT VIDE -->
-    @if (equipementsFiltres.length === 0) {
-      <div class="empty-state">
-        Aucun équipement trouvé.
-      </div>
-    }
-
   </div>
+
+  <!-- PAGINATION -->
+  @if (totalPages > 1) {
+    <div class="pagination">
+      <span class="pagination-info">
+        {{ debutIndex }} à {{ finIndex }} sur {{ equipementsFiltres.length }}
+      </span>
+      <div class="pagination-controls">
+        <button
+          class="page-btn"
+          [disabled]="pageCourante === 1"
+          (click)="setPage(pageCourante - 1)">
+          Préc.
+        </button>
+        @for (page of pages; track page) {
+          <button
+            class="page-btn"
+            [class.active]="page === pageCourante"
+            (click)="setPage(page)">
+            {{ page }}
+          </button>
+        }
+        <button
+          class="page-btn"
+          [disabled]="pageCourante === totalPages"
+          (click)="setPage(pageCourante + 1)">
+          Suiv.
+        </button>
+      </div>
+    </div>
+  }
 
 </div>
