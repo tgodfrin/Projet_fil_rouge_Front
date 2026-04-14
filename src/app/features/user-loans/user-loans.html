@@ -1,1 +1,63 @@
-<p>user-loans works!</p>
+<div class="loans-page">
+
+  <div class="page-title">Mes emprunts</div>
+
+  <!-- Tabs -->
+  <div class="chip-row">
+    <button class="chip" [class.active]="activeTab() === 'EN_COURS'" (click)="setTab('EN_COURS')">
+      En cours ({{ countByTab('EN_COURS') }})
+    </button>
+    <button class="chip" [class.active]="activeTab() === 'EN_ATTENTE'" (click)="setTab('EN_ATTENTE')">
+      En attente ({{ countByTab('EN_ATTENTE') }})
+    </button>
+    <button class="chip" [class.active]="activeTab() === 'HISTORIQUE'" (click)="setTab('HISTORIQUE')">
+      Historique ({{ countByTab('HISTORIQUE') }})
+    </button>
+  </div>
+
+  <!-- Liste -->
+  @if (filteredLoans().length === 0) {
+    <div class="empty-state">Aucun emprunt dans cette catégorie.</div>
+  } @else {
+    <div class="loans-list">
+      @for (loan of filteredLoans(); track loan.id) {
+        <div class="loan-card">
+
+          <!-- Header -->
+          <div class="loan-header">
+            <div class="loan-icon">{{ loan.categoryIcon }}</div>
+            <div class="loan-info">
+              <div class="loan-name">{{ loan.equipmentName }}</div>
+              <div class="loan-dates">{{ formatDateRange(loan.startDate, loan.endDate) }}</div>
+            </div>
+            <span class="badge" [ngClass]="getStatusClass(loan.status)">
+              <span class="badge-dot"></span>{{ getStatusLabel(loan.status) }}
+            </span>
+          </div>
+
+          <!-- Progress (EN_COURS uniquement) -->
+          @if (loan.status === 'EN_COURS' || loan.status === 'RETARD') {
+            <div class="progress-bar">
+              <div class="progress-fill" [style.width.%]="getProgressPercent(loan)"></div>
+            </div>
+            <div class="days-left">
+              Retour dans
+              <strong [class.urgent]="getDaysLeft(loan) <= 1">
+                {{ getDaysLeft(loan) }} jour(s)
+              </strong>
+            </div>
+
+            <!-- Actions -->
+            <div class="loan-actions">
+              <button class="btn-action btn-outline">Signaler</button>
+              <button class="btn-action btn-ghost">Retour anticipé</button>
+              <button class="btn-action btn-ghost">Prolonger</button>
+            </div>
+          }
+
+        </div>
+      }
+    </div>
+  }
+
+</div>
