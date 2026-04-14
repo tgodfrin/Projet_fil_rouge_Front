@@ -165,7 +165,8 @@
 // ── Boutons ───────────────────────────────────────────
 .btn-validate,
 .btn-refuse,
-.btn-ghost {
+.btn-ghost,
+.btn-return {
   flex: 1;
   height: 28px;
   border: none;
@@ -195,6 +196,19 @@
   color: var(--grey-700);
 }
 
+.btn-return {
+  flex: 0;
+  padding: 0 0.6rem;
+  background: var(--info-bg);
+  color: var(--info-text);
+  font-weight: 600;
+}
+
+.rendu-label {
+  color: var(--grey-300);
+  font-size: 0.85rem;
+}
+
 // ── Tableau en cours ──────────────────────────────────
 .table-wrapper {
   overflow-x: auto;
@@ -205,7 +219,7 @@
 
 .loan-table {
   width: 100%;
-  min-width: 480px;
+  min-width: 560px;
   border-collapse: collapse;
   background: white;
 
