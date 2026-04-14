@@ -3,6 +3,10 @@
   display: flex;
   flex-direction: column;
   gap: 1.25rem;
+
+  @media (max-width: 768px) {
+    padding: 1rem;
+  }
 }
 
 // ── En-tête ───────────────────────────────────────────
@@ -11,19 +15,28 @@
   align-items: center;
   justify-content: space-between;
   flex-wrap: wrap;
-  gap: 1rem;
+  gap: 0.75rem;
 }
 
 .page-title {
   font-size: 1.4rem;
   font-weight: 700;
   color: var(--grey-900);
+
+  @media (max-width: 768px) {
+    font-size: 1.2rem;
+  }
 }
 
 .header-actions {
   display: flex;
   gap: 0.5rem;
   align-items: center;
+  flex-wrap: wrap;
+
+  @media (max-width: 480px) {
+    width: 100%;
+  }
 }
 
 .filter-select {
@@ -36,9 +49,10 @@
   background: white;
   cursor: pointer;
 
-  &:focus {
-    outline: none;
-    border-color: var(--primary);
+  &:focus { outline: none; border-color: var(--primary); }
+
+  @media (max-width: 480px) {
+    flex: 1;
   }
 }
 
@@ -52,10 +66,12 @@
   color: var(--grey-700);
   cursor: pointer;
   transition: all 0.2s;
+  white-space: nowrap;
 
-  &:hover {
-    border-color: var(--primary);
-    color: var(--primary);
+  &:hover { border-color: var(--primary); color: var(--primary); }
+
+  @media (max-width: 480px) {
+    width: 100%;
   }
 }
 
@@ -70,32 +86,36 @@
 
 // ── Cartes à valider ──────────────────────────────────
 .cards-list {
-  display: flex;
-  flex-direction: column;
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
   gap: 0.75rem;
+
+  @media (max-width: 640px) {
+    grid-template-columns: 1fr;
+  }
 }
 
 .emprunt-card {
   background: white;
   border: 1px solid var(--grey-200);
   border-radius: var(--r-md);
-  padding: 1rem;
+  padding: 0.75rem;
   box-shadow: var(--shadow-sm);
 }
 
 .card-top {
   display: flex;
   align-items: center;
-  gap: 0.75rem;
+  gap: 0.6rem;
 }
 
 .avatar {
-  width: 36px;
-  height: 36px;
-  border-radius: 8px;
+  width: 30px;
+  height: 30px;
+  border-radius: 6px;
   background: var(--primary-xlight);
   color: var(--primary);
-  font-size: 0.75rem;
+  font-size: 0.7rem;
   font-weight: 700;
   display: flex;
   align-items: center;
@@ -105,34 +125,41 @@
 
 .card-info {
   flex: 1;
+  min-width: 0;
 }
 
 .card-title {
-  font-size: 0.875rem;
+  font-size: 0.8rem;
   font-weight: 600;
   color: var(--grey-900);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
 
 .card-dates {
-  font-size: 0.75rem;
+  font-size: 0.7rem;
   color: var(--grey-400);
-  margin-top: 0.15rem;
+  margin-top: 0.1rem;
 }
 
 .card-comment {
-  font-size: 0.8rem;
+  font-size: 0.75rem;
   color: var(--grey-700);
   background: var(--grey-50);
   border-left: 3px solid var(--primary);
   border-radius: var(--r-sm);
-  padding: 0.5rem 0.75rem;
-  margin-top: 0.75rem;
+  padding: 0.4rem 0.6rem;
+  margin-top: 0.6rem;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
 
 .card-actions {
   display: flex;
-  gap: 0.5rem;
-  margin-top: 0.75rem;
+  gap: 0.4rem;
+  margin-top: 0.6rem;
 }
 
 // ── Boutons ───────────────────────────────────────────
@@ -140,10 +167,10 @@
 .btn-refuse,
 .btn-ghost {
   flex: 1;
-  height: 32px;
+  height: 28px;
   border: none;
   border-radius: var(--r-sm);
-  font-size: 0.8rem;
+  font-size: 0.75rem;
   font-weight: 500;
   cursor: pointer;
   transition: opacity 0.2s;
@@ -163,22 +190,24 @@
 
 .btn-ghost {
   flex: 0;
-  padding: 0 0.75rem;
+  padding: 0 0.6rem;
   background: var(--grey-100);
   color: var(--grey-700);
 }
 
 // ── Tableau en cours ──────────────────────────────────
-.table-container {
-  background: white;
+.table-wrapper {
+  overflow-x: auto;
   border-radius: var(--r-lg);
+  border: 1px solid var(--grey-200);
   box-shadow: var(--shadow-sm);
-  overflow: hidden;
 }
 
 .loan-table {
   width: 100%;
+  min-width: 480px;
   border-collapse: collapse;
+  background: white;
 
   thead tr {
     background: var(--grey-50);
@@ -193,6 +222,7 @@
     color: var(--grey-500);
     text-transform: uppercase;
     letter-spacing: 0.05em;
+    white-space: nowrap;
   }
 
   tbody tr {
@@ -207,6 +237,7 @@
     padding: 0.875rem 1rem;
     font-size: 0.875rem;
     color: var(--grey-700);
+    white-space: nowrap;
   }
 }
 

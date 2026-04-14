@@ -4,16 +4,15 @@
   <div class="page-header">
     <div class="page-title">Gestion des emprunts</div>
     <div class="header-actions">
-      <select class="filter-select">
-        <option>Tous les statuts</option>
-        <option>En attente</option>
-        <option>En cours</option>
-        <option>Terminé</option>
+      <select class="filter-select" (change)="onFiltreStatutChange($event)">
+        <option value="tous">Tous les statuts</option>
+        <option value="EN_COURS">En cours</option>
+        <option value="RETARD">Retard</option>
       </select>
-      <select class="filter-select">
-        <option>Cette semaine</option>
-        <option>Ce mois</option>
-        <option>Tout</option>
+      <select class="filter-select" (change)="onFiltreTempsChange($event)">
+        <option value="tout">Tout</option>
+        <option value="semaine">Cette semaine</option>
+        <option value="mois">Ce mois</option>
       </select>
       <button class="btn-export">Export CSV</button>
     </div>
@@ -21,74 +20,73 @@
 
   <!-- Section : À valider -->
   @if (pendingLoans().length > 0) {
-    <div class="section-label">À valider ({{ pendingLoans().length }})</div>
-    <div class="cards-list">
-      @for (loan of pendingLoans(); track loan.id) {
-        <div class="emprunt-card">
-          <div class="card-top">
-            <div class="avatar">{{ loan.borrowerInitials }}</div>
-            <div class="card-info">
-              <div class="card-title">{{ loan.borrowerName }} — {{ loan.equipmentName }}</div>
-              <div class="card-dates">{{ formatDate(loan.startDate) }} au {{ formatDate(loan.endDate) }}</div>
-            </div>
-            <span class="badge badge-warning">En attente</span>
-          </div>
-          @if (loan.comment) {
-            <div class="card-comment">{{ loan.comment }}</div>
-          }
-          <div class="card-actions">
-            <button class="btn-validate" (click)="validateLoan(loan)">Valider</button>
-            <button class="btn-refuse" (click)="refuseLoan(loan)">Refuser</button>
-            <button class="btn-ghost">Voir détail</button>
-          </div>
+  <div class="section-label">À valider ({{ pendingLoans().length }})</div>
+  <div class="cards-list">
+    @for (loan of pendingLoans(); track loan.id) {
+    <div class="emprunt-card">
+      <div class="card-top">
+        <div class="avatar">{{ loan.borrowerInitials }}</div>
+        <div class="card-info">
+          <div class="card-title">{{ loan.borrowerName }} — {{ loan.equipmentName }}</div>
+          <div class="card-dates">{{ formatDate(loan.startDate) }} au {{ formatDate(loan.endDate) }}</div>
         </div>
+        <span class="badge badge-warning">En attente</span>
+      </div>
+      @if (loan.comment) {
+      <div class="card-comment">{{ loan.comment }}</div>
       }
+      <div class="card-actions">
+        <button class="btn-validate" (click)="validateLoan(loan)">Valider</button>
+        <button class="btn-refuse" (click)="refuseLoan(loan)">Refuser</button>
+        <button class="btn-ghost">Voir détail</button>
+      </div>
     </div>
+    }
+  </div>
   }
 
   <!-- Section : En cours -->
-  <div class="section-label" style="margin-top: 0.5rem">
+  <div class="section-label">
     En cours ({{ activeLoans().length }})
   </div>
 
   @if (activeLoans().length === 0) {
-    <div class="empty-state">Aucun emprunt en cours.</div>
+  <div class="empty-state">Aucun emprunt pour ce filtre.</div>
   } @else {
-    <div class="table-container">
-      <table class="loan-table">
-        <thead>
-          <tr>
-            <th>Emprunteur / Matériel</th>
-            <th>Retour prévu</th>
-            <th>Statut</th>
-            <th></th>
-          </tr>
-        </thead>
-        <tbody>
-          @for (loan of activeLoans(); track loan.id) {
-            <tr>
-              <td>
-                <div class="cell-main">{{ loan.borrowerName }} — {{ loan.equipmentName }}</div>
-              </td>
-              <td>
-                <span [class.retard]="loan.status === 'RETARD'">
-                  {{ formatDate(loan.endDate) }}
-                  @if (loan.status === 'RETARD') { (retard) }
-                </span>
-              </td>
-              <td>
-                <span class="badge" [ngClass]="getStatusClass(loan.status)">
-                  {{ getStatusLabel(loan.status) }}
-                </span>
-              </td>
-              <td>
-                <button class="btn-ghost">Détail</button>
-              </td>
-            </tr>
-          }
-        </tbody>
-      </table>
-    </div>
+  <div class="table-wrapper">
+    <table class="loan-table">
+      <thead>
+        <tr>
+          <th>Emprunteur / Matériel</th>
+          <th>Retour prévu</th>
+          <th>Statut</th>
+          <th></th>
+        </tr>
+      </thead>
+      <tbody>
+        @for (loan of activeLoans(); track loan.id) {
+        <tr>
+          <td>
+            <div class="cell-main">{{ loan.borrowerName }} — {{ loan.equipmentName }}</div>
+          </td>
+          <td>
+            <span [class.retard]="loan.status === 'RETARD'">
+              {{ formatDate(loan.endDate) }}
+            </span>
+          </td>
+          <td>
+            <span class="badge" [ngClass]="getStatusClass(loan.status)">
+              {{ getStatusLabel(loan.status) }}
+            </span>
+          </td>
+          <td>
+            <button class="btn-ghost">Détail</button>
+          </td>
+        </tr>
+        }
+      </tbody>
+    </table>
+  </div>
   }
 
 </div>

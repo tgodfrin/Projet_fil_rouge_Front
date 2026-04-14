@@ -1,5 +1,6 @@
 import { Component, signal, computed } from '@angular/core';
 import { CommonModule } from '@angular/common';
+import { FormsModule } from '@angular/forms';
 
 export type LoanStatus = 'EN_ATTENTE' | 'EN_COURS' | 'RETARD' | 'TERMINE' | 'REFUSE';
 
@@ -17,11 +18,14 @@ export interface Loan {
 @Component({
   selector: 'app-loan',
   standalone: true,
-  imports: [CommonModule],
+  imports: [CommonModule, FormsModule],
   templateUrl: './loan.html',
   styleUrl: './loan.scss'
 })
 export class LoanComponent {
+
+  filtreStatut = signal<string>('tous');
+  filtreTemps = signal<string>('tout');
 
   loans = signal<Loan[]>([
     {
@@ -72,15 +76,42 @@ export class LoanComponent {
     }
   ]);
 
-  // Emprunts à valider (cartes en haut)
   pendingLoans = computed(() =>
     this.loans().filter(l => l.status === 'EN_ATTENTE')
   );
 
-  // Emprunts en cours + retard (tableau en bas)
-  activeLoans = computed(() =>
-    this.loans().filter(l => l.status === 'EN_COURS' || l.status === 'RETARD')
-  );
+  activeLoans = computed(() => {
+    let list = this.loans().filter(l =>
+      l.status === 'EN_COURS' || l.status === 'RETARD'
+    );
+
+    // Filtre statut
+    const statut = this.filtreStatut();
+    if (statut === 'EN_COURS') list = list.filter(l => l.status === 'EN_COURS');
+    if (statut === 'RETARD') list = list.filter(l => l.status === 'RETARD');
+
+    // Filtre temporalité
+    const now = new Date();
+    const temps = this.filtreTemps();
+    if (temps === 'semaine') {
+      const debutSemaine = new Date(now);
+      debutSemaine.setDate(now.getDate() - now.getDay() + 1);
+      const finSemaine = new Date(debutSemaine);
+      finSemaine.setDate(debutSemaine.getDate() + 6);
+      list = list.filter(l => {
+        const d = new Date(l.startDate);
+        return d >= debutSemaine && d <= finSemaine;
+      });
+    }
+    if (temps === 'mois') {
+      list = list.filter(l => {
+        const d = new Date(l.startDate);
+        return d.getMonth() === now.getMonth() && d.getFullYear() === now.getFullYear();
+      });
+    }
+
+    return list;
+  });
 
   validateLoan(loan: Loan): void {
     this.loans.update(list =>
@@ -92,6 +123,16 @@ export class LoanComponent {
     this.loans.update(list =>
       list.map(l => l.id === loan.id ? { ...l, status: 'REFUSE' as LoanStatus } : l)
     );
+  }
+
+  onFiltreStatutChange(event: Event): void {
+    const value = (event.target as HTMLSelectElement).value;
+    this.filtreStatut.set(value);
+  }
+
+  onFiltreTempsChange(event: Event): void {
+    const value = (event.target as HTMLSelectElement).value;
+    this.filtreTemps.set(value);
   }
 
   getStatusLabel(status: LoanStatus): string {
