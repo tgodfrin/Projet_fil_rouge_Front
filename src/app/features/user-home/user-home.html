@@ -1,0 +1,64 @@
+<div class="home-page">
+
+  <!-- Greeting -->
+  <div class="greeting">
+    <div class="greeting-sub">Bonjour,</div>
+    <div class="greeting-name">{{ user.firstName }} {{ user.lastName }}</div>
+  </div>
+
+  <!-- Bannière retour imminent -->
+  @if (returnSoonLoan()) {
+    <div class="return-banner">
+      <div class="banner-title">⚠ Retour prévu demain</div>
+      <div class="banner-sub">{{ returnSoonLoan()!.equipmentName }} — avant 18h</div>
+    </div>
+  }
+
+  <!-- KPIs -->
+  <div class="kpi-grid">
+    <div class="kpi-card">
+      <div class="kpi-val primary">{{ activeLoans().length }}</div>
+      <div class="kpi-lbl">Emprunts actifs</div>
+    </div>
+    <div class="kpi-card">
+      <div class="kpi-val warning">{{ pendingCount() }}</div>
+      <div class="kpi-lbl">En attente</div>
+    </div>
+  </div>
+
+  <!-- Emprunts actifs -->
+  @if (activeLoans().length > 0) {
+    <div class="section-label">Emprunts actifs</div>
+    <div class="loans-list">
+      @for (loan of activeLoans(); track loan.id) {
+        <div class="loan-card">
+          <div class="loan-card-header">
+            <div>
+              <div class="loan-label">En cours</div>
+              <div class="loan-name">{{ loan.equipmentName }}</div>
+              <div class="loan-dates">{{ formatDateRange(loan.startDate, loan.endDate) }}</div>
+            </div>
+            <span class="badge badge-success">
+              <span class="badge-dot"></span>Actif
+            </span>
+          </div>
+          <div class="progress-bar">
+            <div class="progress-fill" [style.width.%]="getProgressPercent(loan)"></div>
+          </div>
+          <div class="days-left">
+            Retour dans
+            <strong [class.urgent]="getDaysLeft(loan) <= 1">
+              {{ getDaysLeft(loan) }} jour(s)
+            </strong>
+          </div>
+        </div>
+      }
+    </div>
+  }
+
+  <!-- CTA -->
+  <button class="btn-new-loan" routerLink="/utilisateur/catalogue">
+    + Nouvel emprunt
+  </button>
+
+</div>
