@@ -28,53 +28,53 @@ export class LoanComponent {
   filtreTemps = signal<string>('tout');
 
   loans = signal<Loan[]>([
-    {
-      id: 1,
-      equipmentName: 'iPad Pro 12.9"',
-      borrowerName: 'Julie Fontaine',
-      borrowerInitials: 'JF',
-      startDate: '2026-03-03',
-      endDate: '2026-03-10',
-      status: 'EN_ATTENTE'
-    },
-    {
-      id: 2,
-      equipmentName: 'Meta Quest 3',
-      borrowerName: 'Kevin Leclerc',
-      borrowerInitials: 'KL',
-      startDate: '2026-03-05',
-      endDate: '2026-03-08',
-      status: 'EN_ATTENTE',
-      comment: 'Pour le cours de UX immersif'
-    },
-    {
-      id: 3,
-      equipmentName: 'MacBook Pro M3',
-      borrowerName: 'Marc Durand',
-      borrowerInitials: 'MD',
-      startDate: '2026-02-24',
-      endDate: '2026-03-01',
-      status: 'RETARD'
-    },
-    {
-      id: 4,
-      equipmentName: 'iPad Pro 12.9"',
-      borrowerName: 'Sophie Renard',
-      borrowerInitials: 'SR',
-      startDate: '2026-03-04',
-      endDate: '2026-03-10',
-      status: 'EN_COURS'
-    },
-    {
-      id: 5,
-      equipmentName: 'HP EliteBook 840',
-      borrowerName: 'Tom Vasseur',
-      borrowerInitials: 'TV',
-      startDate: '2026-03-07',
-      endDate: '2026-03-15',
-      status: 'EN_COURS'
-    }
-  ]);
+  {
+    id: 1,
+    equipmentName: 'iPad Pro 12.9"',
+    borrowerName: 'Julie Fontaine',
+    borrowerInitials: 'JF',
+    startDate: '2026-04-10',
+    endDate: '2026-04-17',
+    status: 'EN_ATTENTE'
+  },
+  {
+    id: 2,
+    equipmentName: 'Meta Quest 3',
+    borrowerName: 'Kevin Leclerc',
+    borrowerInitials: 'KL',
+    startDate: '2026-04-12',
+    endDate: '2026-04-15',
+    status: 'EN_ATTENTE',
+    comment: 'Pour le cours de UX immersif'
+  },
+  {
+    id: 3,
+    equipmentName: 'MacBook Pro M3',
+    borrowerName: 'Marc Durand',
+    borrowerInitials: 'MD',
+    startDate: '2026-04-07',
+    endDate: '2026-04-11',
+    status: 'RETARD'
+  },
+  {
+    id: 4,
+    equipmentName: 'iPad Pro 12.9"',
+    borrowerName: 'Sophie Renard',
+    borrowerInitials: 'SR',
+    startDate: '2026-04-08',
+    endDate: '2026-04-14',
+    status: 'EN_COURS'
+  },
+  {
+    id: 5,
+    equipmentName: 'HP EliteBook 840',
+    borrowerName: 'Tom Vasseur',
+    borrowerInitials: 'TV',
+    startDate: '2026-04-14',
+    endDate: '2026-04-22',
+    status: 'EN_COURS'
+  }
+]);
 
   pendingLoans = computed(() =>
     this.loans().filter(l => l.status === 'EN_ATTENTE')
@@ -122,6 +122,12 @@ export class LoanComponent {
   refuseLoan(loan: Loan): void {
     this.loans.update(list =>
       list.map(l => l.id === loan.id ? { ...l, status: 'REFUSE' as LoanStatus } : l)
+    );
+  }
+
+  returnLoan(loan: Loan): void {
+    this.loans.update(list =>
+      list.map(l => l.id === loan.id ? { ...l, status: 'TERMINE' as LoanStatus } : l)
     );
   }
 
