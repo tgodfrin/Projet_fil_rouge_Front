@@ -27,6 +27,13 @@ export class UserHomeComponent {
       category: 'PC',
       startDate: '2026-04-10',
       endDate: '2026-04-17'
+    },
+    {
+      id: 2,
+      equipmentName: 'Pc Asus ROG',
+      category: 'PC',
+      startDate: '2026-04-03',
+      endDate: '2026-04-30'
     }
   ]);
 
