@@ -1,0 +1,101 @@
+<div class="request-page">
+
+  <!-- Header -->
+  <div class="page-header">
+    <button class="btn-back" (click)="cancel()">‹ Retour</button>
+    <div class="page-title">Nouvelle demande</div>
+  </div>
+
+  <!-- Stepper -->
+  <div class="stepper">
+    <div class="step-circle" [class.active]="currentStep() === 1" [class.done]="currentStep() > 1">1</div>
+    <div class="step-line" [class.done]="currentStep() > 1"></div>
+    <div class="step-circle" [class.active]="currentStep() === 2" [class.done]="currentStep() > 2">2</div>
+    <div class="step-line"></div>
+    <div class="step-circle">3</div>
+  </div>
+  <div class="step-label">
+    @if (currentStep() === 1) { Étape 1 sur 3 — Sélection et dates }
+    @if (currentStep() === 2) { Étape 2 sur 3 — Récapitulatif }
+  </div>
+
+  <!-- Équipement sélectionné -->
+  @if (equipment()) {
+    <div class="equipment-card">
+      <div class="equipment-icon">{{ equipment()!.icon }}</div>
+      <div class="equipment-info">
+        <div class="equipment-name">{{ equipment()!.name }}</div>
+        <div class="equipment-ref">{{ equipment()!.ref }}</div>
+      </div>
+      <span class="badge badge-success"><span class="badge-dot"></span>Dispo</span>
+    </div>
+  } @else {
+    <div class="empty-state">Équipement introuvable.</div>
+  }
+
+  <!-- ÉTAPE 1 -->
+  @if (currentStep() === 1) {
+    <div class="form-group">
+      <label class="form-label">Date de début</label>
+      <input class="form-input" type="date" [min]="getTodayString()" (change)="onStartDate($event)" />
+    </div>
+
+    <div class="form-group">
+      <label class="form-label">Date de fin</label>
+      <input class="form-input" type="date" [min]="startDate() || getTodayString()" (change)="onEndDate($event)" />
+    </div>
+
+    @if (duration() > 0) {
+      <div class="info-banner">
+        Durée : {{ duration() }} jour(s) — Retour le {{ formattedReturn() }}
+      </div>
+    }
+
+    <div class="form-group">
+      <label class="form-label">Motif</label>
+      <textarea
+        class="form-textarea"
+        placeholder="Expliquez brièvement la raison de l'emprunt..."
+        rows="3"
+        (input)="onMotif($event)">
+      </textarea>
+    </div>
+
+    <div class="form-actions">
+      <button class="btn-ghost" (click)="cancel()">Annuler</button>
+      <button class="btn-primary" [disabled]="!canGoNext()" (click)="nextStep()">Suivant</button>
+    </div>
+  }
+
+  <!-- ÉTAPE 2 — Récapitulatif -->
+  @if (currentStep() === 2) {
+    <div class="recap-card">
+      <div class="recap-row">
+        <span class="recap-key">Matériel</span>
+        <span class="recap-val">{{ equipment()!.name }}</span>
+      </div>
+      <div class="recap-row">
+        <span class="recap-key">Période</span>
+        <span class="recap-val">{{ formattedRange() }}</span>
+      </div>
+      <div class="recap-row">
+        <span class="recap-key">Durée</span>
+        <span class="recap-val">{{ duration() }} jour(s)</span>
+      </div>
+      <div class="recap-row">
+        <span class="recap-key">Motif</span>
+        <span class="recap-val">{{ motif() }}</span>
+      </div>
+      <div class="recap-row">
+        <span class="recap-key">Statut</span>
+        <span class="badge badge-warning"><span class="badge-dot"></span>En attente</span>
+      </div>
+    </div>
+
+    <div class="form-actions">
+      <button class="btn-ghost" (click)="prevStep()">Retour</button>
+      <button class="btn-primary" (click)="submit()">Confirmer</button>
+    </div>
+  }
+
+</div>
