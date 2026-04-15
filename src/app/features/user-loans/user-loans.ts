@@ -1,5 +1,7 @@
 import { Component, signal, computed } from '@angular/core';
 import { CommonModule } from '@angular/common';
+import { RouterLink } from '@angular/router';
+
 
 export type UserLoanStatus = 'EN_COURS' | 'EN_ATTENTE' | 'TERMINE' | 'REFUSE' | 'RETARD';
 
@@ -18,7 +20,7 @@ type FilterTab = 'EN_COURS' | 'EN_ATTENTE' | 'HISTORIQUE';
 @Component({
   selector: 'app-user-loans',
   standalone: true,
-  imports: [CommonModule],
+  imports: [CommonModule,RouterLink],
   templateUrl: './user-loans.html',
   styleUrl: './user-loans.scss'
 })

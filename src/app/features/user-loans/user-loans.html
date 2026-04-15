@@ -17,47 +17,49 @@
 
   <!-- Liste -->
   @if (filteredLoans().length === 0) {
-    <div class="empty-state">Aucun emprunt dans cette catégorie.</div>
+  <div class="empty-state">Aucun emprunt dans cette catégorie.</div>
   } @else {
-    <div class="loans-list">
-      @for (loan of filteredLoans(); track loan.id) {
-        <div class="loan-card">
+  <div class="loans-list">
+    @for (loan of filteredLoans(); track loan.id) {
+    <div class="loan-card">
 
-          <!-- Header -->
-          <div class="loan-header">
-            <div class="loan-icon">{{ loan.categoryIcon }}</div>
-            <div class="loan-info">
-              <div class="loan-name">{{ loan.equipmentName }}</div>
-              <div class="loan-dates">{{ formatDateRange(loan.startDate, loan.endDate) }}</div>
-            </div>
-            <span class="badge" [ngClass]="getStatusClass(loan.status)">
-              <span class="badge-dot"></span>{{ getStatusLabel(loan.status) }}
-            </span>
-          </div>
-
-          <!-- Progress (EN_COURS uniquement) -->
-          @if (loan.status === 'EN_COURS' || loan.status === 'RETARD') {
-            <div class="progress-bar">
-              <div class="progress-fill" [style.width.%]="getProgressPercent(loan)"></div>
-            </div>
-            <div class="days-left">
-              Retour dans
-              <strong [class.urgent]="getDaysLeft(loan) <= 1">
-                {{ getDaysLeft(loan) }} jour(s)
-              </strong>
-            </div>
-
-            <!-- Actions -->
-            <div class="loan-actions">
-              <button class="btn-action btn-outline">Signaler</button>
-              <button class="btn-action btn-ghost">Retour anticipé</button>
-              <button class="btn-action btn-ghost">Prolonger</button>
-            </div>
-          }
-
+      <!-- Header -->
+      <div class="loan-header">
+        <div class="loan-icon">{{ loan.categoryIcon }}</div>
+        <div class="loan-info">
+          <div class="loan-name">{{ loan.equipmentName }}</div>
+          <div class="loan-dates">{{ formatDateRange(loan.startDate, loan.endDate) }}</div>
         </div>
+        <span class="badge" [ngClass]="getStatusClass(loan.status)">
+          <span class="badge-dot"></span>{{ getStatusLabel(loan.status) }}
+        </span>
+      </div>
+
+      <!-- Progress (EN_COURS uniquement) -->
+      @if (loan.status === 'EN_COURS' || loan.status === 'RETARD') {
+      <div class="progress-bar">
+        <div class="progress-fill" [style.width.%]="getProgressPercent(loan)"></div>
+      </div>
+      <div class="days-left">
+        Retour dans
+        <strong [class.urgent]="getDaysLeft(loan) <= 1">
+          {{ getDaysLeft(loan) }} jour(s)
+        </strong>
+      </div>
+
+      <!-- Actions -->
+      <div class="loan-actions">
+        <a class="btn-action btn-outline" [routerLink]="['/utilisateur/signalement', loan.id]">
+          Signaler
+        </a>
+        <button class="btn-action btn-ghost">Retour anticipé</button>
+        <button class="btn-action btn-ghost">Prolonger</button>
+      </div>
       }
+
     </div>
+    }
+  </div>
   }
 
 </div>
