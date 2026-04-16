@@ -1,126 +1,172 @@
-import { Component, signal, computed } from '@angular/core';
+import { Component, signal, computed, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
+import { FormsModule } from '@angular/forms';
 import { RouterLink } from '@angular/router';
 
-
-export type UserLoanStatus = 'EN_COURS' | 'EN_ATTENTE' | 'TERMINE' | 'REFUSE' | 'RETARD';
-
-export interface UserLoan {
+interface Loan {
   id: number;
   equipmentName: string;
-  category: string;
   categoryIcon: string;
   startDate: string;
   endDate: string;
-  status: UserLoanStatus;
+  status: 'EN_COURS' | 'EN_ATTENTE' | 'HISTORIQUE' | 'RETARD' | 'TERMINE' | 'REFUSE';
 }
-
-type FilterTab = 'EN_COURS' | 'EN_ATTENTE' | 'HISTORIQUE';
 
 @Component({
   selector: 'app-user-loans',
   standalone: true,
-  imports: [CommonModule,RouterLink],
+  imports: [CommonModule, FormsModule, RouterLink],
   templateUrl: './user-loans.html',
   styleUrl: './user-loans.scss'
 })
 export class UserLoansComponent {
-  activeTab = signal<FilterTab>('EN_COURS');
 
-  loans = signal<UserLoan[]>([
+  // ── Données mock ───────────────────────────────────────
+  private loans: Loan[] = [
     {
       id: 1,
-      equipmentName: 'MacBook Pro M3',
-      category: 'PC',
+      equipmentName: 'MacBook Pro 14"',
       categoryIcon: '💻',
-      startDate: '2026-04-10',
-      endDate: '2026-04-17',
+      startDate: '2026-04-01',
+      endDate: '2026-04-20',
       status: 'EN_COURS'
     },
     {
       id: 2,
-      equipmentName: 'Dell UltraSharp 27"',
-      category: 'Écran',
-      categoryIcon: '🖥️',
-      startDate: '2026-04-08',
-      endDate: '2026-04-22',
-      status: 'EN_COURS'
+      equipmentName: 'Appareil photo Sony A7',
+      categoryIcon: '📷',
+      startDate: '2026-04-10',
+      endDate: '2026-04-18',
+      status: 'RETARD'
     },
     {
       id: 3,
-      equipmentName: 'iPad Pro 12.9"',
-      category: 'Tablette',
-      categoryIcon: '📱',
-      startDate: '2026-04-15',
-      endDate: '2026-04-20',
+      equipmentName: 'Vidéoprojecteur Epson',
+      categoryIcon: '📽️',
+      startDate: '2026-04-20',
+      endDate: '2026-04-25',
       status: 'EN_ATTENTE'
     },
     {
       id: 4,
-      equipmentName: 'Meta Quest 3',
-      category: 'VR',
-      categoryIcon: '🥽',
+      equipmentName: 'iPad Pro 12.9"',
+      categoryIcon: '📱',
       startDate: '2026-03-01',
-      endDate: '2026-03-10',
+      endDate: '2026-03-15',
       status: 'TERMINE'
-    },
-    {
-      id: 5,
-      equipmentName: 'HP EliteBook 840',
-      category: 'PC',
-      categoryIcon: '💻',
-      startDate: '2026-03-15',
-      endDate: '2026-03-20',
-      status: 'REFUSE'
     }
-  ]);
+  ];
+
+  // ── Tabs ───────────────────────────────────────────────
+  activeTab = signal<'EN_COURS' | 'EN_ATTENTE' | 'HISTORIQUE'>('EN_COURS');
+
+  setTab(tab: 'EN_COURS' | 'EN_ATTENTE' | 'HISTORIQUE') {
+    this.activeTab.set(tab);
+    this.closeForm();
+  }
+
+  countByTab(tab: string): number {
+    if (tab === 'EN_COURS') {
+      return this.loans.filter(l => l.status === 'EN_COURS' || l.status === 'RETARD').length;
+    }
+    if (tab === 'EN_ATTENTE') {
+      return this.loans.filter(l => l.status === 'EN_ATTENTE').length;
+    }
+    return this.loans.filter(l => l.status === 'TERMINE' || l.status === 'REFUSE').length;
+  }
 
   filteredLoans = computed(() => {
     const tab = this.activeTab();
-    if (tab === 'EN_COURS')    return this.loans().filter(l => l.status === 'EN_COURS' || l.status === 'RETARD');
-    if (tab === 'EN_ATTENTE')  return this.loans().filter(l => l.status === 'EN_ATTENTE');
-    return this.loans().filter(l => l.status === 'TERMINE' || l.status === 'REFUSE');
+    if (tab === 'EN_COURS') {
+      return this.loans.filter(l => l.status === 'EN_COURS' || l.status === 'RETARD');
+    }
+    if (tab === 'EN_ATTENTE') {
+      return this.loans.filter(l => l.status === 'EN_ATTENTE');
+    }
+    return this.loans.filter(l => l.status === 'TERMINE' || l.status === 'REFUSE');
   });
 
-  countByTab(tab: FilterTab): number {
-    if (tab === 'EN_COURS')   return this.loans().filter(l => l.status === 'EN_COURS' || l.status === 'RETARD').length;
-    if (tab === 'EN_ATTENTE') return this.loans().filter(l => l.status === 'EN_ATTENTE').length;
-    return this.loans().filter(l => l.status === 'TERMINE' || l.status === 'REFUSE').length;
+  // ── Badges ─────────────────────────────────────────────
+  getStatusClass(status: string): string {
+    const map: Record<string, string> = {
+      EN_COURS:   'badge-success',
+      RETARD:     'badge-danger',
+      EN_ATTENTE: 'badge-warning',
+      TERMINE:    'badge-neutral',
+      REFUSE:     'badge-danger'
+    };
+    return map[status] ?? 'badge-neutral';
   }
 
-  setTab(tab: FilterTab): void {
-    this.activeTab.set(tab);
+  getStatusLabel(status: string): string {
+    const map: Record<string, string> = {
+      EN_COURS:   'En cours',
+      RETARD:     'En retard',
+      EN_ATTENTE: 'En attente',
+      TERMINE:    'Terminé',
+      REFUSE:     'Refusé'
+    };
+    return map[status] ?? status;
   }
 
-  getDaysLeft(loan: UserLoan): number {
-    return Math.ceil((new Date(loan.endDate).getTime() - Date.now()) / (1000 * 60 * 60 * 24));
+  // ── Dates & progress ───────────────────────────────────
+  formatDateRange(start: string, end: string): string {
+    const fmt = (d: string) =>
+      new Date(d).toLocaleDateString('fr-FR', { day: 'numeric', month: 'short' });
+    return `${fmt(start)} → ${fmt(end)}`;
   }
 
-  getProgressPercent(loan: UserLoan): number {
+  getProgressPercent(loan: Loan): number {
     const start = new Date(loan.startDate).getTime();
+    const end   = new Date(loan.endDate).getTime();
+    const now   = Date.now();
+    if (now >= end) return 100;
+    if (now <= start) return 0;
+    return Math.round(((now - start) / (end - start)) * 100);
+  }
+
+  getDaysLeft(loan: Loan): number {
     const end = new Date(loan.endDate).getTime();
-    return Math.min(100, Math.max(0, Math.round(((Date.now() - start) / (end - start)) * 100)));
+    const diff = end - Date.now();
+    return Math.max(0, Math.ceil(diff / (1000 * 60 * 60 * 24)));
   }
 
-  formatDateRange(startDate: string, endDate: string): string {
-    const s = new Date(startDate).toLocaleDateString('fr-FR', { day: 'numeric', month: 'short' });
-    const e = new Date(endDate).toLocaleDateString('fr-FR', { day: 'numeric', month: 'short', year: 'numeric' });
-    return `${s} au ${e}`;
+  // ── Formulaires inline ─────────────────────────────────
+  selectedLoanId = signal<number | null>(null);
+  activeForm = signal<'prolong' | 'return' | null>(null);
+
+  returnDate = '';
+  returnReason = '';
+  prolongDate = '';
+  prolongReason = '';
+
+  toggleForm(loanId: number, form: 'prolong' | 'return') {
+    if (this.selectedLoanId() === loanId && this.activeForm() === form) {
+      this.closeForm();
+    } else {
+      this.selectedLoanId.set(loanId);
+      this.activeForm.set(form);
+    }
   }
 
-  getStatusLabel(status: UserLoanStatus): string {
-    const labels: Record<UserLoanStatus, string> = {
-      EN_COURS: 'Actif', EN_ATTENTE: 'En attente',
-      TERMINE: 'Terminé', REFUSE: 'Refusé', RETARD: 'Retard'
-    };
-    return labels[status];
+  closeForm() {
+    this.selectedLoanId.set(null);
+    this.activeForm.set(null);
+    this.returnDate = '';
+    this.returnReason = '';
+    this.prolongDate = '';
+    this.prolongReason = '';
   }
 
-  getStatusClass(status: UserLoanStatus): string {
-    const classes: Record<UserLoanStatus, string> = {
-      EN_COURS: 'badge-success', EN_ATTENTE: 'badge-warning',
-      TERMINE: 'badge-neutral', REFUSE: 'badge-danger', RETARD: 'badge-danger'
-    };
-    return classes[status];
+  submitReturn(loan: Loan) {
+    console.log('Retour anticipé', { id: loan.id, date: this.returnDate, motif: this.returnReason });
+    // TODO: appel API
+    this.closeForm();
+  }
+
+  submitProlong(loan: Loan) {
+    console.log('Prolongation', { id: loan.id, date: this.prolongDate, motif: this.prolongReason });
+    // TODO: appel API
+    this.closeForm();
   }
 }

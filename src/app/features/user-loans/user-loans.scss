@@ -7,7 +7,6 @@
   @media (min-width: 769px) {
     padding: 2rem;
     gap: 1.25rem;
-    max-width: 800px;
   }
 }
 
@@ -57,6 +56,13 @@
   display: flex;
   flex-direction: column;
   gap: 0.75rem;
+
+  @media (min-width: 900px) {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 1rem;
+    align-items: start;
+  }
 }
 
 .loan-card {
@@ -166,10 +172,6 @@
 .loan-actions {
   display: flex;
   gap: 0.375rem;
-
-  @media (min-width: 769px) {
-    max-width: 420px;
-  }
 }
 
 .btn-action {
@@ -182,6 +184,10 @@
   font-family: var(--font);
   transition: opacity 0.2s;
   border: none;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  text-decoration: none;
 
   &:hover { opacity: 0.8; }
 
@@ -195,6 +201,103 @@
     background: var(--grey-100);
     color: var(--grey-700);
   }
+}
+
+// ── Formulaire inline ─────────────────────────────────
+.inline-form {
+  margin-top: 0.875rem;
+  padding: 0.875rem;
+  background: var(--grey-50, #f9f9fb);
+  border: 1px solid var(--grey-200);
+  border-radius: var(--r-md);
+  display: flex;
+  flex-direction: column;
+  gap: 0.625rem;
+  animation: slideDown 0.15s ease;
+}
+
+@keyframes slideDown {
+  from { opacity: 0; transform: translateY(-6px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+.inline-form-title {
+  font-size: 0.8rem;
+  font-weight: 700;
+  color: var(--grey-800);
+}
+
+.form-group {
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+
+  label {
+    font-size: 0.72rem;
+    font-weight: 600;
+    color: var(--grey-500);
+  }
+}
+
+.form-input {
+  border: 1px solid var(--grey-200);
+  border-radius: var(--r-sm);
+  padding: 0.375rem 0.5rem;
+  font-size: 0.78rem;
+  font-family: var(--font);
+  color: var(--grey-900);
+  background: white;
+  outline: none;
+  resize: none;
+  width: 100%;
+  box-sizing: border-box;
+
+  &:focus { border-color: var(--primary); }
+}
+
+.form-actions {
+  display: flex;
+  gap: 0.5rem;
+  margin-top: 0.25rem;
+  flex-wrap: wrap;
+}
+
+.btn-submit {
+  height: 30px;
+  padding: 0 0.875rem;
+  border-radius: var(--r-sm);
+  font-size: 0.72rem;
+  font-weight: 600;
+  cursor: pointer;
+  font-family: var(--font);
+  border: none;
+  background: var(--primary);
+  color: white;
+  transition: opacity 0.2s;
+
+  &:hover { opacity: 0.85; }
+
+  &.btn-danger {
+    background: var(--danger-bg);
+    color: var(--danger-text);
+    border: 1.5px solid var(--danger-text);
+  }
+}
+
+.btn-cancel {
+  height: 30px;
+  padding: 0 0.875rem;
+  border-radius: var(--r-sm);
+  font-size: 0.72rem;
+  font-weight: 600;
+  cursor: pointer;
+  font-family: var(--font);
+  border: none;
+  background: transparent;
+  color: var(--grey-400);
+  transition: color 0.2s;
+
+  &:hover { color: var(--grey-700); }
 }
 
 // ── Empty state ───────────────────────────────────────
