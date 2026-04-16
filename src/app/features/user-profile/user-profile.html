@@ -22,14 +22,64 @@
   <!-- Informations -->
   <div class="section-label">Informations</div>
   <div class="info-card">
-    <div class="info-row">
+
+    <!-- Email -->
+    <div class="info-row" [class.active]="activeEdit() === 'email'">
       <span class="info-key">Email</span>
-      <span class="info-val">{{ profile().email }}</span>
+      <div class="info-row-right">
+        <span class="info-val">{{ profile().email }}</span>
+        <button class="btn-edit" (click)="toggleEdit('email')">
+          {{ activeEdit() === 'email' ? 'Annuler' : 'Modifier' }}
+        </button>
+      </div>
     </div>
-    <div class="info-row">
+    @if (activeEdit() === 'email') {
+      <div class="edit-form">
+        <div class="form-group">
+          <label>Nouvel email</label>
+          <input type="email" class="form-input" [(ngModel)]="newEmail" placeholder="nouveau@email.fr" />
+        </div>
+        <div class="form-group">
+          <label>Confirmer l'email</label>
+          <input type="email" class="form-input" [(ngModel)]="confirmEmail" placeholder="nouveau@email.fr" />
+        </div>
+        @if (errorMessage()) {
+          <div class="msg msg-error">{{ errorMessage() }}</div>
+        }
+        @if (successMessage()) {
+          <div class="msg msg-success">{{ successMessage() }}</div>
+        }
+        <button class="btn-save" (click)="submitEmail()">Enregistrer</button>
+      </div>
+    }
+
+    <!-- Téléphone -->
+    <div class="info-row" [class.active]="activeEdit() === 'phone'">
       <span class="info-key">Téléphone</span>
-      <span class="info-val">{{ profile().phone }}</span>
+      <div class="info-row-right">
+        <span class="info-val">{{ profile().phone }}</span>
+        <button class="btn-edit" (click)="toggleEdit('phone')">
+          {{ activeEdit() === 'phone' ? 'Annuler' : 'Modifier' }}
+        </button>
+      </div>
     </div>
+    @if (activeEdit() === 'phone') {
+      <div class="edit-form">
+        <div class="form-group">
+          <label>Nouveau numéro</label>
+          <input type="tel" class="form-input" [(ngModel)]="newPhone" placeholder="06 00 00 00 00" />
+        </div>
+        @if (errorMessage()) {
+          <div class="msg msg-error">{{ errorMessage() }}</div>
+        }
+        @if (successMessage()) {
+          <div class="msg msg-success">{{ successMessage() }}</div>
+        }
+        <button class="btn-save" (click)="submitPhone()">Enregistrer</button>
+      </div>
+    }
+
+    <!-- Rôle & membre depuis (non modifiables) -->
     <div class="info-row">
       <span class="info-key">Rôle</span>
       <span class="info-val">{{ profile().role }}</span>
@@ -38,19 +88,49 @@
       <span class="info-key">Membre depuis</span>
       <span class="info-val">{{ formatDate(profile().memberSince) }}</span>
     </div>
+
   </div>
 
   <!-- Actions -->
   <div class="section-label">Compte</div>
   <div class="actions-card">
-    <button class="action-row">
+
+    <button class="action-row" (click)="toggleEdit('password')">
       <span>🔑 Changer le mot de passe</span>
-      <span class="arrow">›</span>
+      <span class="arrow">{{ activeEdit() === 'password' ? '˅' : '›' }}</span>
     </button>
+    @if (activeEdit() === 'password') {
+      <div class="edit-form edit-form-incard">
+        <div class="form-group">
+          <label>Mot de passe actuel</label>
+          <input type="password" class="form-input" [(ngModel)]="currentPassword" placeholder="••••••••" />
+        </div>
+        <div class="form-group">
+          <label>Nouveau mot de passe</label>
+          <input type="password" class="form-input" [(ngModel)]="newPassword" placeholder="••••••••" />
+        </div>
+        <div class="form-group">
+          <label>Confirmer le nouveau mot de passe</label>
+          <input type="password" class="form-input" [(ngModel)]="confirmPassword" placeholder="••••••••" />
+        </div>
+        @if (errorMessage()) {
+          <div class="msg msg-error">{{ errorMessage() }}</div>
+        }
+        @if (successMessage()) {
+          <div class="msg msg-success">{{ successMessage() }}</div>
+        }
+        <div class="form-actions">
+          <button class="btn-save" (click)="submitPassword()">Enregistrer</button>
+          <button class="btn-cancel" (click)="closeEdit()">Annuler</button>
+        </div>
+      </div>
+    }
+
     <button class="action-row danger">
       <span>🚪 Se déconnecter</span>
       <span class="arrow">›</span>
     </button>
+
   </div>
 
 </div>
