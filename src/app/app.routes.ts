@@ -15,8 +15,10 @@ import { UserProfileComponent } from './features/user-profile/user-profile';
 import { UserIncidentComponent } from './features/user-incident/user-incident';
 import { UserLoanRequestComponent } from './features/user-loan-request/user-loan-request';
 import { UserConfirmationComponent } from './features/user-confirmation/user-confirmation';
+import { LoginComponent } from './features/login/login';
 
 export const routes: Routes = [
+  { path: 'login', component: LoginComponent },
   {
     path: '',
     component: LayoutComponent,

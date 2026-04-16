@@ -1,0 +1,65 @@
+<div class="login-page">
+
+  <div class="login-wrapper">
+
+    <!-- Logo au-dessus de la carte -->
+    <div class="login-logo">
+      <div class="logo-icon">L</div>
+      <div class="logo-text-block">
+        <div class="logo-title">LOC <span class="logo-accent">MNS</span></div>
+        <div class="logo-subtitle">Gestion du parc informatique MNS</div>
+      </div>
+    </div>
+
+    <!-- Carte -->
+    <div class="login-card">
+      <div class="card-title">Connexion</div>
+
+      <div class="form-group">
+        <label>Adresse email</label>
+        <input
+          class="form-input"
+          type="email"
+          placeholder="votre@email.fr"
+          [(ngModel)]="email"
+          (keydown)="onKeydown($event)"
+          autocomplete="email"
+        />
+      </div>
+
+      <div class="form-group">
+        <label>Mot de passe</label>
+        <div class="input-wrapper">
+          <input
+            class="form-input"
+            [type]="showPassword() ? 'text' : 'password'"
+            placeholder="••••••••"
+            [(ngModel)]="password"
+            (keydown)="onKeydown($event)"
+            autocomplete="current-password"
+          />
+          <button class="toggle-password" type="button" (click)="togglePassword()">
+            {{ showPassword() ? '🙈' : '👁️' }}
+          </button>
+        </div>
+      </div>
+
+      <div class="forgot-password">
+        <span>Mot de passe oublié ?</span>
+      </div>
+
+      @if (errorMessage()) {
+        <div class="error-msg">{{ errorMessage() }}</div>
+      }
+
+      <button
+        class="btn-login"
+        (click)="submit()"
+        [disabled]="loading()">
+        {{ loading() ? 'Connexion...' : 'Se connecter' }}
+      </button>
+    </div>
+
+  </div>
+
+</div>
