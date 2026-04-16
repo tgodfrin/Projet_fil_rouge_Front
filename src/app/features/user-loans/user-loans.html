@@ -35,7 +35,7 @@
             </span>
           </div>
 
-          <!-- Progress (EN_COURS uniquement) -->
+          <!-- Progress -->
           @if (loan.status === 'EN_COURS' || loan.status === 'RETARD') {
             <div class="progress-bar">
               <div class="progress-fill" [style.width.%]="getProgressPercent(loan)"></div>
@@ -49,10 +49,50 @@
 
             <!-- Actions -->
             <div class="loan-actions">
-              <button class="btn-action btn-outline">Signaler</button>
-              <button class="btn-action btn-ghost">Retour anticipé</button>
-              <button class="btn-action btn-ghost">Prolonger</button>
+              <a class="btn-action btn-outline" [routerLink]="['/utilisateur/signalement', loan.id]">Signaler</a>
+              <button class="btn-action btn-ghost" (click)="toggleForm(loan.id, 'return')">Retour anticipé</button>
+              <button class="btn-action btn-ghost" (click)="toggleForm(loan.id, 'prolong')">Prolonger</button>
             </div>
+
+            <!-- Formulaire retour anticipé -->
+            @if (selectedLoanId() === loan.id && activeForm() === 'return') {
+              <div class="inline-form">
+                <div class="inline-form-title">🔄 Retour anticipé</div>
+                <div class="form-group">
+                  <label>Date de retour</label>
+                  <input type="date" [(ngModel)]="returnDate" class="form-input" />
+                </div>
+                <div class="form-group">
+                  <label>Motif (optionnel)</label>
+                  <textarea class="form-input" rows="2" [(ngModel)]="returnReason"
+                    placeholder="Ex : mission terminée plus tôt..."></textarea>
+                </div>
+                <div class="form-actions">
+                  <button class="btn-submit btn-danger" (click)="submitReturn(loan)">Confirmer le retour</button>
+                  <button class="btn-cancel" (click)="closeForm()">Annuler</button>
+                </div>
+              </div>
+            }
+
+            <!-- Formulaire prolongation -->
+            @if (selectedLoanId() === loan.id && activeForm() === 'prolong') {
+              <div class="inline-form">
+                <div class="inline-form-title">📅 Demande de prolongation</div>
+                <div class="form-group">
+                  <label>Nouvelle date de fin</label>
+                  <input type="date" [(ngModel)]="prolongDate" [min]="loan.endDate" class="form-input" />
+                </div>
+                <div class="form-group">
+                  <label>Motif</label>
+                  <textarea class="form-input" rows="2" [(ngModel)]="prolongReason"
+                    placeholder="Ex : projet prolongé d'une semaine..."></textarea>
+                </div>
+                <div class="form-actions">
+                  <button class="btn-submit" (click)="submitProlong(loan)">Envoyer la demande</button>
+                  <button class="btn-cancel" (click)="closeForm()">Annuler</button>
+                </div>
+              </div>
+            }
           }
 
         </div>
