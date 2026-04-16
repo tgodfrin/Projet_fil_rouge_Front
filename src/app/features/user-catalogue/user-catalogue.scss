@@ -3,12 +3,21 @@
   display: flex;
   flex-direction: column;
   gap: 1rem;
+  padding-bottom: 5rem; // espace pour la barre flottante
 
   @media (min-width: 769px) {
-    padding: 2rem;
+    padding: 2rem 2rem 5rem;
     gap: 1.25rem;
     max-width: 800px;
+    margin: 0 auto;
   }
+}
+
+// ── Header ────────────────────────────────────────────
+.page-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
 }
 
 .page-title {
@@ -16,9 +25,88 @@
   font-weight: 800;
   color: var(--grey-900);
 
-  @media (min-width: 769px) {
-    font-size: 1.4rem;
+  @media (min-width: 769px) { font-size: 1.4rem; }
+}
+
+.btn-multi {
+  height: 34px;
+  padding: 0 1rem;
+  background: white;
+  border: 1.5px solid var(--primary);
+  border-radius: var(--r-sm);
+  font-size: 0.8rem;
+  font-weight: 600;
+  color: var(--primary);
+  cursor: pointer;
+  font-family: var(--font);
+  transition: all 0.2s;
+
+  &.active {
+    background: var(--danger-bg);
+    border-color: var(--danger-text);
+    color: var(--danger-text);
   }
+
+  &:hover { opacity: 0.85; }
+}
+
+// ── Panneau multi ─────────────────────────────────────
+.multi-panel {
+  background: var(--primary-xlight);
+  border: 1px solid var(--primary-light);
+  border-radius: var(--r-md);
+  padding: 0.875rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+}
+
+.multi-panel-title {
+  font-size: 0.78rem;
+  font-weight: 600;
+  color: var(--primary-dark);
+}
+
+.multi-dates {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 0.625rem;
+}
+
+.form-group {
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+}
+
+.form-label {
+  font-size: 0.68rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  color: var(--grey-500);
+}
+
+.form-input {
+  height: 36px;
+  border: 1.5px solid var(--grey-200);
+  border-radius: var(--r-sm);
+  padding: 0 0.625rem;
+  font-size: 0.8rem;
+  font-family: var(--font);
+  color: var(--grey-900);
+  background: white;
+
+  &:focus { outline: none; border-color: var(--primary); }
+}
+
+.info-banner {
+  background: var(--info-bg);
+  color: var(--info-text);
+  border-radius: var(--r-sm);
+  padding: 0.4rem 0.75rem;
+  font-size: 0.75rem;
+  font-weight: 500;
 }
 
 // ── Recherche ─────────────────────────────────────────
@@ -32,15 +120,10 @@
   padding: 0 0.75rem;
   height: 40px;
 
-  &:focus-within {
-    border-color: var(--primary);
-  }
+  &:focus-within { border-color: var(--primary); }
 }
 
-.search-icon {
-  font-size: 0.9rem;
-  flex-shrink: 0;
-}
+.search-icon { font-size: 0.9rem; flex-shrink: 0; }
 
 .search-input {
   flex: 1;
@@ -77,12 +160,7 @@
   transition: all 0.2s;
 
   &:hover { border-color: var(--primary); color: var(--primary); }
-
-  &.active {
-    background: var(--primary);
-    border-color: var(--primary);
-    color: white;
-  }
+  &.active { background: var(--primary); border-color: var(--primary); color: white; }
 }
 
 // ── Liste ─────────────────────────────────────────────
@@ -101,9 +179,37 @@
   align-items: center;
   gap: 0.75rem;
   box-shadow: var(--shadow-sm);
-  transition: box-shadow 0.2s;
+  transition: all 0.2s;
 
   &:hover { box-shadow: var(--shadow-md); }
+
+  &.selectable { cursor: pointer; }
+
+  &.selected {
+    border-color: var(--primary);
+    background: var(--primary-xlight);
+  }
+}
+
+// ── Checkbox ──────────────────────────────────────────
+.item-checkbox {
+  width: 22px;
+  height: 22px;
+  border-radius: 6px;
+  border: 2px solid var(--grey-300);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 0.75rem;
+  font-weight: 700;
+  flex-shrink: 0;
+  color: white;
+  transition: all 0.2s;
+
+  &.checked {
+    background: var(--primary);
+    border-color: var(--primary);
+  }
 }
 
 .item-icon {
@@ -118,10 +224,7 @@
   flex-shrink: 0;
 }
 
-.item-info {
-  flex: 1;
-  min-width: 0;
-}
+.item-info { flex: 1; min-width: 0; }
 
 .item-name {
   font-size: 0.85rem;
@@ -180,6 +283,7 @@
   font-weight: 600;
   cursor: pointer;
   font-family: var(--font);
+  text-decoration: none;
   transition: opacity 0.2s;
 
   &:hover { opacity: 0.85; }
@@ -196,6 +300,50 @@
   cursor: not-allowed;
   font-family: var(--font);
   opacity: 0.6;
+}
+
+// ── Barre flottante ───────────────────────────────────
+.multi-bar {
+  position: fixed;
+  bottom: 70px;
+  left: 50%;
+  transform: translateX(-50%);
+  background: var(--secondary);
+  color: white;
+  border-radius: var(--r-lg);
+  padding: 0.75rem 1.25rem;
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  box-shadow: var(--shadow-md);
+  z-index: 40;
+  white-space: nowrap;
+
+  @media (min-width: 769px) {
+    bottom: 1.5rem;
+  }
+}
+
+.multi-bar-count {
+  font-size: 0.82rem;
+  font-weight: 600;
+}
+
+.multi-bar-btn {
+  height: 34px;
+  padding: 0 1rem;
+  background: var(--primary);
+  color: white;
+  border: none;
+  border-radius: var(--r-sm);
+  font-size: 0.8rem;
+  font-weight: 700;
+  cursor: pointer;
+  font-family: var(--font);
+  transition: opacity 0.2s;
+
+  &:hover:not(:disabled) { opacity: 0.85; }
+  &:disabled { opacity: 0.4; cursor: not-allowed; }
 }
 
 // ── Empty state ───────────────────────────────────────

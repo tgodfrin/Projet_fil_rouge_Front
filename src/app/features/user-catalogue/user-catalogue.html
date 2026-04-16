@@ -1,49 +1,102 @@
 <div class="catalogue-page">
 
-  <div class="page-title">Catalogue</div>
+  <div class="page-header">
+    <div class="page-title">Catalogue</div>
+    <button class="btn-multi" [class.active]="multiMode()" (click)="toggleMultiMode()">
+      @if (multiMode()) { ✕ Annuler } @else { + Emprunt groupé }
+    </button>
+  </div>
+
+  <!-- Panneau multi-sélection -->
+  @if (multiMode()) {
+    <div class="multi-panel">
+      <div class="multi-panel-title">Sélectionne une période et les matériels souhaités</div>
+      <div class="multi-dates">
+        <div class="form-group">
+          <label class="form-label">Date de début</label>
+          <input class="form-input" type="date" [min]="getTodayString()" (change)="onStartDate($event)" />
+        </div>
+        <div class="form-group">
+          <label class="form-label">Date de fin</label>
+          <input class="form-input" type="date" [min]="multiStartDate() || getTodayString()" (change)="onEndDate($event)" />
+        </div>
+      </div>
+      @if (duration() > 0) {
+        <div class="info-banner">Durée : {{ duration() }} jour(s)</div>
+      }
+    </div>
+  }
 
   <!-- Recherche -->
   <div class="search-bar">
     <span class="search-icon">🔍</span>
-    <input type="text" class="search-input" placeholder="Rechercher un matériel..." (input)="onSearch($event)" />
+    <input
+      type="text"
+      class="search-input"
+      placeholder="Rechercher un matériel..."
+      (input)="onSearch($event)"
+    />
   </div>
 
   <!-- Filtres catégories -->
   <div class="chip-row">
     @for (cat of categories; track cat) {
-    <button class="chip" [class.active]="activeCategory() === cat" (click)="setCategory(cat)">
-      {{ cat }}
-    </button>
+      <button class="chip" [class.active]="activeCategory() === cat" (click)="setCategory(cat)">
+        {{ cat }}
+      </button>
     }
   </div>
 
   <!-- Liste -->
   @if (filteredItems().length === 0) {
-  <div class="empty-state">Aucun matériel pour ce filtre.</div>
+    <div class="empty-state">Aucun matériel pour ce filtre.</div>
   } @else {
-  <div class="items-list">
-    @for (item of filteredItems(); track item.id) {
-    <div class="item-card">
-      <div class="item-icon">{{ getCategoryIcon(item.category) }}</div>
-      <div class="item-info">
-        <div class="item-name">{{ item.name }}</div>
-        <div class="item-ref">{{ item.ref }}</div>
-      </div>
-      <div class="item-right">
-        <span class="badge" [ngClass]="getStatusClass(item.status)">
-          <span class="badge-dot"></span>{{ getStatusLabel(item.status) }}
-        </span>
-        @if (item.status === 'DISPONIBLE') {
-        <a class="btn-borrow" [routerLink]="['/utilisateur/nouvelle-demande', item.id]">
-          Emprunter
-        </a>
-        } @else {
-        <button class="btn-unavailable" disabled>Indispo.</button>
-        }
-      </div>
+    <div class="items-list">
+      @for (item of filteredItems(); track item.id) {
+        <div class="item-card"
+             [class.selected]="isSelected(item.id)"
+             [class.selectable]="multiMode() && item.status === 'DISPONIBLE'"
+             (click)="multiMode() && item.status === 'DISPONIBLE' ? toggleSelect(item) : null">
+
+          <!-- Checkbox multi-mode -->
+          @if (multiMode()) {
+            <div class="item-checkbox" [class.checked]="isSelected(item.id)">
+              @if (isSelected(item.id)) { ✓ }
+            </div>
+          }
+
+          <div class="item-icon">{{ getCategoryIcon(item.category) }}</div>
+          <div class="item-info">
+            <div class="item-name">{{ item.name }}</div>
+            <div class="item-ref">{{ item.ref }}</div>
+          </div>
+          <div class="item-right">
+            <span class="badge" [ngClass]="getStatusClass(item.status)">
+              <span class="badge-dot"></span>{{ getStatusLabel(item.status) }}
+            </span>
+            @if (!multiMode()) {
+              @if (item.status === 'DISPONIBLE') {
+                <a class="btn-borrow" [routerLink]="['/utilisateur/nouvelle-demande', item.id]">
+                  Emprunter
+                </a>
+              } @else {
+                <button class="btn-unavailable" disabled>Indispo.</button>
+              }
+            }
+          </div>
+        </div>
+      }
     </div>
-    }
-  </div>
+  }
+
+  <!-- Barre flottante multi-sélection -->
+  @if (multiMode() && selectedIds().length > 0) {
+    <div class="multi-bar">
+      <span class="multi-bar-count">{{ selectedIds().length }} matériel(s) sélectionné(s)</span>
+      <button class="multi-bar-btn" [disabled]="!canMultiSubmit()" (click)="submitMulti()">
+        Envoyer la demande
+      </button>
+    </div>
   }
 
 </div>

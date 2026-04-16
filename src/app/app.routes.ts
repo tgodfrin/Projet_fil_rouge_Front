@@ -12,8 +12,6 @@ import { UserHomeComponent } from './features/user-home/user-home';
 import { UserCatalogueComponent } from './features/user-catalogue/user-catalogue';
 import { UserLoansComponent } from './features/user-loans/user-loans';
 import { UserProfileComponent } from './features/user-profile/user-profile';
-import { UserIncidentComponent } from './features/user-incident/user-incident';
-import { UserLoanRequestComponent } from './features/user-loan-request/user-loan-request';
 import { UserConfirmationComponent } from './features/user-confirmation/user-confirmation';
 
 export const routes: Routes = [
@@ -40,8 +38,6 @@ export const routes: Routes = [
       { path: 'catalogue', component: UserCatalogueComponent },
       { path: 'mes-emprunts', component: UserLoansComponent },
       { path: 'profil', component: UserProfileComponent },
-      { path: 'signalement/:id', component: UserIncidentComponent },
-      { path: 'nouvelle-demande/:id', component: UserLoanRequestComponent },
       { path: 'confirmation', component: UserConfirmationComponent },
     ]
   }
