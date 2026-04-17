@@ -2,7 +2,7 @@ import { Component } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { CommonModule } from '@angular/common';
 import { EquipmentFormComponent, Equipement } from './equipment-form/equipment-form';
-import { ExportComponent } from '../../shared/export/export';
+import { ExportComponent } from '../../../shared/export/export';
 
 @Component({
   selector: 'app-equipment',

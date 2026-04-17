@@ -1,6 +1,6 @@
 import { Component, signal, computed } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { ExportComponent } from '../../shared/export/export';
+import { ExportComponent } from '../../../shared/export/export';
 
 export type UserRole = 'GESTIONNAIRE' | 'COLLABORATEUR' | 'INTERVENANT' | 'STAGIAIRE';
 
