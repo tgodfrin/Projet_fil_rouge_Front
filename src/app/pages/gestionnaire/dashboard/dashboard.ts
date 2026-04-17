@@ -29,7 +29,7 @@ export class DashboardComponent {
     {
       type: 'warning',
       titre: '2 demandes en attente',
-      btnLabel: 'Valider',
+      btnLabel: 'Voir',
       route: '/emprunts'
     },
   ];

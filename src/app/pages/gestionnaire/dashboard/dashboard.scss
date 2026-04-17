@@ -103,6 +103,12 @@
     background: var(--grey-100);
     color: var(--grey-700);
   }
+
+  &.btn-warning {
+    background: var(--warning-bg);
+    color: var(--warning-text);
+    border: 1px solid var(--warning);
+  }
 }
 
 // ── Section label ─────────────────────────────────────
