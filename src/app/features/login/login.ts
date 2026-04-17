@@ -1,46 +1,54 @@
 import { Component, signal, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { FormsModule } from '@angular/forms';
+import { ReactiveFormsModule, FormBuilder, Validators } from '@angular/forms';
 import { Router } from '@angular/router';
 
 @Component({
   selector: 'app-login',
   standalone: true,
-  imports: [CommonModule, FormsModule],
+  imports: [CommonModule, ReactiveFormsModule],
   templateUrl: './login.html',
   styleUrl: './login.scss'
 })
 export class LoginComponent {
-  private router = inject(Router);
+  private router  = inject(Router);
+  private fb      = inject(FormBuilder);
 
-  email = '';
-  password = '';
-  showPassword = signal(false);
-  errorMessage = signal<string | null>(null);
-  loading = signal(false);
+  showPassword  = signal(false);
+  errorMessage  = signal<string | null>(null);
+  loading       = signal(false);
+
+  form = this.fb.group({
+    email:    ['', [Validators.required, Validators.email]],
+    password: ['', [Validators.required, Validators.minLength(6)]]
+  });
 
   private mockUsers = [
-    { email: 'admin@mns.fr',  password: 'admin123', role: 'GESTIONNAIRE' },
-    { email: 'julie@mns.fr',  password: 'user123',  role: 'COLLABORATEUR' },
+    { email: 'admin@mns.fr', password: 'admin123', role: 'GESTIONNAIRE'  },
+    { email: 'julie@mns.fr', password: 'user123',  role: 'COLLABORATEUR' },
   ];
+
+  get email()    { return this.form.get('email')!;    }
+  get password() { return this.form.get('password')!; }
 
   togglePassword() {
     this.showPassword.update(v => !v);
   }
 
   submit() {
-    this.errorMessage.set(null);
-
-    if (!this.email || !this.password) {
-      this.errorMessage.set('Veuillez remplir tous les champs.');
+    if (this.form.invalid) {
+      this.form.markAllAsTouched();
       return;
     }
 
+    this.errorMessage.set(null);
     this.loading.set(true);
+
+    const { email, password } = this.form.value;
 
     setTimeout(() => {
       const user = this.mockUsers.find(
-        u => u.email === this.email && u.password === this.password
+        u => u.email === email && u.password === password
       );
 
       if (!user) {
@@ -57,9 +65,5 @@ export class LoginComponent {
         this.router.navigate(['/utilisateur/accueil']);
       }
     }, 600);
-  }
-
-  onKeydown(event: KeyboardEvent) {
-    if (event.key === 'Enter') this.submit();
   }
 }

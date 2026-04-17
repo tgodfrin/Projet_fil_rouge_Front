@@ -15,49 +15,63 @@
     <div class="login-card">
       <div class="card-title">Connexion</div>
 
-      <div class="form-group">
-        <label>Adresse email</label>
-        <input
-          class="form-input"
-          type="email"
-          placeholder="votre@email.fr"
-          [(ngModel)]="email"
-          (keydown)="onKeydown($event)"
-          autocomplete="email"
-        />
-      </div>
+      <form [formGroup]="form" (ngSubmit)="submit()">
 
-      <div class="form-group">
-        <label>Mot de passe</label>
-        <div class="input-wrapper">
+        <div class="form-group">
+          <label>Adresse email</label>
           <input
             class="form-input"
-            [type]="showPassword() ? 'text' : 'password'"
-            placeholder="••••••••"
-            [(ngModel)]="password"
-            (keydown)="onKeydown($event)"
-            autocomplete="current-password"
+            type="email"
+            placeholder="votre@email.fr"
+            formControlName="email"
+            autocomplete="email"
           />
-          <button class="toggle-password" type="button" (click)="togglePassword()">
-            {{ showPassword() ? '🙈' : '👁️' }}
-          </button>
+          @if (email.invalid && email.touched) {
+            <small class="form-error">
+              @if (email.hasError('required')) { L'email est requis. }
+              @else if (email.hasError('email')) { Format d'email invalide. }
+            </small>
+          }
         </div>
-      </div>
 
-      <div class="forgot-password">
-        <span>Mot de passe oublié ?</span>
-      </div>
+        <div class="form-group">
+          <label>Mot de passe</label>
+          <div class="input-wrapper">
+            <input
+              class="form-input"
+              [type]="showPassword() ? 'text' : 'password'"
+              placeholder="••••••••"
+              formControlName="password"
+              autocomplete="current-password"
+            />
+            <button class="toggle-password" type="button" (click)="togglePassword()">
+              {{ showPassword() ? '🙈' : '👁️' }}
+            </button>
+          </div>
+          @if (password.invalid && password.touched) {
+            <small class="form-error">
+              @if (password.hasError('required')) { Le mot de passe est requis. }
+              @else if (password.hasError('minlength')) { Minimum 6 caractères. }
+            </small>
+          }
+        </div>
 
-      @if (errorMessage()) {
-        <div class="error-msg">{{ errorMessage() }}</div>
-      }
+        <div class="forgot-password">
+          <span>Mot de passe oublié ?</span>
+        </div>
 
-      <button
-        class="btn-login"
-        (click)="submit()"
-        [disabled]="loading()">
-        {{ loading() ? 'Connexion...' : 'Se connecter' }}
-      </button>
+        @if (errorMessage()) {
+          <div class="error-msg">{{ errorMessage() }}</div>
+        }
+
+        <button
+          class="btn-login"
+          type="submit"
+          [disabled]="loading()">
+          {{ loading() ? 'Connexion...' : 'Se connecter' }}
+        </button>
+
+      </form>
     </div>
 
   </div>
