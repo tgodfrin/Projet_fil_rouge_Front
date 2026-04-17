@@ -10,6 +10,7 @@ import { PlanningComponent } from './pages/gestionnaire/planning/planning';
 import { AlertListComponent } from './pages/gestionnaire/alert-list/alert-list';
 import { UserHomeComponent } from './pages/utilisateur/user-home/user-home';
 import { UserCatalogueComponent } from './pages/utilisateur/user-catalogue/user-catalogue';
+import { UserCatalogueDetailComponent } from './pages/utilisateur/user-catalogue-detail/user-catalogue-detail';
 import { UserLoansComponent } from './pages/utilisateur/user-loans/user-loans';
 import { UserProfileComponent } from './pages/utilisateur/user-profile/user-profile';
 import { UserIncidentComponent } from './pages/utilisateur/user-incident/user-incident';
@@ -42,6 +43,7 @@ export const routes: Routes = [
       { path: '', redirectTo: 'accueil', pathMatch: 'full' },
       { path: 'accueil', component: UserHomeComponent },
       { path: 'catalogue', component: UserCatalogueComponent },
+      { path: 'catalogue/:id', component: UserCatalogueDetailComponent },
       { path: 'mes-emprunts', component: UserLoansComponent },
       { path: 'profil', component: UserProfileComponent },
       { path: 'signalement/:id', component: UserIncidentComponent },

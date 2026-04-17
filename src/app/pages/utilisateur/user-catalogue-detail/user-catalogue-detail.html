@@ -1,0 +1,71 @@
+<div class="detail-page">
+
+  <!-- EN-TÊTE -->
+  <div class="page-header">
+    <button class="btn-back" (click)="retour()">‹ Retour</button>
+    <div class="page-title">Détail équipement</div>
+  </div>
+
+  @if (equipement()) {
+
+    <!-- FICHE -->
+    <div class="fiche">
+      <div class="fiche-top">
+        <div class="fiche-icon">{{ getCategoryIcon(equipement()!.category) }}</div>
+        <div class="fiche-info">
+          <div class="fiche-nom">{{ equipement()!.name }}</div>
+          <div class="fiche-ref">{{ equipement()!.ref }}</div>
+          <span class="badge" [ngClass]="getStatusClass(equipement()!.status)">
+            <span class="badge-dot"></span>
+            {{ getStatusLabel(equipement()!.status) }}
+          </span>
+        </div>
+      </div>
+
+      <div class="fiche-meta">
+        <div class="meta-item">
+          <div class="meta-label">Catégorie</div>
+          <div class="meta-value">{{ equipement()!.category }}</div>
+        </div>
+        <div class="meta-item">
+          <div class="meta-label">Localisation</div>
+          <div class="meta-value">{{ equipement()!.localisation }}</div>
+        </div>
+        <div class="meta-item">
+          <div class="meta-label">Acquis le</div>
+          <div class="meta-value">{{ equipement()!.dateAcquisition }}</div>
+        </div>
+        <div class="meta-item">
+          <div class="meta-label">Description</div>
+          <div class="meta-value">{{ equipement()!.description }}</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- TABLEAU DES CARACTÉRISTIQUES -->
+    <div class="section-label">Caractéristiques</div>
+    <div class="carac-table">
+      @for (c of equipement()!.caracteristiques; track c.label) {
+        <div class="carac-row">
+          <span class="carac-label">{{ c.label }}</span>
+          <span class="carac-valeur">{{ c.valeur }}</span>
+        </div>
+      }
+    </div>
+
+    <!-- ACTION EMPRUNT -->
+    @if (equipement()!.status === 'DISPONIBLE') {
+      <a class="btn-borrow" [routerLink]="['/utilisateur/nouvelle-demande', equipement()!.id]">
+        Emprunter cet équipement
+      </a>
+    } @else {
+      <button class="btn-unavailable" disabled>
+        {{ equipement()!.status === 'EN_PRET' ? 'Actuellement en prêt' : 'Hors service' }}
+      </button>
+    }
+
+  } @else {
+    <div class="empty-state">Équipement introuvable.</div>
+  }
+
+</div>
