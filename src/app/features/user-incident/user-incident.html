@@ -15,43 +15,57 @@
     </div>
   </div>
 
-  <!-- Type d'incident -->
-  <div class="section-label">Type d'incident</div>
-  <div class="incident-grid">
-    @for (option of incidentOptions; track option.type) {
-      <button
-        class="incident-type"
-        [class.selected]="selectedType() === option.type"
-        (click)="selectType(option.type)">
-        <div class="incident-icon">{{ option.icon }}</div>
-        <div class="incident-label">{{ option.label }}</div>
-      </button>
-    }
-  </div>
+  <form [formGroup]="form" (ngSubmit)="submit()">
 
-  <!-- Description -->
-  <div class="form-group">
-    <label class="form-label">Description</label>
-    <textarea
-      class="form-textarea"
-      placeholder="Décrivez le problème rencontré..."
-      rows="4"
-      (input)="onDescriptionChange($event)">
-    </textarea>
-  </div>
-
-  <!-- Photo -->
-  <div class="form-group">
-    <label class="form-label">Photo (optionnel)</label>
-    <div class="photo-upload">
-      <span class="photo-icon">📷</span>
-      <span class="photo-label">Ajouter une photo</span>
+    <!-- Type d'incident -->
+    <div class="section-label">Type d'incident</div>
+    <div class="incident-grid">
+      @for (option of incidentOptions; track option.type) {
+        <button
+          type="button"
+          class="incident-type"
+          [class.selected]="type.value === option.type"
+          (click)="selectType(option.type)">
+          <div class="incident-icon">{{ option.icon }}</div>
+          <div class="incident-label">{{ option.label }}</div>
+        </button>
+      }
     </div>
-  </div>
+    @if (type.invalid && type.touched) {
+      <small class="form-error">Veuillez sélectionner un type d'incident.</small>
+    }
 
-  <!-- Submit -->
-  <button class="btn-submit" [disabled]="!canSubmit()" (click)="submit()">
-    Envoyer le signalement
-  </button>
+    <!-- Description -->
+    <div class="form-group">
+      <label class="form-label">Description</label>
+      <textarea
+        class="form-textarea"
+        placeholder="Décrivez le problème rencontré..."
+        rows="4"
+        formControlName="description">
+      </textarea>
+      @if (description.invalid && description.touched) {
+        <small class="form-error">
+          @if (description.hasError('required')) { La description est requise. }
+          @else if (description.hasError('minlength')) { Minimum 10 caractères. }
+        </small>
+      }
+    </div>
+
+    <!-- Photo -->
+    <div class="form-group">
+      <label class="form-label">Photo (optionnel)</label>
+      <div class="photo-upload">
+        <span class="photo-icon">📷</span>
+        <span class="photo-label">Ajouter une photo</span>
+      </div>
+    </div>
+
+    <!-- Submit -->
+    <button class="btn-submit" type="submit">
+      Envoyer le signalement
+    </button>
+
+  </form>
 
 </div>

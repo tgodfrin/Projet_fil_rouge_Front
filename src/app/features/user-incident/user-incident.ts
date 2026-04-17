@@ -1,6 +1,6 @@
-import { Component, signal, inject } from '@angular/core';
+import { Component, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { FormsModule } from '@angular/forms';
+import { ReactiveFormsModule, FormBuilder, Validators } from '@angular/forms';
 import { Router, ActivatedRoute } from '@angular/router';
 
 export type IncidentType = 'DYSFONCTIONNEMENT' | 'PANNE' | 'DEGRADATION' | 'AUTRE';
@@ -14,13 +14,14 @@ interface IncidentOption {
 @Component({
   selector: 'app-user-incident',
   standalone: true,
-  imports: [CommonModule, FormsModule],
+  imports: [CommonModule, ReactiveFormsModule],
   templateUrl: './user-incident.html',
   styleUrl: './user-incident.scss'
 })
 export class UserIncidentComponent {
   private router = inject(Router);
-  private route = inject(ActivatedRoute);
+  private route  = inject(ActivatedRoute);
+  private fb     = inject(FormBuilder);
 
   loanId = this.route.snapshot.paramMap.get('id');
 
@@ -37,23 +38,23 @@ export class UserIncidentComponent {
     { type: 'AUTRE',             label: 'Autre',             icon: '❓' },
   ];
 
-  selectedType = signal<IncidentType | null>(null);
-  description = signal('');
+  form = this.fb.group({
+    type:        [null as IncidentType | null, Validators.required],
+    description: ['', [Validators.required, Validators.minLength(10)]]
+  });
 
-  selectType(type: IncidentType): void {
-    this.selectedType.set(type);
-  }
+  get type()        { return this.form.get('type')!;        }
+  get description() { return this.form.get('description')!; }
 
-  onDescriptionChange(event: Event): void {
-    this.description.set((event.target as HTMLTextAreaElement).value);
-  }
-
-  canSubmit(): boolean {
-    return this.selectedType() !== null && this.description().trim().length > 0;
+  selectType(incidentType: IncidentType): void {
+    this.type.setValue(incidentType);
   }
 
   submit(): void {
-    if (!this.canSubmit()) return;
+    if (this.form.invalid) {
+      this.form.markAllAsTouched();
+      return;
+    }
     this.router.navigate(['/utilisateur/mes-emprunts']);
   }
 
