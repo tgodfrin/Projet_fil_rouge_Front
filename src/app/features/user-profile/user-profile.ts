@@ -1,6 +1,6 @@
-import { Component, signal } from '@angular/core';
+import { Component, signal, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { FormsModule } from '@angular/forms';
+import { ReactiveFormsModule, FormBuilder, Validators, AbstractControl, ValidationErrors } from '@angular/forms';
 
 interface UserProfile {
   firstName: string;
@@ -15,11 +15,12 @@ interface UserProfile {
 @Component({
   selector: 'app-user-profile',
   standalone: true,
-  imports: [CommonModule, FormsModule],
+  imports: [CommonModule, ReactiveFormsModule],
   templateUrl: './user-profile.html',
   styleUrl: './user-profile.scss'
 })
 export class UserProfileComponent {
+  private fb = inject(FormBuilder);
 
   profile = signal<UserProfile>({
     firstName: 'Julie',
@@ -38,41 +39,60 @@ export class UserProfileComponent {
   ]);
 
   // ── Formulaires inline ─────────────────────────────────
-  activeEdit = signal<'email' | 'phone' | 'password' | null>(null);
-
-  // Email
-  newEmail = '';
-  confirmEmail = '';
-
-  // Téléphone
-  newPhone = '';
-
-  // Mot de passe
-  currentPassword = '';
-  newPassword = '';
-  confirmPassword = '';
-
-  // Messages retour
+  activeEdit    = signal<'email' | 'phone' | 'password' | null>(null);
   successMessage = signal<string | null>(null);
-  errorMessage = signal<string | null>(null);
+  errorMessage   = signal<string | null>(null);
+
+  // Validator de correspondance entre deux champs
+  private matchValidator(field1: string, field2: string) {
+    return (group: AbstractControl): ValidationErrors | null => {
+      const val1 = group.get(field1)?.value;
+      const val2 = group.get(field2)?.value;
+      if (val1 && val2 && val1 !== val2) {
+        group.get(field2)?.setErrors({ mismatch: true });
+      } else {
+        const errs = group.get(field2)?.errors;
+        if (errs?.['mismatch']) {
+          const { mismatch, ...rest } = errs;
+          group.get(field2)?.setErrors(Object.keys(rest).length ? rest : null);
+        }
+      }
+      return null;
+    };
+  }
+
+  emailForm = this.fb.group({
+    newEmail:     ['', [Validators.required, Validators.email]],
+    confirmEmail: ['', [Validators.required, Validators.email]]
+  }, { validators: this.matchValidator('newEmail', 'confirmEmail') });
+
+  phoneForm = this.fb.group({
+    newPhone: ['', [Validators.required, Validators.pattern(/^[0-9\s\+\-\.]{10,15}$/)]]
+  });
+
+  passwordForm = this.fb.group({
+    currentPassword: ['', Validators.required],
+    newPassword:     ['', [Validators.required, Validators.minLength(8)]],
+    confirmPassword: ['', Validators.required]
+  }, { validators: this.matchValidator('newPassword', 'confirmPassword') });
 
   toggleEdit(field: 'email' | 'phone' | 'password') {
     if (this.activeEdit() === field) {
       this.closeEdit();
     } else {
       this.activeEdit.set(field);
+      this.emailForm.reset();
+      this.phoneForm.reset();
+      this.passwordForm.reset();
       this.clearMessages();
     }
   }
 
   closeEdit() {
     this.activeEdit.set(null);
-    this.newEmail = '';
-    this.confirmEmail = '';
-    this.newPhone = '';
-    this.currentPassword = '';
-    this.newPassword = '';
-    this.confirmPassword = '';
+    this.emailForm.reset();
+    this.phoneForm.reset();
+    this.passwordForm.reset();
     this.clearMessages();
   }
 
@@ -82,40 +102,30 @@ export class UserProfileComponent {
   }
 
   submitEmail() {
-    if (!this.newEmail) {
-      this.errorMessage.set('Veuillez saisir un email.');
+    if (this.emailForm.invalid) {
+      this.emailForm.markAllAsTouched();
       return;
     }
-    if (this.newEmail !== this.confirmEmail) {
-      this.errorMessage.set('Les emails ne correspondent pas.');
-      return;
-    }
-    this.profile.update(p => ({ ...p, email: this.newEmail }));
+    const { newEmail } = this.emailForm.value;
+    this.profile.update(p => ({ ...p, email: newEmail! }));
     this.successMessage.set('Email mis à jour.');
     setTimeout(() => this.closeEdit(), 1500);
   }
 
   submitPhone() {
-    if (!this.newPhone) {
-      this.errorMessage.set('Veuillez saisir un numéro.');
+    if (this.phoneForm.invalid) {
+      this.phoneForm.markAllAsTouched();
       return;
     }
-    this.profile.update(p => ({ ...p, phone: this.newPhone }));
+    const { newPhone } = this.phoneForm.value;
+    this.profile.update(p => ({ ...p, phone: newPhone! }));
     this.successMessage.set('Téléphone mis à jour.');
     setTimeout(() => this.closeEdit(), 1500);
   }
 
   submitPassword() {
-    if (!this.currentPassword || !this.newPassword || !this.confirmPassword) {
-      this.errorMessage.set('Tous les champs sont obligatoires.');
-      return;
-    }
-    if (this.newPassword !== this.confirmPassword) {
-      this.errorMessage.set('Les mots de passe ne correspondent pas.');
-      return;
-    }
-    if (this.newPassword.length < 8) {
-      this.errorMessage.set('Le mot de passe doit contenir au moins 8 caractères.');
+    if (this.passwordForm.invalid) {
+      this.passwordForm.markAllAsTouched();
       return;
     }
     // TODO: appel API
