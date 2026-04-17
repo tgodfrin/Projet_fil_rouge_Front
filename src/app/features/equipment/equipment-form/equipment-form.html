@@ -9,21 +9,20 @@
     <button class="btn-close" (click)="onFermer()">✕</button>
   </div>
 
-  <form class="modal-body" (ngSubmit)="onSubmit()">
+  <form class="modal-body" [formGroup]="form" (ngSubmit)="onSubmit()">
 
     <!-- Nom -->
     <div class="form-group">
       <label class="form-label">Nom <span class="required">*</span></label>
       <input
         class="form-input"
-        [class.error]="erreurs.nom"
+        [class.error]="form.get('nom')?.invalid && form.get('nom')?.touched"
         type="text"
-        [(ngModel)]="form.nom"
-        name="nom"
+        formControlName="nom"
         placeholder="Ex : MacBook Pro M3"
       />
-      @if (erreurs.nom) {
-        <span class="form-error">{{ erreurs.nom }}</span>
+      @if (form.get('nom')?.invalid && form.get('nom')?.touched) {
+        <span class="form-error">Le nom est requis.</span>
       }
     </div>
 
@@ -32,14 +31,13 @@
       <label class="form-label">Référence <span class="required">*</span></label>
       <input
         class="form-input"
-        [class.error]="erreurs.reference"
+        [class.error]="form.get('reference')?.invalid && form.get('reference')?.touched"
         type="text"
-        [(ngModel)]="form.reference"
-        name="reference"
+        formControlName="reference"
         placeholder="Ex : REF-PC-042"
       />
-      @if (erreurs.reference) {
-        <span class="form-error">{{ erreurs.reference }}</span>
+      @if (form.get('reference')?.invalid && form.get('reference')?.touched) {
+        <span class="form-error">La référence est requise.</span>
       }
     </div>
 
@@ -48,16 +46,15 @@
       <label class="form-label">Famille <span class="required">*</span></label>
       <select
         class="form-select"
-        [class.error]="erreurs.famille"
-        [(ngModel)]="form.famille"
-        name="famille">
+        [class.error]="form.get('famille')?.invalid && form.get('famille')?.touched"
+        formControlName="famille">
         <option value="" disabled>Sélectionner une famille</option>
         @for (f of famillesDisponibles; track f) {
           <option [value]="f">{{ f }}</option>
         }
       </select>
-      @if (erreurs.famille) {
-        <span class="form-error">{{ erreurs.famille }}</span>
+      @if (form.get('famille')?.invalid && form.get('famille')?.touched) {
+        <span class="form-error">La famille est requise.</span>
       }
     </div>
 
@@ -66,29 +63,28 @@
       <label class="form-label">Localisation <span class="required">*</span></label>
       <input
         class="form-input"
-        [class.error]="erreurs.localisation"
+        [class.error]="form.get('localisation')?.invalid && form.get('localisation')?.touched"
         type="text"
-        [(ngModel)]="form.localisation"
-        name="localisation"
+        formControlName="localisation"
         placeholder="Ex : Salle B204"
       />
-      @if (erreurs.localisation) {
-        <span class="form-error">{{ erreurs.localisation }}</span>
+      @if (form.get('localisation')?.invalid && form.get('localisation')?.touched) {
+        <span class="form-error">La localisation est requise.</span>
       }
     </div>
 
     <!-- Statut -->
     <div class="form-group">
       <label class="form-label">Statut</label>
-      <select class="form-select" [(ngModel)]="form.statut" name="statut">
+      <select class="form-select" formControlName="statut">
         @for (s of statutsDisponibles; track s.value) {
           <option [value]="s.value">{{ s.label }}</option>
         }
       </select>
     </div>
 
-    <!-- Composants -->
-    <div class="composants-section">
+    <!-- Composants (FormArray) -->
+    <div class="composants-section" formArrayName="composants">
       <div class="composants-header">
         <span class="form-label">Composants</span>
         <button type="button" class="btn-add-composant" (click)="ajouterComposant()">
@@ -96,16 +92,13 @@
         </button>
       </div>
 
-      @if (form.composants.length === 0) {
+      @if (composants.length === 0) {
         <p class="composants-empty">Aucun composant ajouté. Cliquez sur "+ Ajouter un composant" pour en ajouter.</p>
       }
 
-      @for (composant of form.composants; track $index) {
-        <div class="composant-row">
-          <select
-            class="form-select composant-type"
-            [(ngModel)]="composant.type"
-            [name]="'type-' + $index">
+      @for (composant of composants.controls; track $index) {
+        <div class="composant-row" [formGroupName]="$index">
+          <select class="form-select composant-type" formControlName="type">
             <option value="" disabled>Type</option>
             @for (t of typesComposants; track t) {
               <option [value]="t">{{ t }}</option>
@@ -114,8 +107,7 @@
           <input
             class="form-input composant-valeur"
             type="text"
-            [(ngModel)]="composant.valeur"
-            [name]="'valeur-' + $index"
+            formControlName="valeur"
             placeholder="Ex : 16 Go, 512 Go SSD, 14&quot;..."
           />
           <button type="button" class="btn-remove" (click)="supprimerComposant($index)">✕</button>
