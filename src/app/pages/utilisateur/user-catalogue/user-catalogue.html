@@ -56,7 +56,7 @@
         <div class="item-card"
              [class.selected]="isSelected(item.id)"
              [class.selectable]="multiMode() && item.status === 'DISPONIBLE'"
-             (click)="multiMode() && item.status === 'DISPONIBLE' ? toggleSelect(item) : null">
+             (click)="multiMode() ? (item.status === 'DISPONIBLE' ? toggleSelect(item) : null) : goToDetail(item.id)">
 
           <!-- Checkbox multi-mode -->
           @if (multiMode()) {

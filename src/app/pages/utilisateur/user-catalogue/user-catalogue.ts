@@ -134,4 +134,8 @@ export class UserCatalogueComponent {
     };
     return classes[status];
   }
+
+  goToDetail(id: number): void {
+  this.router.navigate(['/utilisateur/catalogue', id]);
+}
 }
