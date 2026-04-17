@@ -1,0 +1,133 @@
+<!-- Overlay -->
+<div class="overlay" (click)="onFermer()"></div>
+
+<!-- Modal -->
+<div class="modal">
+
+  <div class="modal-header">
+    <h2 class="modal-title">Ajouter un équipement</h2>
+    <button class="btn-close" (click)="onFermer()">✕</button>
+  </div>
+
+  <form class="modal-body" (ngSubmit)="onSubmit()">
+
+    <!-- Nom -->
+    <div class="form-group">
+      <label class="form-label">Nom <span class="required">*</span></label>
+      <input
+        class="form-input"
+        [class.error]="erreurs.nom"
+        type="text"
+        [(ngModel)]="form.nom"
+        name="nom"
+        placeholder="Ex : MacBook Pro M3"
+      />
+      @if (erreurs.nom) {
+        <span class="form-error">{{ erreurs.nom }}</span>
+      }
+    </div>
+
+    <!-- Référence -->
+    <div class="form-group">
+      <label class="form-label">Référence <span class="required">*</span></label>
+      <input
+        class="form-input"
+        [class.error]="erreurs.reference"
+        type="text"
+        [(ngModel)]="form.reference"
+        name="reference"
+        placeholder="Ex : REF-PC-042"
+      />
+      @if (erreurs.reference) {
+        <span class="form-error">{{ erreurs.reference }}</span>
+      }
+    </div>
+
+    <!-- Famille -->
+    <div class="form-group">
+      <label class="form-label">Famille <span class="required">*</span></label>
+      <select
+        class="form-select"
+        [class.error]="erreurs.famille"
+        [(ngModel)]="form.famille"
+        name="famille">
+        <option value="" disabled>Sélectionner une famille</option>
+        @for (f of famillesDisponibles; track f) {
+          <option [value]="f">{{ f }}</option>
+        }
+      </select>
+      @if (erreurs.famille) {
+        <span class="form-error">{{ erreurs.famille }}</span>
+      }
+    </div>
+
+    <!-- Localisation -->
+    <div class="form-group">
+      <label class="form-label">Localisation <span class="required">*</span></label>
+      <input
+        class="form-input"
+        [class.error]="erreurs.localisation"
+        type="text"
+        [(ngModel)]="form.localisation"
+        name="localisation"
+        placeholder="Ex : Salle B204"
+      />
+      @if (erreurs.localisation) {
+        <span class="form-error">{{ erreurs.localisation }}</span>
+      }
+    </div>
+
+    <!-- Statut -->
+    <div class="form-group">
+      <label class="form-label">Statut</label>
+      <select class="form-select" [(ngModel)]="form.statut" name="statut">
+        @for (s of statutsDisponibles; track s.value) {
+          <option [value]="s.value">{{ s.label }}</option>
+        }
+      </select>
+    </div>
+
+    <!-- Composants -->
+    <div class="composants-section">
+      <div class="composants-header">
+        <span class="form-label">Composants</span>
+        <button type="button" class="btn-add-composant" (click)="ajouterComposant()">
+          + Ajouter un composant
+        </button>
+      </div>
+
+      @if (form.composants.length === 0) {
+        <p class="composants-empty">Aucun composant ajouté. Cliquez sur "+ Ajouter un composant" pour en ajouter.</p>
+      }
+
+      @for (composant of form.composants; track $index) {
+        <div class="composant-row">
+          <select
+            class="form-select composant-type"
+            [(ngModel)]="composant.type"
+            [name]="'type-' + $index">
+            <option value="" disabled>Type</option>
+            @for (t of typesComposants; track t) {
+              <option [value]="t">{{ t }}</option>
+            }
+          </select>
+          <input
+            class="form-input composant-valeur"
+            type="text"
+            [(ngModel)]="composant.valeur"
+            [name]="'valeur-' + $index"
+            placeholder="Ex : 16 Go, 512 Go SSD, 14&quot;..."
+          />
+          <button type="button" class="btn-remove" (click)="supprimerComposant($index)">✕</button>
+        </div>
+      }
+    </div>
+
+    <div class="modal-footer">
+      <button type="button" class="btn btn-ghost" (click)="onFermer()">Annuler</button>
+      <button type="submit" class="btn btn-primary">Ajouter</button>
+    </div>
+
+  </form>
+
+</div>

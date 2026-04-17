@@ -1,15 +1,18 @@
 import { Component } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { CommonModule } from '@angular/common';
+import { EquipmentFormComponent, Equipement } from './equipment-form/equipment-form';
 
 @Component({
   selector: 'app-equipment',
   standalone: true,
-  imports: [FormsModule, CommonModule],
+  imports: [FormsModule, CommonModule, EquipmentFormComponent],
   templateUrl: './equipment.html',
   styleUrl: './equipment.scss'
 })
 export class EquipmentComponent {
+
+  modalOuvert: boolean = false;
 
   filtreActif: string = 'tous';
   recherche: string = '';
@@ -83,6 +86,15 @@ export class EquipmentComponent {
   get totalDisponibles() { return this.equipements.filter(e => e.statut === 'disponible').length; }
   get totalEnPret()      { return this.equipements.filter(e => e.statut === 'en-pret').length; }
   get totalHorsService() { return this.equipements.filter(e => e.statut === 'hors-service').length; }
+
+  ouvrirModal(): void  { this.modalOuvert = true; }
+  fermerModal(): void  { this.modalOuvert = false; }
+
+  onAjouter(eq: Equipement): void {
+    this.equipements = [eq, ...this.equipements];
+    this.famillesDisponibles = ['toutes', ...new Set(this.equipements.map(e => e.famille))];
+    this.onFiltreChange();
+  }
 
   getStatutLabel(statut: string): string {
     const labels: Record<string, string> = {

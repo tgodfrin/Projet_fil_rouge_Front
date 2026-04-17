@@ -2,7 +2,7 @@
 
   <div class="page-header">
     <div class="page-title">Équipements</div>
-    <button class="btn btn-primary">+ Ajouter</button>
+    <button class="btn btn-primary" (click)="ouvrirModal()">+ Ajouter</button>
   </div>
 
   <div class="search-bar">
@@ -103,3 +103,10 @@
   }
 
 </div>
+
+@if (modalOuvert) {
+  <app-equipment-form
+    (fermer)="fermerModal()"
+    (ajouter)="onAjouter($event)">
+  </app-equipment-form>
+}
