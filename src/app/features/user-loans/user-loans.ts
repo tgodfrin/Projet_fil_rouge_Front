@@ -1,6 +1,6 @@
 import { Component, signal, computed, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { FormsModule } from '@angular/forms';
+import { ReactiveFormsModule, FormBuilder, Validators } from '@angular/forms';
 import { RouterLink } from '@angular/router';
 
 interface Loan {
@@ -15,11 +15,12 @@ interface Loan {
 @Component({
   selector: 'app-user-loans',
   standalone: true,
-  imports: [CommonModule, FormsModule, RouterLink],
+  imports: [CommonModule, ReactiveFormsModule, RouterLink],
   templateUrl: './user-loans.html',
   styleUrl: './user-loans.scss'
 })
 export class UserLoansComponent {
+  private fb = inject(FormBuilder);
 
   // ── Données mock ───────────────────────────────────────
   private loans: Loan[] = [
@@ -133,12 +134,17 @@ export class UserLoansComponent {
 
   // ── Formulaires inline ─────────────────────────────────
   selectedLoanId = signal<number | null>(null);
-  activeForm = signal<'prolong' | 'return' | null>(null);
+  activeForm     = signal<'prolong' | 'return' | null>(null);
 
-  returnDate = '';
-  returnReason = '';
-  prolongDate = '';
-  prolongReason = '';
+  returnForm = this.fb.group({
+    date:   ['', Validators.required],
+    motif:  ['']
+  });
+
+  prolongForm = this.fb.group({
+    date:   ['', Validators.required],
+    motif:  ['', Validators.required]
+  });
 
   toggleForm(loanId: number, form: 'prolong' | 'return') {
     if (this.selectedLoanId() === loanId && this.activeForm() === form) {
@@ -146,26 +152,34 @@ export class UserLoansComponent {
     } else {
       this.selectedLoanId.set(loanId);
       this.activeForm.set(form);
+      this.returnForm.reset();
+      this.prolongForm.reset();
     }
   }
 
   closeForm() {
     this.selectedLoanId.set(null);
     this.activeForm.set(null);
-    this.returnDate = '';
-    this.returnReason = '';
-    this.prolongDate = '';
-    this.prolongReason = '';
+    this.returnForm.reset();
+    this.prolongForm.reset();
   }
 
   submitReturn(loan: Loan) {
-    console.log('Retour anticipé', { id: loan.id, date: this.returnDate, motif: this.returnReason });
+    if (this.returnForm.invalid) {
+      this.returnForm.markAllAsTouched();
+      return;
+    }
+    console.log('Retour anticipé', { id: loan.id, ...this.returnForm.value });
     // TODO: appel API
     this.closeForm();
   }
 
   submitProlong(loan: Loan) {
-    console.log('Prolongation', { id: loan.id, date: this.prolongDate, motif: this.prolongReason });
+    if (this.prolongForm.invalid) {
+      this.prolongForm.markAllAsTouched();
+      return;
+    }
+    console.log('Prolongation', { id: loan.id, ...this.prolongForm.value });
     // TODO: appel API
     this.closeForm();
   }

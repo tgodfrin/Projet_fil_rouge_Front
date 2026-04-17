@@ -56,42 +56,51 @@
 
             <!-- Formulaire retour anticipé -->
             @if (selectedLoanId() === loan.id && activeForm() === 'return') {
-              <div class="inline-form">
+              <form class="inline-form" [formGroup]="returnForm" (ngSubmit)="submitReturn(loan)">
                 <div class="inline-form-title">🔄 Retour anticipé</div>
                 <div class="form-group">
                   <label>Date de retour</label>
-                  <input type="date" [(ngModel)]="returnDate" class="form-input" />
+                  <input type="date" class="form-input" formControlName="date" />
+                  @if (returnForm.get('date')?.invalid && returnForm.get('date')?.touched) {
+                    <small class="form-error">La date de retour est requise.</small>
+                  }
                 </div>
                 <div class="form-group">
                   <label>Motif (optionnel)</label>
-                  <textarea class="form-input" rows="2" [(ngModel)]="returnReason"
+                  <textarea class="form-input" rows="2" formControlName="motif"
                     placeholder="Ex : mission terminée plus tôt..."></textarea>
                 </div>
                 <div class="form-actions">
-                  <button class="btn-submit btn-danger" (click)="submitReturn(loan)">Confirmer le retour</button>
-                  <button class="btn-cancel" (click)="closeForm()">Annuler</button>
+                  <button class="btn-submit btn-danger" type="submit">Confirmer le retour</button>
+                  <button class="btn-cancel" type="button" (click)="closeForm()">Annuler</button>
                 </div>
-              </div>
+              </form>
             }
 
             <!-- Formulaire prolongation -->
             @if (selectedLoanId() === loan.id && activeForm() === 'prolong') {
-              <div class="inline-form">
+              <form class="inline-form" [formGroup]="prolongForm" (ngSubmit)="submitProlong(loan)">
                 <div class="inline-form-title">📅 Demande de prolongation</div>
                 <div class="form-group">
                   <label>Nouvelle date de fin</label>
-                  <input type="date" [(ngModel)]="prolongDate" [min]="loan.endDate" class="form-input" />
+                  <input type="date" class="form-input" formControlName="date" [min]="loan.endDate" />
+                  @if (prolongForm.get('date')?.invalid && prolongForm.get('date')?.touched) {
+                    <small class="form-error">La nouvelle date de fin est requise.</small>
+                  }
                 </div>
                 <div class="form-group">
                   <label>Motif</label>
-                  <textarea class="form-input" rows="2" [(ngModel)]="prolongReason"
+                  <textarea class="form-input" rows="2" formControlName="motif"
                     placeholder="Ex : projet prolongé d'une semaine..."></textarea>
+                  @if (prolongForm.get('motif')?.invalid && prolongForm.get('motif')?.touched) {
+                    <small class="form-error">Le motif est requis.</small>
+                  }
                 </div>
                 <div class="form-actions">
-                  <button class="btn-submit" (click)="submitProlong(loan)">Envoyer la demande</button>
-                  <button class="btn-cancel" (click)="closeForm()">Annuler</button>
+                  <button class="btn-submit" type="submit">Envoyer la demande</button>
+                  <button class="btn-cancel" type="button" (click)="closeForm()">Annuler</button>
                 </div>
-              </div>
+              </form>
             }
           }
 
