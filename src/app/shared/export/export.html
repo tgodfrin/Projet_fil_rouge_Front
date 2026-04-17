@@ -1,0 +1,30 @@
+<div class="export-wrapper">
+  <button class="btn-export" (click)="toggleMenu()">
+    Exporter
+    <span class="chevron" [class.open]="ouvert">▾</span>
+  </button>
+
+  @if (ouvert) {
+    <div class="export-menu">
+      @for (f of formats; track f.value) {
+        <button class="export-option" (click)="demanderConfirmation(f.value, f.label)">
+          {{ f.label }}
+        </button>
+      }
+    </div>
+  }
+</div>
+
+<!-- Modale de confirmation -->
+@if (confirmation) {
+  <div class="confirm-overlay" (click)="annulerExport()"></div>
+  <div class="confirm-modal">
+    <p class="confirm-text">
+      Exporter les données en <strong>{{ confirmation.label }}</strong> ?
+    </p>
+    <div class="confirm-actions">
+      <button class="btn btn-ghost" (click)="annulerExport()">Annuler</button>
+      <button class="btn btn-primary" (click)="confirmerExport()">Télécharger</button>
+    </div>
+  </div>
+}

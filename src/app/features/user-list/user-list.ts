@@ -1,5 +1,6 @@
 import { Component, signal, computed } from '@angular/core';
 import { CommonModule } from '@angular/common';
+import { ExportComponent } from '../../shared/export/export';
 
 export type UserRole = 'GESTIONNAIRE' | 'COLLABORATEUR' | 'INTERVENANT' | 'STAGIAIRE';
 
@@ -16,7 +17,7 @@ export interface User {
 @Component({
   selector: 'app-user-list',
   standalone: true,
-  imports: [CommonModule],
+  imports: [CommonModule, ExportComponent],
   templateUrl: './user-list.html',
   styleUrl: './user-list.scss'
 })
@@ -100,6 +101,18 @@ export class UserListComponent {
     if (role === 'TOUS') return this.users().length;
     return this.users().filter(u => u.role === role).length;
   }
+
+  usersExport = computed(() =>
+    this.users().map(u => ({
+      id: u.id,
+      prenom: u.firstName,
+      nom: u.lastName,
+      email: u.email,
+      role: this.getRoleLabel(u.role),
+      emprunts_actifs: u.activeLoans,
+      membre_depuis: u.createdAt
+    }))
+  );
 
   setFilter(filter: UserRole | 'TOUS'): void {
     this.activeFilter.set(filter);

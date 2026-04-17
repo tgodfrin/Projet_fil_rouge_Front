@@ -2,11 +2,12 @@ import { Component } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { CommonModule } from '@angular/common';
 import { EquipmentFormComponent, Equipement } from './equipment-form/equipment-form';
+import { ExportComponent } from '../../shared/export/export';
 
 @Component({
   selector: 'app-equipment',
   standalone: true,
-  imports: [FormsModule, CommonModule, EquipmentFormComponent],
+  imports: [FormsModule, CommonModule, EquipmentFormComponent, ExportComponent],
   templateUrl: './equipment.html',
   styleUrl: './equipment.scss'
 })
@@ -86,6 +87,16 @@ export class EquipmentComponent {
   get totalDisponibles() { return this.equipements.filter(e => e.statut === 'disponible').length; }
   get totalEnPret()      { return this.equipements.filter(e => e.statut === 'en-pret').length; }
   get totalHorsService() { return this.equipements.filter(e => e.statut === 'hors-service').length; }
+
+  get equipementsExport() {
+    return this.equipements.map(e => ({
+      nom: e.nom,
+      reference: e.reference,
+      famille: e.famille,
+      localisation: e.localisation,
+      statut: this.getStatutLabel(e.statut)
+    }));
+  }
 
   ouvrirModal(): void  { this.modalOuvert = true; }
   fermerModal(): void  { this.modalOuvert = false; }

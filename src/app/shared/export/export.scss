@@ -1,0 +1,126 @@
+.export-wrapper {
+  position: relative;
+  display: inline-block;
+}
+
+.btn-export {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  height: 36px;
+  padding: 0 14px;
+  border: 1px solid var(--grey-200);
+  border-radius: var(--r-sm);
+  background: white;
+  color: var(--grey-700);
+  font-size: 12px;
+  font-weight: 600;
+  font-family: var(--font);
+  cursor: pointer;
+  transition: border-color 0.2s, background 0.2s;
+
+  &:hover {
+    border-color: var(--primary);
+    color: var(--primary);
+  }
+}
+
+.chevron {
+  font-size: 10px;
+  transition: transform 0.2s;
+
+  &.open { transform: rotate(180deg); }
+}
+
+.export-menu {
+  position: absolute;
+  top: calc(100% + 4px);
+  right: 0;
+  background: white;
+  border: 1px solid var(--grey-100);
+  border-radius: var(--r-sm);
+  box-shadow: var(--shadow-sm);
+  z-index: 50;
+  min-width: 110px;
+  overflow: hidden;
+  animation: fadeIn 0.1s ease;
+}
+
+.export-option {
+  display: block;
+  width: 100%;
+  padding: 8px 14px;
+  text-align: left;
+  background: none;
+  border: none;
+  font-size: 12px;
+  font-weight: 600;
+  font-family: var(--font);
+  color: var(--grey-700);
+  cursor: pointer;
+  transition: background 0.15s;
+
+  &:hover { background: var(--grey-50); color: var(--primary); }
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(-4px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+// ── Confirmation ──────────────────────────────────────
+.confirm-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.35);
+  z-index: 100;
+}
+
+.confirm-modal {
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  z-index: 101;
+  background: white;
+  border-radius: var(--r-lg);
+  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.15);
+  padding: 1.5rem;
+  width: 100%;
+  max-width: 340px;
+  animation: slideUp 0.2s ease;
+}
+
+.confirm-text {
+  font-size: 0.88rem;
+  color: var(--grey-700);
+  margin: 0 0 1.25rem;
+  line-height: 1.5;
+}
+
+.confirm-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 0.5rem;
+}
+
+.btn {
+  height: 34px;
+  padding: 0 1rem;
+  border-radius: var(--r-sm);
+  font-size: 0.78rem;
+  font-weight: 600;
+  border: none;
+  cursor: pointer;
+  font-family: var(--font);
+  transition: opacity 0.2s;
+
+  &:hover { opacity: 0.85; }
+  &.btn-primary { background: var(--primary); color: white; }
+  &.btn-ghost   { background: var(--grey-100); color: var(--grey-700); }
+}
+
+@keyframes slideUp {
+  from { opacity: 0; transform: translate(-50%, -47%); }
+  to   { opacity: 1; transform: translate(-50%, -50%); }
+}

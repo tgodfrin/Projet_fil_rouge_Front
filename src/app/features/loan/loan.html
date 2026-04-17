@@ -14,7 +14,7 @@
         <option value="semaine">Cette semaine</option>
         <option value="mois">Ce mois</option>
       </select>
-      <button class="btn-export">Export CSV</button>
+      <app-export [data]="loansExport()" filename="emprunts"></app-export>
     </div>
   </div>
 

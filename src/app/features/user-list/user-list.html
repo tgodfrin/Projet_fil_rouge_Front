@@ -3,10 +3,13 @@
     <!-- En-tête -->
     <div class="page-header">
     <div class="page-title">Utilisateurs</div>
-    <button class="btn-add">
-      <span class="btn-full">+ Ajouter un utilisateur</span>
-      <span class="btn-short">+ Ajouter</span>
-    </button>
+    <div class="header-actions">
+      <app-export [data]="usersExport()" filename="utilisateurs"></app-export>
+      <button class="btn-add">
+        <span class="btn-full">+ Ajouter un utilisateur</span>
+        <span class="btn-short">+ Ajouter</span>
+      </button>
+    </div>
 </div>
 
     <!-- Filtres + recherche -->

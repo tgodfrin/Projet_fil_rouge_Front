@@ -2,7 +2,10 @@
 
   <div class="page-header">
     <div class="page-title">Équipements</div>
-    <button class="btn btn-primary" (click)="ouvrirModal()">+ Ajouter</button>
+    <div class="header-actions">
+      <app-export [data]="equipementsExport" filename="equipements"></app-export>
+      <button class="btn btn-primary" (click)="ouvrirModal()">+ Ajouter</button>
+    </div>
   </div>
 
   <div class="search-bar">

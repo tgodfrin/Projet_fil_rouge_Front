@@ -1,6 +1,7 @@
 import { Component, signal, computed } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
+import { ExportComponent } from '../../shared/export/export';
 
 export type LoanStatus = 'EN_ATTENTE' | 'EN_COURS' | 'RETARD' | 'TERMINE' | 'REFUSE';
 
@@ -18,7 +19,7 @@ export interface Loan {
 @Component({
   selector: 'app-loan',
   standalone: true,
-  imports: [CommonModule, FormsModule],
+  imports: [CommonModule, FormsModule, ExportComponent],
   templateUrl: './loan.html',
   styleUrl: './loan.scss'
 })
@@ -130,6 +131,18 @@ export class LoanComponent {
       list.map(l => l.id === loan.id ? { ...l, status: 'TERMINE' as LoanStatus } : l)
     );
   }
+
+  loansExport = computed(() =>
+    this.loans().map(l => ({
+      id: l.id,
+      equipement: l.equipmentName,
+      emprunteur: l.borrowerName,
+      debut: l.startDate,
+      fin: l.endDate,
+      statut: this.getStatusLabel(l.status),
+      commentaire: l.comment ?? ''
+    }))
+  );
 
   onFiltreStatutChange(event: Event): void {
     const value = (event.target as HTMLSelectElement).value;
