@@ -16,11 +16,13 @@ import { UserIncidentComponent } from './features/user-incident/user-incident';
 import { UserLoanRequestComponent } from './features/user-loan-request/user-loan-request';
 import { UserConfirmationComponent } from './features/user-confirmation/user-confirmation';
 import { LoginComponent } from './features/login/login';
+import { NotFoundComponent } from './features/not-found/not-found';
 
 export const routes: Routes = [
+  { path: '', redirectTo: 'login', pathMatch: 'full' },
   { path: 'login', component: LoginComponent },
   {
-    path: '',
+    path: 'gestionnaire',
     component: LayoutComponent,
     children: [
       { path: '', redirectTo: 'dashboard', pathMatch: 'full' },
@@ -46,5 +48,6 @@ export const routes: Routes = [
       { path: 'nouvelle-demande/:id', component: UserLoanRequestComponent },
       { path: 'confirmation', component: UserConfirmationComponent },
     ]
-  }
+  },
+  { path: '**', component: NotFoundComponent },
 ];
