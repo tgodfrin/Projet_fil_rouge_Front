@@ -53,8 +53,15 @@
   --shadow-md: 0 4px 16px rgba(30, 35, 51, 0.12);
 }
 
+// Reset navigateur
+*, *::before, *::after {
+  box-sizing: border-box;
+}
+
 // Fond général de l'application
 body {
+  margin: 0;
+  padding: 0;
   font-family: var(--font);
   background: var(--grey-50);
   color: var(--grey-900);
