@@ -1,6 +1,5 @@
 import { Component, signal, computed } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { FormsModule } from '@angular/forms';
 import { ExportComponent } from '../../shared/export/export';
 
 export type LoanStatus = 'EN_ATTENTE' | 'EN_COURS' | 'RETARD' | 'TERMINE' | 'REFUSE';
@@ -19,7 +18,7 @@ export interface Loan {
 @Component({
   selector: 'app-loan',
   standalone: true,
-  imports: [CommonModule, FormsModule, ExportComponent],
+  imports: [CommonModule, ExportComponent],
   templateUrl: './loan.html',
   styleUrl: './loan.scss'
 })

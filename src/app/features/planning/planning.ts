@@ -1,6 +1,5 @@
 import { Component, signal, computed } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { FormsModule } from '@angular/forms';
 
 export interface PlanningEvent {
   id: number;
@@ -20,7 +19,7 @@ export interface PlanningRow {
 @Component({
   selector: 'app-planning',
   standalone: true,
-  imports: [CommonModule, FormsModule],
+  imports: [CommonModule],
   templateUrl: './planning.html',
   styleUrl: './planning.scss'
 })

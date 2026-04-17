@@ -1,8 +1,6 @@
 import { Component, signal, computed, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { FormsModule } from '@angular/forms';
-import { Router } from '@angular/router';
-import { RouterLink } from '@angular/router';
+import { Router, RouterLink } from '@angular/router';
 
 
 export type EquipmentStatus = 'DISPONIBLE' | 'EN_PRET' | 'HORS_SERVICE';
@@ -19,7 +17,7 @@ export interface CatalogueItem {
 @Component({
   selector: 'app-user-catalogue',
   standalone: true,
-  imports: [CommonModule, FormsModule, RouterLink],
+  imports: [CommonModule, RouterLink],
   templateUrl: './user-catalogue.html',
   styleUrl: './user-catalogue.scss'
 })
