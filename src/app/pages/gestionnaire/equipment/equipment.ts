@@ -1,8 +1,19 @@
 import { Component } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { CommonModule } from '@angular/common';
+import { Router } from '@angular/router';
 import { EquipmentFormComponent, Equipement } from './equipment-form/equipment-form';
 import { ExportComponent } from '../../../shared/export/export';
+
+interface EquipementItem {
+  id: number;
+  nom: string;
+  reference: string;
+  famille: string;
+  localisation: string;
+  statut: string;
+  composants?: { type: string; valeur: string }[];
+}
 
 @Component({
   selector: 'app-equipment',
@@ -13,6 +24,8 @@ import { ExportComponent } from '../../../shared/export/export';
 })
 export class EquipmentComponent {
 
+  constructor(private router: Router) {}
+
   modalOuvert: boolean = false;
 
   filtreActif: string = 'tous';
@@ -21,24 +34,23 @@ export class EquipmentComponent {
   pageCourante: number = 1;
   itemsParPage: number = 10;
 
-  equipements = [
-    { nom: 'MacBook Pro M3',    reference: 'REF-PC-042',  famille: 'PC',       localisation: 'Salle B204', statut: 'disponible'  },
-    { nom: 'Meta Quest 3',      reference: 'REF-VR-008',  famille: 'VR',       localisation: 'Réserve',    statut: 'en-pret'     },
-    { nom: 'iPad Pro 12.9"',    reference: 'REF-TAB-03',  famille: 'Tablette', localisation: 'Salle A101', statut: 'disponible'  },
-    { nom: 'Dell UltraSharp',   reference: 'REF-ECR-12',  famille: 'Écran',    localisation: 'Salle B204', statut: 'disponible'  },
-    { nom: 'Sony WH-1000XM5',  reference: 'REF-SON-07',  famille: 'Audio',    localisation: 'Réserve',    statut: 'hors-service'},
-    { nom: 'HP EliteBook 840',  reference: 'REF-PC-039',  famille: 'PC',       localisation: 'Salle B204', statut: 'disponible'  },
-    { nom: 'Clavier Keychron',  reference: 'REF-PER-015', famille: 'Périphérique', localisation: 'Réserve', statut: 'disponible' },
-    { nom: 'Samsung Galaxy Tab',reference: 'REF-TAB-04',  famille: 'Tablette', localisation: 'Salle A101', statut: 'en-pret'     },
-
-    { nom: 'MacBook Pro M2',    reference: 'REF-PC-043',  famille: 'PC',       localisation: 'Salle B204', statut: 'disponible'  },
-    { nom: 'Meta Quest ',      reference: 'REF-VR-001',  famille: 'VR',       localisation: 'Réserve',    statut: 'en-pret'     },
-    { nom: 'iPad Pro 13"',    reference: 'REF-TAB-44',  famille: 'Tablette', localisation: 'Salle A101', statut: 'disponible'  },
-    { nom: 'Dell UltraSharp 2',   reference: 'REF-ECR-13',  famille: 'Écran',    localisation: 'Salle B204', statut: 'disponible'  },
-    { nom: 'Sony WH-1000XM6',  reference: 'REF-SON-022',  famille: 'Audio',    localisation: 'Réserve',    statut: 'hors-service'},
-    { nom: 'HP EliteBook 845',  reference: 'REF-PC-034',  famille: 'PC',       localisation: 'Salle B204', statut: 'disponible'  },
-    { nom: 'Clavier Keychron 32',  reference: 'REF-PER-017', famille: 'Périphérique', localisation: 'Réserve', statut: 'disponible' },
-    { nom: 'Samsung Galaxy Tab3',reference: 'REF-TAB-46',  famille: 'Tablette', localisation: 'Salle A101', statut: 'en-pret'     },
+  equipements: EquipementItem[] = [
+    { id: 1,  nom: 'MacBook Pro M3',     reference: 'REF-PC-042',  famille: 'PC',           localisation: 'Salle B204', statut: 'disponible'   },
+    { id: 2,  nom: 'Meta Quest 3',       reference: 'REF-VR-008',  famille: 'VR',           localisation: 'Réserve',    statut: 'en-pret'      },
+    { id: 3,  nom: 'iPad Pro 12.9"',     reference: 'REF-TAB-03',  famille: 'Tablette',     localisation: 'Salle A101', statut: 'disponible'   },
+    { id: 4,  nom: 'Dell UltraSharp',    reference: 'REF-ECR-12',  famille: 'Écran',        localisation: 'Salle B204', statut: 'disponible'   },
+    { id: 5,  nom: 'Sony WH-1000XM5',   reference: 'REF-SON-07',  famille: 'Audio',        localisation: 'Réserve',    statut: 'hors-service' },
+    { id: 6,  nom: 'HP EliteBook 840',   reference: 'REF-PC-039',  famille: 'PC',           localisation: 'Salle B204', statut: 'disponible'   },
+    { id: 7,  nom: 'Clavier Keychron',   reference: 'REF-PER-015', famille: 'Périphérique', localisation: 'Réserve',    statut: 'disponible'   },
+    { id: 8,  nom: 'Samsung Galaxy Tab', reference: 'REF-TAB-04',  famille: 'Tablette',     localisation: 'Salle A101', statut: 'en-pret'      },
+    { id: 9,  nom: 'MacBook Pro M2',     reference: 'REF-PC-043',  famille: 'PC',           localisation: 'Salle B204', statut: 'disponible'   },
+    { id: 10, nom: 'Meta Quest 2',       reference: 'REF-VR-001',  famille: 'VR',           localisation: 'Réserve',    statut: 'en-pret'      },
+    { id: 11, nom: 'iPad Pro 13"',       reference: 'REF-TAB-44',  famille: 'Tablette',     localisation: 'Salle A101', statut: 'disponible'   },
+    { id: 12, nom: 'Dell UltraSharp 2',  reference: 'REF-ECR-13',  famille: 'Écran',        localisation: 'Salle B204', statut: 'disponible'   },
+    { id: 13, nom: 'Sony WH-1000XM6',   reference: 'REF-SON-022', famille: 'Audio',        localisation: 'Réserve',    statut: 'hors-service' },
+    { id: 14, nom: 'HP EliteBook 845',   reference: 'REF-PC-034',  famille: 'PC',           localisation: 'Salle B204', statut: 'disponible'   },
+    { id: 15, nom: 'Clavier Keychron 2', reference: 'REF-PER-017', famille: 'Périphérique', localisation: 'Réserve',    statut: 'disponible'   },
+    { id: 16, nom: 'Samsung Galaxy Tab3',reference: 'REF-TAB-46',  famille: 'Tablette',     localisation: 'Salle A101', statut: 'en-pret'      },
   ];
 
   famillesDisponibles = ['toutes', 'PC', 'VR', 'Tablette', 'Écran', 'Audio', 'Périphérique'];
@@ -102,9 +114,15 @@ export class EquipmentComponent {
   fermerModal(): void  { this.modalOuvert = false; }
 
   onAjouter(eq: Equipement): void {
-    this.equipements = [eq, ...this.equipements];
+    const newId = Math.max(...this.equipements.map(e => e.id), 0) + 1;
+    const item: EquipementItem = { id: newId, ...eq };
+    this.equipements = [item, ...this.equipements];
     this.famillesDisponibles = ['toutes', ...new Set(this.equipements.map(e => e.famille))];
     this.onFiltreChange();
+  }
+
+  navigateToDetail(id: number): void {
+    this.router.navigate(['/equipements', id]);
   }
 
   getStatutLabel(statut: string): string {

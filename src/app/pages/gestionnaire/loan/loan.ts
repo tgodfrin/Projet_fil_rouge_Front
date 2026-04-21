@@ -1,5 +1,6 @@
 import { Component, signal, computed } from '@angular/core';
 import { CommonModule } from '@angular/common';
+import { Router } from '@angular/router';
 import { ExportComponent } from '../../../shared/export/export';
 
 export type LoanStatus = 'EN_ATTENTE' | 'EN_COURS' | 'RETARD' | 'TERMINE' | 'REFUSE';
@@ -23,6 +24,8 @@ export interface Loan {
   styleUrl: './loan.scss'
 })
 export class LoanComponent {
+
+  constructor(private router: Router) {}
 
   filtreStatut = signal<string>('tous');
   filtreTemps = signal<string>('tout');
@@ -173,6 +176,10 @@ export class LoanComponent {
       REFUSE: 'badge-danger'
     };
     return classes[status];
+  }
+
+  navigateToDetail(id: number): void {
+    this.router.navigate(['/emprunts', id]);
   }
 
   formatDate(dateStr: string): string {

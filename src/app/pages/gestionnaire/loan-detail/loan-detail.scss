@@ -1,0 +1,257 @@
+.loan-detail {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  padding: 2rem;
+
+  @media (max-width: 768px) { padding: 1rem; }
+}
+
+// ── En-tête ───────────────────────────────────────────
+.page-header {
+  display: flex;
+  align-items: center;
+}
+
+.btn {
+  padding: 8px 16px;
+  border-radius: var(--r-sm);
+  font-size: 12px;
+  font-weight: 600;
+  border: none;
+  cursor: pointer;
+  font-family: var(--font);
+  transition: opacity 0.2s;
+  &:hover { opacity: 0.85; }
+}
+
+.btn-retour {
+  background: var(--grey-100);
+  color: var(--grey-700);
+}
+
+// ── Alerte retard ─────────────────────────────────────
+.alert-retard {
+  background: var(--danger-bg);
+  color: var(--danger-text);
+  border: 1px solid #fca5a5;
+  border-radius: var(--r-md);
+  padding: 12px 16px;
+  font-size: 13px;
+  font-weight: 500;
+}
+
+// ── Fiche ─────────────────────────────────────────────
+.fiche {
+  background: white;
+  border-radius: var(--r-lg);
+  border: 1px solid var(--grey-200);
+  box-shadow: var(--shadow-sm);
+  padding: 24px;
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+.fiche-top {
+  display: flex;
+  gap: 20px;
+  align-items: center;
+
+  @media (max-width: 480px) { flex-direction: column; text-align: center; }
+}
+
+.fiche-icon {
+  width: 64px;
+  height: 64px;
+  background: var(--info-bg);
+  border-radius: var(--r-md);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 28px;
+  flex-shrink: 0;
+}
+
+.fiche-info {
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+}
+
+.fiche-titre {
+  font-size: 20px;
+  font-weight: 800;
+  color: var(--grey-900);
+}
+
+.fiche-sub {
+  font-size: 13px;
+  color: var(--grey-500);
+}
+
+.fiche-details {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 16px;
+  padding-top: 16px;
+  border-top: 1px solid var(--grey-100);
+
+  @media (max-width: 600px) { grid-template-columns: 1fr 1fr; }
+  @media (max-width: 380px) { grid-template-columns: 1fr; }
+}
+
+.detail-item-full {
+  grid-column: 1 / -1;
+}
+
+.detail-item {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.detail-label {
+  font-size: 10px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.8px;
+  color: var(--grey-400);
+}
+
+.detail-value {
+  font-size: 13px;
+  font-weight: 500;
+  color: var(--grey-900);
+
+  &.text-danger { color: var(--danger-text); font-weight: 700; }
+}
+
+// ── Badges ────────────────────────────────────────────
+.badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  padding: 4px 12px;
+  border-radius: 99px;
+  font-size: 11px;
+  font-weight: 700;
+
+  .badge-dot {
+    width: 6px;
+    height: 6px;
+    border-radius: 50%;
+  }
+
+  &.b-success { background: var(--success-bg); color: var(--success-text); .badge-dot { background: var(--success-text); } }
+  &.b-warning  { background: var(--warning-bg); color: var(--warning-text); .badge-dot { background: var(--warning); } }
+  &.b-danger   { background: var(--danger-bg);  color: var(--danger-text);  .badge-dot { background: var(--danger-text); } }
+  &.b-neutral  { background: var(--grey-100);   color: var(--grey-500);     .badge-dot { background: var(--grey-400); } }
+}
+
+// ── Cartes emprunteur / équipement ────────────────────
+.cards-row {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 16px;
+
+  @media (max-width: 600px) { grid-template-columns: 1fr; }
+}
+
+.info-card {
+  background: white;
+  border: 1px solid var(--grey-200);
+  border-radius: var(--r-lg);
+  box-shadow: var(--shadow-sm);
+  padding: 20px;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.card-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.card-title {
+  font-size: 11px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.8px;
+  color: var(--grey-400);
+}
+
+.btn-link {
+  background: none;
+  border: none;
+  cursor: pointer;
+  font-size: 11px;
+  font-weight: 600;
+  color: var(--primary);
+  font-family: var(--font);
+  padding: 0;
+
+  &:hover { opacity: 0.75; }
+}
+
+.card-body {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+}
+
+.avatar-md {
+  width: 44px;
+  height: 44px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, var(--primary), var(--primary-dark, #b84d08));
+  color: white;
+  font-size: 16px;
+  font-weight: 800;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+.equip-icon {
+  width: 44px;
+  height: 44px;
+  background: var(--grey-100);
+  border-radius: var(--r-md);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 22px;
+  flex-shrink: 0;
+}
+
+.card-info {
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+}
+
+.info-name {
+  font-size: 14px;
+  font-weight: 700;
+  color: var(--grey-900);
+}
+
+.info-sub {
+  font-size: 11px;
+  color: var(--grey-400);
+}
+
+// ── Empty state ───────────────────────────────────────
+.empty-state {
+  text-align: center;
+  padding: 3rem;
+  color: var(--grey-400);
+  font-size: 14px;
+  background: white;
+  border-radius: var(--r-md);
+  border: 1px dashed var(--grey-200);
+}

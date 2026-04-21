@@ -8,6 +8,7 @@ import { LoanComponent } from './pages/gestionnaire/loan/loan';
 import { UserListComponent } from './pages/gestionnaire/user-list/user-list';
 import { UserDetailComponent } from './pages/gestionnaire/user-detail/user-detail';
 import { UserCreateComponent } from './pages/gestionnaire/user-create/user-create';
+import { LoanDetailComponent } from './pages/gestionnaire/loan-detail/loan-detail';
 import { PlanningComponent } from './pages/gestionnaire/planning/planning';
 import { AlertListComponent } from './pages/gestionnaire/alert-list/alert-list';
 import { UserHomeComponent } from './pages/utilisateur/user-home/user-home';
@@ -33,6 +34,7 @@ export const routes: Routes = [
       { path: 'equipements', component: EquipmentComponent },
       { path: 'equipements/:id', component: EquipmentDetailComponent },
       { path: 'emprunts', component: LoanComponent },
+      { path: 'emprunts/:id', component: LoanDetailComponent },
       { path: 'utilisateurs', component: UserListComponent },
       { path: 'utilisateurs/nouveau', component: UserCreateComponent },
       { path: 'utilisateurs/:id', component: UserDetailComponent },

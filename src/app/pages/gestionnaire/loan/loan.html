@@ -38,7 +38,7 @@
           <div class="card-actions">
             <button class="btn-validate" (click)="validateLoan(loan)">Valider</button>
             <button class="btn-refuse" (click)="refuseLoan(loan)">Refuser</button>
-            <button class="btn-ghost">Détail</button>
+            <button class="btn-ghost" (click)="navigateToDetail(loan.id)">Détail</button>
           </div>
         </div>
       }
@@ -88,7 +88,7 @@
                 }
               </td>
               <td>
-                <button class="btn-ghost">Détail</button>
+                <button class="btn-ghost" (click)="navigateToDetail(loan.id)">Détail</button>
               </td>
             </tr>
           }

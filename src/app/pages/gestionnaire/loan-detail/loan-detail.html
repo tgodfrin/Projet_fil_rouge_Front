@@ -1,0 +1,98 @@
+<div class="loan-detail">
+
+  <!-- EN-TÊTE -->
+  <div class="page-header">
+    <button class="btn btn-retour" (click)="retour()">← Retour</button>
+  </div>
+
+  @if (loan() === null) {
+    <div class="empty-state">Emprunt introuvable.</div>
+  } @else {
+
+  <!-- ALERTE RETARD -->
+  @if (isLate(loan()!)) {
+    <div class="alert-retard">
+      ⚠️ Cet emprunt est en retard de <strong>{{ daysLate(loan()!) }} jour(s)</strong> — retour prévu le {{ formatDate(loan()!.endDate) }}.
+    </div>
+  }
+
+  <!-- FICHE PRINCIPALE -->
+  <div class="fiche">
+    <div class="fiche-top">
+      <div class="fiche-icon">📋</div>
+      <div class="fiche-info">
+        <div class="fiche-titre">Emprunt #{{ loan()!.id }}</div>
+        <div class="fiche-sub">{{ loan()!.borrowerName }} — {{ loan()!.equipmentName }}</div>
+        <span class="badge" [ngClass]="getStatusClass(loan()!.status)">
+          <span class="badge-dot"></span>
+          {{ getStatusLabel(loan()!.status) }}
+        </span>
+      </div>
+    </div>
+
+    <div class="fiche-details">
+      <div class="detail-item">
+        <div class="detail-label">Date de début</div>
+        <div class="detail-value">{{ formatDate(loan()!.startDate) }}</div>
+      </div>
+      <div class="detail-item">
+        <div class="detail-label">Retour prévu</div>
+        <div class="detail-value" [class.text-danger]="isLate(loan()!)">
+          {{ formatDate(loan()!.endDate) }}
+        </div>
+      </div>
+      @if (loan()!.returnDate) {
+        <div class="detail-item">
+          <div class="detail-label">Retour effectif</div>
+          <div class="detail-value">{{ formatDate(loan()!.returnDate!) }}</div>
+        </div>
+      }
+      @if (loan()!.comment) {
+        <div class="detail-item detail-item-full">
+          <div class="detail-label">Commentaire</div>
+          <div class="detail-value">{{ loan()!.comment }}</div>
+        </div>
+      }
+    </div>
+  </div>
+
+  <!-- DEUX CARTES : Emprunteur + Équipement -->
+  <div class="cards-row">
+
+    <!-- Emprunteur -->
+    <div class="info-card">
+      <div class="card-header">
+        <div class="card-title">Emprunteur</div>
+        <button class="btn-link" (click)="voirUtilisateur(loan()!.borrowerName)">Voir le profil →</button>
+      </div>
+      <div class="card-body">
+        <div class="avatar-md">{{ loan()!.borrowerInitials }}</div>
+        <div class="card-info">
+          <div class="info-name">{{ loan()!.borrowerName }}</div>
+          <div class="info-sub">{{ loan()!.borrowerEmail }}</div>
+          <div class="info-sub">{{ loan()!.borrowerRole }}</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Équipement -->
+    <div class="info-card">
+      <div class="card-header">
+        <div class="card-title">Équipement</div>
+        <button class="btn-link" (click)="voirEquipement()">Voir la fiche →</button>
+      </div>
+      <div class="card-body">
+        <div class="equip-icon">💻</div>
+        <div class="card-info">
+          <div class="info-name">{{ loan()!.equipmentName }}</div>
+          <div class="info-sub">{{ loan()!.equipmentRef }}</div>
+          <div class="info-sub">{{ loan()!.equipmentFamille }}</div>
+        </div>
+      </div>
+    </div>
+
+  </div>
+
+  } <!-- fin @if loan -->
+
+</div>
