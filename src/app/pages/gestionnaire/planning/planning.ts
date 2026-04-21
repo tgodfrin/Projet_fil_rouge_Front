@@ -1,20 +1,6 @@
 import { Component, signal, computed } from '@angular/core';
 import { CommonModule } from '@angular/common';
-
-export interface PlanningEvent {
-  id: number;
-  borrowerName: string;
-  equipmentName: string;
-  category: string;
-  startDate: string; // 'YYYY-MM-DD'
-  endDate: string;   // 'YYYY-MM-DD'
-}
-
-export interface PlanningRow {
-  equipmentName: string;
-  category: string;
-  events: PlanningEvent[];
-}
+import { PlanningEvent, PlanningRow } from '../../../core/models/planning.model';
 
 @Component({
   selector: 'app-planning',

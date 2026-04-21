@@ -2,19 +2,7 @@ import { Component, signal, computed } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { Router } from '@angular/router';
 import { ExportComponent } from '../../../shared/export/export';
-
-export type LoanStatus = 'IN_PROGRESS' | 'VALID' | 'RETARD' | 'TERMINE' | 'INVALID';
-
-export interface Loan {
-  id: number;
-  equipmentName: string;
-  borrowerName: string;
-  borrowerInitials: string;
-  startDate: string;
-  endDate: string;
-  status: LoanStatus;
-  comment?: string;
-}
+import { LoanStatus, Loan } from '../../../core/models/loan.model';
 
 @Component({
   selector: 'app-loan',

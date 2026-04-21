@@ -2,18 +2,7 @@ import { Component, signal, computed } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { Router } from '@angular/router';
 import { ExportComponent } from '../../../shared/export/export';
-
-export type UserRole = 'GESTIONNAIRE' | 'COLLABORATEUR' | 'INTERVENANT' | 'STAGIAIRE';
-
-export interface User {
-  id: number;
-  firstName: string;
-  lastName: string;
-  email: string;
-  role: UserRole;
-  activeLoans: number;
-  createdAt: string;
-}
+import { UserRole, User } from '../../../core/models/user.model';
 
 @Component({
   selector: 'app-user-list',

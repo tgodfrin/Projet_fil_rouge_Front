@@ -2,8 +2,7 @@ import { Component, signal, inject } from '@angular/core';
 import { CommonModule, Location } from '@angular/common';
 import { ReactiveFormsModule, FormBuilder, Validators, AbstractControl, ValidationErrors } from '@angular/forms';
 import { Router } from '@angular/router';
-
-export type UserRole = 'GESTIONNAIRE' | 'COLLABORATEUR' | 'INTERVENANT' | 'STAGIAIRE';
+import { UserRole } from '../../../core/models/user.model';
 
 @Component({
   selector: 'app-user-create',

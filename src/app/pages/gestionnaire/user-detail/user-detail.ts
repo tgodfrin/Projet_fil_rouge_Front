@@ -1,9 +1,8 @@
 import { Component, OnInit, signal, computed } from '@angular/core';
 import { CommonModule, Location } from '@angular/common';
 import { ActivatedRoute } from '@angular/router';
-
-export type UserRole = 'GESTIONNAIRE' | 'COLLABORATEUR' | 'INTERVENANT' | 'STAGIAIRE';
-export type LoanStatus = 'VALID' | 'IN_PROGRESS' | 'TERMINE' | 'RETARD' | 'INVALID';
+import { UserRole } from '../../../core/models/user.model';
+import { LoanStatus } from '../../../core/models/loan.model';
 
 export interface UserDetail {
   id: number;

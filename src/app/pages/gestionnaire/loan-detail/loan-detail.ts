@@ -1,8 +1,7 @@
 import { Component, OnInit, signal } from '@angular/core';
 import { CommonModule, Location } from '@angular/common';
 import { ActivatedRoute, Router } from '@angular/router';
-
-export type LoanStatus = 'IN_PROGRESS' | 'VALID' | 'RETARD' | 'TERMINE' | 'INVALID';
+import { LoanStatus } from '../../../core/models/loan.model';
 
 export interface LoanDetail {
   id: number;
