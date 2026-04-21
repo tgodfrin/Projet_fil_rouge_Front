@@ -35,22 +35,22 @@ export class EquipmentComponent {
   itemsParPage: number = 10;
 
   equipements: EquipementItem[] = [
-    { id: 1,  nom: 'MacBook Pro M3',     reference: 'REF-PC-042',  famille: 'PC',           localisation: 'Salle B204', statut: 'disponible'   },
-    { id: 2,  nom: 'Meta Quest 3',       reference: 'REF-VR-008',  famille: 'VR',           localisation: 'Réserve',    statut: 'en-pret'      },
-    { id: 3,  nom: 'iPad Pro 12.9"',     reference: 'REF-TAB-03',  famille: 'Tablette',     localisation: 'Salle A101', statut: 'disponible'   },
-    { id: 4,  nom: 'Dell UltraSharp',    reference: 'REF-ECR-12',  famille: 'Écran',        localisation: 'Salle B204', statut: 'disponible'   },
-    { id: 5,  nom: 'Sony WH-1000XM5',   reference: 'REF-SON-07',  famille: 'Audio',        localisation: 'Réserve',    statut: 'hors-service' },
-    { id: 6,  nom: 'HP EliteBook 840',   reference: 'REF-PC-039',  famille: 'PC',           localisation: 'Salle B204', statut: 'disponible'   },
-    { id: 7,  nom: 'Clavier Keychron',   reference: 'REF-PER-015', famille: 'Périphérique', localisation: 'Réserve',    statut: 'disponible'   },
-    { id: 8,  nom: 'Samsung Galaxy Tab', reference: 'REF-TAB-04',  famille: 'Tablette',     localisation: 'Salle A101', statut: 'en-pret'      },
-    { id: 9,  nom: 'MacBook Pro M2',     reference: 'REF-PC-043',  famille: 'PC',           localisation: 'Salle B204', statut: 'disponible'   },
-    { id: 10, nom: 'Meta Quest 2',       reference: 'REF-VR-001',  famille: 'VR',           localisation: 'Réserve',    statut: 'en-pret'      },
-    { id: 11, nom: 'iPad Pro 13"',       reference: 'REF-TAB-44',  famille: 'Tablette',     localisation: 'Salle A101', statut: 'disponible'   },
-    { id: 12, nom: 'Dell UltraSharp 2',  reference: 'REF-ECR-13',  famille: 'Écran',        localisation: 'Salle B204', statut: 'disponible'   },
-    { id: 13, nom: 'Sony WH-1000XM6',   reference: 'REF-SON-022', famille: 'Audio',        localisation: 'Réserve',    statut: 'hors-service' },
-    { id: 14, nom: 'HP EliteBook 845',   reference: 'REF-PC-034',  famille: 'PC',           localisation: 'Salle B204', statut: 'disponible'   },
-    { id: 15, nom: 'Clavier Keychron 2', reference: 'REF-PER-017', famille: 'Périphérique', localisation: 'Réserve',    statut: 'disponible'   },
-    { id: 16, nom: 'Samsung Galaxy Tab3',reference: 'REF-TAB-46',  famille: 'Tablette',     localisation: 'Salle A101', statut: 'en-pret'      },
+    { id: 1,  nom: 'MacBook Pro M3',     reference: 'REF-PC-042',  famille: 'PC',           localisation: 'Salle B204', statut: 'DISPONIBLE'     },
+    { id: 2,  nom: 'Meta Quest 3',       reference: 'REF-VR-008',  famille: 'VR',           localisation: 'Réserve',    statut: 'EN_PRET'        },
+    { id: 3,  nom: 'iPad Pro 12.9"',     reference: 'REF-TAB-03',  famille: 'Tablette',     localisation: 'Salle A101', statut: 'DISPONIBLE'     },
+    { id: 4,  nom: 'Dell UltraSharp',    reference: 'REF-ECR-12',  famille: 'Écran',        localisation: 'Salle B204', statut: 'DISPONIBLE'     },
+    { id: 5,  nom: 'Sony WH-1000XM5',   reference: 'REF-SON-07',  famille: 'Audio',        localisation: 'Réserve',    statut: 'OUT_OF_SERVICE' },
+    { id: 6,  nom: 'HP EliteBook 840',   reference: 'REF-PC-039',  famille: 'PC',           localisation: 'Salle B204', statut: 'DISPONIBLE'     },
+    { id: 7,  nom: 'Clavier Keychron',   reference: 'REF-PER-015', famille: 'Périphérique', localisation: 'Réserve',    statut: 'DISPONIBLE'     },
+    { id: 8,  nom: 'Samsung Galaxy Tab', reference: 'REF-TAB-04',  famille: 'Tablette',     localisation: 'Salle A101', statut: 'EN_PRET'        },
+    { id: 9,  nom: 'MacBook Pro M2',     reference: 'REF-PC-043',  famille: 'PC',           localisation: 'Salle B204', statut: 'DISPONIBLE'     },
+    { id: 10, nom: 'Meta Quest 2',       reference: 'REF-VR-001',  famille: 'VR',           localisation: 'Réserve',    statut: 'EN_PRET'        },
+    { id: 11, nom: 'iPad Pro 13"',       reference: 'REF-TAB-44',  famille: 'Tablette',     localisation: 'Salle A101', statut: 'DISPONIBLE'     },
+    { id: 12, nom: 'Dell UltraSharp 2',  reference: 'REF-ECR-13',  famille: 'Écran',        localisation: 'Salle B204', statut: 'DISPONIBLE'     },
+    { id: 13, nom: 'Sony WH-1000XM6',   reference: 'REF-SON-022', famille: 'Audio',        localisation: 'Réserve',    statut: 'OUT_OF_SERVICE' },
+    { id: 14, nom: 'HP EliteBook 845',   reference: 'REF-PC-034',  famille: 'PC',           localisation: 'Salle B204', statut: 'DISPONIBLE'     },
+    { id: 15, nom: 'Clavier Keychron 2', reference: 'REF-PER-017', famille: 'Périphérique', localisation: 'Réserve',    statut: 'DISPONIBLE'     },
+    { id: 16, nom: 'Samsung Galaxy Tab3',reference: 'REF-TAB-46',  famille: 'Tablette',     localisation: 'Salle A101', statut: 'EN_PRET'        },
   ];
 
   famillesDisponibles = ['toutes', 'PC', 'VR', 'Tablette', 'Écran', 'Audio', 'Périphérique'];
@@ -96,9 +96,9 @@ export class EquipmentComponent {
   }
 
   get totalTous()        { return this.equipements.length; }
-  get totalDisponibles() { return this.equipements.filter(e => e.statut === 'disponible').length; }
-  get totalEnPret()      { return this.equipements.filter(e => e.statut === 'en-pret').length; }
-  get totalHorsService() { return this.equipements.filter(e => e.statut === 'hors-service').length; }
+  get totalDisponibles() { return this.equipements.filter(e => e.statut === 'DISPONIBLE').length; }
+  get totalEnPret()      { return this.equipements.filter(e => e.statut === 'EN_PRET').length; }
+  get totalHorsService() { return this.equipements.filter(e => e.statut === 'OUT_OF_SERVICE' || e.statut === 'UNDER_REPAIR').length; }
 
   get equipementsExport() {
     return this.equipements.map(e => ({
@@ -127,9 +127,10 @@ export class EquipmentComponent {
 
   getStatutLabel(statut: string): string {
     const labels: Record<string, string> = {
-      'disponible':   'Disponible',
-      'en-pret':      'En prêt',
-      'hors-service': 'Hors service',
+      DISPONIBLE:     'Disponible',
+      EN_PRET:        'En prêt',
+      OUT_OF_SERVICE: 'Hors service',
+      UNDER_REPAIR:   'En réparation',
     };
     return labels[statut] || statut;
   }

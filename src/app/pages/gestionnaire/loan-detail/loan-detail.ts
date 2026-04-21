@@ -2,7 +2,7 @@ import { Component, OnInit, signal } from '@angular/core';
 import { CommonModule, Location } from '@angular/common';
 import { ActivatedRoute, Router } from '@angular/router';
 
-export type LoanStatus = 'EN_ATTENTE' | 'EN_COURS' | 'RETARD' | 'TERMINE' | 'REFUSE';
+export type LoanStatus = 'IN_PROGRESS' | 'VALID' | 'RETARD' | 'TERMINE' | 'INVALID';
 
 export interface LoanDetail {
   id: number;
@@ -26,14 +26,14 @@ const MOCK_LOANS: Record<number, LoanDetail> = {
     equipmentName: 'iPad Pro 12.9"',     equipmentRef: 'REF-TAB-03',  equipmentFamille: 'Tablette',
     borrowerName: 'Julie Fontaine',       borrowerInitials: 'JF',      borrowerEmail: 'julie.fontaine@mns.fr', borrowerRole: 'Collaborateur',
     startDate: '2026-04-10',             endDate: '2026-04-17',
-    status: 'EN_ATTENTE',
+    status: 'IN_PROGRESS',
   },
   2: {
     id: 2,
     equipmentName: 'Meta Quest 3',        equipmentRef: 'REF-VR-008',  equipmentFamille: 'VR',
     borrowerName: 'Kevin Leclerc',        borrowerInitials: 'KL',      borrowerEmail: 'kevin.leclerc@mns.fr', borrowerRole: 'Stagiaire',
     startDate: '2026-04-12',             endDate: '2026-04-15',
-    status: 'EN_ATTENTE',
+    status: 'IN_PROGRESS',
     comment: 'Pour le cours de UX immersif',
   },
   3: {
@@ -48,14 +48,14 @@ const MOCK_LOANS: Record<number, LoanDetail> = {
     equipmentName: 'iPad Pro 12.9"',     equipmentRef: 'REF-TAB-03',  equipmentFamille: 'Tablette',
     borrowerName: 'Sophie Renard',        borrowerInitials: 'SR',      borrowerEmail: 'sophie.renard@mns.fr', borrowerRole: 'Intervenant',
     startDate: '2026-04-08',             endDate: '2026-04-14',
-    status: 'EN_COURS',
+    status: 'VALID',
   },
   5: {
     id: 5,
     equipmentName: 'HP EliteBook 840',    equipmentRef: 'REF-PC-039',  equipmentFamille: 'PC',
     borrowerName: 'Tom Vasseur',          borrowerInitials: 'TV',      borrowerEmail: 'tom.vasseur@mns.fr', borrowerRole: 'Collaborateur',
     startDate: '2026-04-14',             endDate: '2026-04-22',
-    status: 'EN_COURS',
+    status: 'VALID',
   },
 };
 
@@ -102,16 +102,16 @@ export class LoanDetailComponent implements OnInit {
 
   getStatusLabel(status: LoanStatus): string {
     const labels: Record<LoanStatus, string> = {
-      EN_ATTENTE: 'En attente', EN_COURS: 'En cours',
-      RETARD: 'En retard',      TERMINE: 'Terminé', REFUSE: 'Refusé',
+      IN_PROGRESS: 'En attente', VALID: 'En cours',
+      RETARD: 'En retard',       TERMINE: 'Terminé', INVALID: 'Refusé',
     };
     return labels[status];
   }
 
   getStatusClass(status: LoanStatus): string {
     const classes: Record<LoanStatus, string> = {
-      EN_ATTENTE: 'b-warning', EN_COURS: 'b-success',
-      RETARD: 'b-danger',      TERMINE: 'b-neutral', REFUSE: 'b-danger',
+      IN_PROGRESS: 'b-warning', VALID: 'b-success',
+      RETARD: 'b-danger',       TERMINE: 'b-neutral', INVALID: 'b-danger',
     };
     return classes[status];
   }

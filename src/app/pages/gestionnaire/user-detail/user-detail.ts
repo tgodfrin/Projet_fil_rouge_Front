@@ -3,7 +3,7 @@ import { CommonModule, Location } from '@angular/common';
 import { ActivatedRoute } from '@angular/router';
 
 export type UserRole = 'GESTIONNAIRE' | 'COLLABORATEUR' | 'INTERVENANT' | 'STAGIAIRE';
-export type LoanStatus = 'EN_COURS' | 'EN_ATTENTE' | 'TERMINE' | 'EN_RETARD' | 'REFUSE';
+export type LoanStatus = 'VALID' | 'IN_PROGRESS' | 'TERMINE' | 'RETARD' | 'INVALID';
 
 export interface UserDetail {
   id: number;
@@ -36,20 +36,20 @@ const MOCK_USERS: Record<number, UserDetail> = {
 const MOCK_LOANS: Record<number, UserLoan[]> = {
   1: [],
   2: [
-    { id: 10, equipmentName: 'MacBook Pro M3',  equipmentRef: 'REF-PC-042',  startDate: '2026-03-03', endDate: '2026-03-10', status: 'TERMINE'   },
-    { id: 11, equipmentName: 'iPad Pro 12"',    equipmentRef: 'REF-TAB-007', startDate: '2026-04-01', endDate: '2026-04-15', status: 'EN_COURS'  },
+    { id: 10, equipmentName: 'MacBook Pro M3',  equipmentRef: 'REF-PC-042',  startDate: '2026-03-03', endDate: '2026-03-10', status: 'TERMINE'    },
+    { id: 11, equipmentName: 'iPad Pro 12"',    equipmentRef: 'REF-TAB-007', startDate: '2026-04-01', endDate: '2026-04-15', status: 'VALID'      },
   ],
   3: [
-    { id: 20, equipmentName: 'Casque VR Meta',  equipmentRef: 'REF-VR-003',  startDate: '2026-02-10', endDate: '2026-02-17', status: 'EN_RETARD' },
-    { id: 21, equipmentName: 'Surface Pro 9',   equipmentRef: 'REF-PC-051',  startDate: '2026-03-20', endDate: '2026-03-27', status: 'TERMINE'   },
-    { id: 22, equipmentName: 'Écran Dell 27"',  equipmentRef: 'REF-ECR-011', startDate: '2026-04-10', endDate: '2026-04-20', status: 'EN_COURS'  },
+    { id: 20, equipmentName: 'Casque VR Meta',  equipmentRef: 'REF-VR-003',  startDate: '2026-02-10', endDate: '2026-02-17', status: 'RETARD'     },
+    { id: 21, equipmentName: 'Surface Pro 9',   equipmentRef: 'REF-PC-051',  startDate: '2026-03-20', endDate: '2026-03-27', status: 'TERMINE'    },
+    { id: 22, equipmentName: 'Écran Dell 27"',  equipmentRef: 'REF-ECR-011', startDate: '2026-04-10', endDate: '2026-04-20', status: 'VALID'      },
   ],
   4: [
-    { id: 30, equipmentName: 'MacBook Air M2',  equipmentRef: 'REF-PC-038',  startDate: '2026-04-05', endDate: '2026-04-19', status: 'EN_COURS'  },
+    { id: 30, equipmentName: 'MacBook Air M2',  equipmentRef: 'REF-PC-038',  startDate: '2026-04-05', endDate: '2026-04-19', status: 'VALID'      },
   ],
   5: [
-    { id: 40, equipmentName: 'iPad Mini 6',     equipmentRef: 'REF-TAB-012', startDate: '2026-03-15', endDate: '2026-03-22', status: 'TERMINE'   },
-    { id: 41, equipmentName: 'Casque VR Meta',  equipmentRef: 'REF-VR-003',  startDate: '2026-04-08', endDate: '2026-04-18', status: 'EN_ATTENTE'},
+    { id: 40, equipmentName: 'iPad Mini 6',     equipmentRef: 'REF-TAB-012', startDate: '2026-03-15', endDate: '2026-03-22', status: 'TERMINE'    },
+    { id: 41, equipmentName: 'Casque VR Meta',  equipmentRef: 'REF-VR-003',  startDate: '2026-04-08', endDate: '2026-04-18', status: 'IN_PROGRESS'},
   ],
   6: [],
 };
@@ -72,10 +72,10 @@ export class UserDetailComponent implements OnInit {
     const l = this.loans();
     return {
       total:     l.length,
-      enCours:   l.filter(x => x.status === 'EN_COURS').length,
-      enAttente: l.filter(x => x.status === 'EN_ATTENTE').length,
+      enCours:   l.filter(x => x.status === 'VALID').length,
+      enAttente: l.filter(x => x.status === 'IN_PROGRESS').length,
       termine:   l.filter(x => x.status === 'TERMINE').length,
-      enRetard:  l.filter(x => x.status === 'EN_RETARD').length,
+      enRetard:  l.filter(x => x.status === 'RETARD').length,
     };
   });
 
@@ -121,22 +121,22 @@ export class UserDetailComponent implements OnInit {
 
   getLoanStatusLabel(status: LoanStatus): string {
     const labels: Record<LoanStatus, string> = {
-      EN_COURS:   'En cours',
-      EN_ATTENTE: 'En attente',
-      TERMINE:    'Terminé',
-      EN_RETARD:  'En retard',
-      REFUSE:     'Refusé',
+      VALID:       'En cours',
+      IN_PROGRESS: 'En attente',
+      TERMINE:     'Terminé',
+      RETARD:      'En retard',
+      INVALID:     'Refusé',
     };
     return labels[status];
   }
 
   getLoanStatusClass(status: LoanStatus): string {
     const classes: Record<LoanStatus, string> = {
-      EN_COURS:   'b-info',
-      EN_ATTENTE: 'b-warning',
-      TERMINE:    'b-success',
-      EN_RETARD:  'b-danger',
-      REFUSE:     'b-neutral',
+      VALID:       'b-info',
+      IN_PROGRESS: 'b-warning',
+      TERMINE:     'b-success',
+      RETARD:      'b-danger',
+      INVALID:     'b-neutral',
     };
     return classes[status];
   }

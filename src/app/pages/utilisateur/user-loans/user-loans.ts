@@ -9,7 +9,7 @@ interface Loan {
   categoryIcon: string;
   startDate: string;
   endDate: string;
-  status: 'EN_COURS' | 'EN_ATTENTE' | 'HISTORIQUE' | 'RETARD' | 'TERMINE' | 'REFUSE';
+  status: 'VALID' | 'IN_PROGRESS' | 'HISTORIQUE' | 'RETARD' | 'TERMINE' | 'INVALID';
 }
 
 @Component({
@@ -30,7 +30,7 @@ export class UserLoansComponent {
       categoryIcon: '💻',
       startDate: '2026-04-01',
       endDate: '2026-04-20',
-      status: 'EN_COURS'
+      status: 'VALID'
     },
     {
       id: 2,
@@ -46,7 +46,7 @@ export class UserLoansComponent {
       categoryIcon: '📽️',
       startDate: '2026-04-20',
       endDate: '2026-04-25',
-      status: 'EN_ATTENTE'
+      status: 'IN_PROGRESS'
     },
     {
       id: 4,
@@ -68,44 +68,44 @@ export class UserLoansComponent {
 
   countByTab(tab: string): number {
     if (tab === 'EN_COURS') {
-      return this.loans.filter(l => l.status === 'EN_COURS' || l.status === 'RETARD').length;
+      return this.loans.filter(l => l.status === 'VALID' || l.status === 'RETARD').length;
     }
     if (tab === 'EN_ATTENTE') {
-      return this.loans.filter(l => l.status === 'EN_ATTENTE').length;
+      return this.loans.filter(l => l.status === 'IN_PROGRESS').length;
     }
-    return this.loans.filter(l => l.status === 'TERMINE' || l.status === 'REFUSE').length;
+    return this.loans.filter(l => l.status === 'TERMINE' || l.status === 'INVALID').length;
   }
 
   filteredLoans = computed(() => {
     const tab = this.activeTab();
     if (tab === 'EN_COURS') {
-      return this.loans.filter(l => l.status === 'EN_COURS' || l.status === 'RETARD');
+      return this.loans.filter(l => l.status === 'VALID' || l.status === 'RETARD');
     }
     if (tab === 'EN_ATTENTE') {
-      return this.loans.filter(l => l.status === 'EN_ATTENTE');
+      return this.loans.filter(l => l.status === 'IN_PROGRESS');
     }
-    return this.loans.filter(l => l.status === 'TERMINE' || l.status === 'REFUSE');
+    return this.loans.filter(l => l.status === 'TERMINE' || l.status === 'INVALID');
   });
 
   // ── Badges ─────────────────────────────────────────────
   getStatusClass(status: string): string {
     const map: Record<string, string> = {
-      EN_COURS:   'badge-success',
-      RETARD:     'badge-danger',
-      EN_ATTENTE: 'badge-warning',
-      TERMINE:    'badge-neutral',
-      REFUSE:     'badge-danger'
+      VALID:       'badge-success',
+      RETARD:      'badge-danger',
+      IN_PROGRESS: 'badge-warning',
+      TERMINE:     'badge-neutral',
+      INVALID:     'badge-danger'
     };
     return map[status] ?? 'badge-neutral';
   }
 
   getStatusLabel(status: string): string {
     const map: Record<string, string> = {
-      EN_COURS:   'En cours',
-      RETARD:     'En retard',
-      EN_ATTENTE: 'En attente',
-      TERMINE:    'Terminé',
-      REFUSE:     'Refusé'
+      VALID:       'En cours',
+      RETARD:      'En retard',
+      IN_PROGRESS: 'En attente',
+      TERMINE:     'Terminé',
+      INVALID:     'Refusé'
     };
     return map[status] ?? status;
   }

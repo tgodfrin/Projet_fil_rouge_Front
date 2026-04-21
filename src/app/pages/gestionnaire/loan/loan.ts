@@ -3,7 +3,7 @@ import { CommonModule } from '@angular/common';
 import { Router } from '@angular/router';
 import { ExportComponent } from '../../../shared/export/export';
 
-export type LoanStatus = 'EN_ATTENTE' | 'EN_COURS' | 'RETARD' | 'TERMINE' | 'REFUSE';
+export type LoanStatus = 'IN_PROGRESS' | 'VALID' | 'RETARD' | 'TERMINE' | 'INVALID';
 
 export interface Loan {
   id: number;
@@ -38,7 +38,7 @@ export class LoanComponent {
     borrowerInitials: 'JF',
     startDate: '2026-04-10',
     endDate: '2026-04-17',
-    status: 'EN_ATTENTE'
+    status: 'IN_PROGRESS'
   },
   {
     id: 2,
@@ -47,7 +47,7 @@ export class LoanComponent {
     borrowerInitials: 'KL',
     startDate: '2026-04-12',
     endDate: '2026-04-15',
-    status: 'EN_ATTENTE',
+    status: 'IN_PROGRESS',
     comment: 'Pour le cours de UX immersif'
   },
   {
@@ -66,7 +66,7 @@ export class LoanComponent {
     borrowerInitials: 'SR',
     startDate: '2026-04-08',
     endDate: '2026-04-14',
-    status: 'EN_COURS'
+    status: 'VALID'
   },
   {
     id: 5,
@@ -75,22 +75,22 @@ export class LoanComponent {
     borrowerInitials: 'TV',
     startDate: '2026-04-14',
     endDate: '2026-04-22',
-    status: 'EN_COURS'
+    status: 'VALID'
   }
 ]);
 
   pendingLoans = computed(() =>
-    this.loans().filter(l => l.status === 'EN_ATTENTE')
+    this.loans().filter(l => l.status === 'IN_PROGRESS')
   );
 
   activeLoans = computed(() => {
     let list = this.loans().filter(l =>
-      l.status === 'EN_COURS' || l.status === 'RETARD'
+      l.status === 'VALID' || l.status === 'RETARD'
     );
 
     // Filtre statut
     const statut = this.filtreStatut();
-    if (statut === 'EN_COURS') list = list.filter(l => l.status === 'EN_COURS');
+    if (statut === 'VALID') list = list.filter(l => l.status === 'VALID');
     if (statut === 'RETARD') list = list.filter(l => l.status === 'RETARD');
 
     // Filtre temporalité
@@ -118,13 +118,13 @@ export class LoanComponent {
 
   validateLoan(loan: Loan): void {
     this.loans.update(list =>
-      list.map(l => l.id === loan.id ? { ...l, status: 'EN_COURS' as LoanStatus } : l)
+      list.map(l => l.id === loan.id ? { ...l, status: 'VALID' as LoanStatus } : l)
     );
   }
 
   refuseLoan(loan: Loan): void {
     this.loans.update(list =>
-      list.map(l => l.id === loan.id ? { ...l, status: 'REFUSE' as LoanStatus } : l)
+      list.map(l => l.id === loan.id ? { ...l, status: 'INVALID' as LoanStatus } : l)
     );
   }
 
@@ -158,22 +158,22 @@ export class LoanComponent {
 
   getStatusLabel(status: LoanStatus): string {
     const labels: Record<LoanStatus, string> = {
-      EN_ATTENTE: 'En attente',
-      EN_COURS: 'Actif',
+      IN_PROGRESS: 'En attente',
+      VALID: 'Actif',
       RETARD: 'Retard',
       TERMINE: 'Terminé',
-      REFUSE: 'Refusé'
+      INVALID: 'Refusé'
     };
     return labels[status];
   }
 
   getStatusClass(status: LoanStatus): string {
     const classes: Record<LoanStatus, string> = {
-      EN_ATTENTE: 'badge-warning',
-      EN_COURS: 'badge-success',
+      IN_PROGRESS: 'badge-warning',
+      VALID: 'badge-success',
       RETARD: 'badge-danger',
       TERMINE: 'badge-neutral',
-      REFUSE: 'badge-danger'
+      INVALID: 'badge-danger'
     };
     return classes[status];
   }

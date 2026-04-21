@@ -3,7 +3,7 @@ import { CommonModule } from '@angular/common';
 import { ReactiveFormsModule, FormBuilder, Validators } from '@angular/forms';
 import { Router, ActivatedRoute } from '@angular/router';
 
-export type IncidentType = 'DYSFONCTIONNEMENT' | 'PANNE' | 'DEGRADATION' | 'AUTRE';
+export type IncidentType = 'PANNE' | 'RETOUR_ANTICIPE' | 'PROLONGATION';
 
 interface IncidentOption {
   type: IncidentType;
@@ -32,10 +32,9 @@ export class UserIncidentComponent {
   };
 
   incidentOptions: IncidentOption[] = [
-    { type: 'DYSFONCTIONNEMENT', label: 'Dysfonctionnement', icon: '⚠️' },
-    { type: 'PANNE',             label: 'Panne',             icon: '🔴' },
-    { type: 'DEGRADATION',       label: 'Dégradation',       icon: '💥' },
-    { type: 'AUTRE',             label: 'Autre',             icon: '❓' },
+    { type: 'PANNE',           label: 'Panne',             icon: '🔴' },
+    { type: 'RETOUR_ANTICIPE', label: 'Retour anticipé',   icon: '↩️' },
+    { type: 'PROLONGATION',    label: 'Prolongation',      icon: '📅' },
   ];
 
   form = this.fb.group({

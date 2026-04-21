@@ -1,4 +1,4 @@
-export type IncidentType = 'DYSFONCTIONNEMENT' | 'PANNE' | 'DEGRADATION' | 'AUTRE';
+export type IncidentType = 'PANNE' | 'RETOUR_ANTICIPE' | 'PROLONGATION';
 
 export interface IncidentOption {
   type: IncidentType;

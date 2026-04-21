@@ -3,7 +3,7 @@ import { CommonModule } from '@angular/common';
 import { Router, RouterLink } from '@angular/router';
 
 
-export type EquipmentStatus = 'DISPONIBLE' | 'EN_PRET' | 'HORS_SERVICE';
+export type EquipmentStatus = 'DISPONIBLE' | 'EN_PRET' | 'OUT_OF_SERVICE' | 'UNDER_REPAIR';
 export type EquipmentCategory = 'PC' | 'VR' | 'Tablette' | 'Écran' | 'Périphérique';
 
 export interface CatalogueItem {
@@ -42,7 +42,7 @@ export class UserCatalogueComponent {
     { id: 4, name: 'iPad Pro 12.9"',       ref: 'REF-TAB-007', category: 'Tablette',     status: 'DISPONIBLE'   },
     { id: 5, name: 'Samsung Galaxy Tab',   ref: 'REF-TAB-012', category: 'Tablette',     status: 'DISPONIBLE'   },
     { id: 6, name: 'Dell UltraSharp 27"',  ref: 'REF-ECR-003', category: 'Écran',        status: 'DISPONIBLE'   },
-    { id: 7, name: 'LG 4K 32"',            ref: 'REF-ECR-009', category: 'Écran',        status: 'HORS_SERVICE'  },
+    { id: 7, name: 'LG 4K 32"',            ref: 'REF-ECR-009', category: 'Écran',        status: 'OUT_OF_SERVICE' },
     { id: 8, name: 'Clavier Keychron K2',  ref: 'REF-PER-015', category: 'Périphérique', status: 'DISPONIBLE'   },
     { id: 9, name: 'Souris Logitech MX',   ref: 'REF-PER-021', category: 'Périphérique', status: 'EN_PRET'      },
   ]);
@@ -123,14 +123,14 @@ export class UserCatalogueComponent {
 
   getStatusLabel(status: EquipmentStatus): string {
     const labels: Record<EquipmentStatus, string> = {
-      DISPONIBLE: 'Dispo', EN_PRET: 'En prêt', HORS_SERVICE: 'H.S.'
+      DISPONIBLE: 'Dispo', EN_PRET: 'En prêt', OUT_OF_SERVICE: 'H.S.', UNDER_REPAIR: 'Réparation'
     };
     return labels[status];
   }
 
   getStatusClass(status: EquipmentStatus): string {
     const classes: Record<EquipmentStatus, string> = {
-      DISPONIBLE: 'badge-success', EN_PRET: 'badge-warning', HORS_SERVICE: 'badge-danger'
+      DISPONIBLE: 'badge-success', EN_PRET: 'badge-warning', OUT_OF_SERVICE: 'badge-danger', UNDER_REPAIR: 'badge-danger'
     };
     return classes[status];
   }

@@ -31,9 +31,10 @@ export class EquipmentFormComponent {
 
   famillesDisponibles = ['PC', 'VR', 'Tablette', 'Écran', 'Audio', 'Périphérique'];
   statutsDisponibles  = [
-    { value: 'disponible',   label: 'Disponible'   },
-    { value: 'en-pret',      label: 'En prêt'      },
-    { value: 'hors-service', label: 'Hors service' },
+    { value: 'DISPONIBLE',     label: 'Disponible'      },
+    { value: 'EN_PRET',        label: 'En prêt'         },
+    { value: 'OUT_OF_SERVICE', label: 'Hors service'    },
+    { value: 'UNDER_REPAIR',   label: 'En réparation'   },
   ];
   typesComposants = ['RAM', 'Stockage', 'Écran', 'Processeur', 'Batterie', 'Connectivité', 'Autre'];
 
@@ -42,7 +43,7 @@ export class EquipmentFormComponent {
     reference:    ['', Validators.required],
     famille:      ['', Validators.required],
     localisation: ['', Validators.required],
-    statut:       ['disponible'],
+    statut:       ['DISPONIBLE'],
     composants:   this.fb.array([])
   });
 

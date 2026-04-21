@@ -100,7 +100,7 @@ export class UserCatalogueDetailComponent {
     },
     {
       id: 7, name: 'LG 4K 32"', ref: 'REF-ECR-009', category: 'Écran',
-      status: 'HORS_SERVICE', localisation: 'Réserve', dateAcquisition: '10/10/2022',
+      status: 'OUT_OF_SERVICE', localisation: 'Réserve', dateAcquisition: '10/10/2022',
       description: 'LG UltraFine 32UN880 32" 4K',
       caracteristiques: [
         { label: 'Résolution', valeur: '4K UHD (3840×2160)' },
@@ -140,18 +140,20 @@ export class UserCatalogueDetailComponent {
 
   getStatusLabel(status: EquipmentStatus): string {
     const labels: Record<EquipmentStatus, string> = {
-      DISPONIBLE:   'Disponible',
-      EN_PRET:      'En prêt',
-      HORS_SERVICE: 'Hors service',
+      DISPONIBLE:     'Disponible',
+      EN_PRET:        'En prêt',
+      OUT_OF_SERVICE: 'Hors service',
+      UNDER_REPAIR:   'En réparation',
     };
     return labels[status];
   }
 
   getStatusClass(status: EquipmentStatus): string {
     const classes: Record<EquipmentStatus, string> = {
-      DISPONIBLE:   'b-success',
-      EN_PRET:      'b-warning',
-      HORS_SERVICE: 'b-danger',
+      DISPONIBLE:     'b-success',
+      EN_PRET:        'b-warning',
+      OUT_OF_SERVICE: 'b-danger',
+      UNDER_REPAIR:   'b-danger',
     };
     return classes[status];
   }

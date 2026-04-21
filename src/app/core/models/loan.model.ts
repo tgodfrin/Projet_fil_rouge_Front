@@ -1,5 +1,5 @@
 // ── Vue gestionnaire ──────────────────────────────────
-export type LoanStatus = 'EN_ATTENTE' | 'EN_COURS' | 'RETARD' | 'TERMINE' | 'REFUSE';
+export type LoanStatus = 'IN_PROGRESS' | 'VALID' | 'RETARD' | 'TERMINE' | 'INVALID';
 
 export interface Loan {
   id: number;
@@ -13,7 +13,7 @@ export interface Loan {
 }
 
 // ── Vue utilisateur ───────────────────────────────────
-export type UserLoanStatus = 'EN_COURS' | 'EN_ATTENTE' | 'HISTORIQUE' | 'RETARD' | 'TERMINE' | 'REFUSE';
+export type UserLoanStatus = 'VALID' | 'IN_PROGRESS' | 'HISTORIQUE' | 'RETARD' | 'TERMINE' | 'INVALID';
 
 export interface UserLoan {
   id: number;

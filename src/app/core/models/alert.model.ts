@@ -1,4 +1,4 @@
-export type AlertType = 'RETARD' | 'INCIDENT';
+export type AlertType = 'RETARD' | 'PANNE';
 
 export interface Alert {
   id: number;

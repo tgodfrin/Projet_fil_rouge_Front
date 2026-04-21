@@ -12,7 +12,7 @@ export interface Equipement {
   composants: Composant[];
 }
 
-export type EquipmentStatus = 'DISPONIBLE' | 'EN_PRET' | 'HORS_SERVICE';
+export type EquipmentStatus = 'DISPONIBLE' | 'EN_PRET' | 'OUT_OF_SERVICE' | 'UNDER_REPAIR';
 
 export type EquipmentCategory = 'PC' | 'VR' | 'Tablette' | 'Écran' | 'Périphérique';
 

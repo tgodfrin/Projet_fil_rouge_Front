@@ -19,7 +19,7 @@ export class EquipmentDetailComponent {
     reference: 'REF-PC-042',
     famille: 'PC',
     localisation: 'Salle B204',
-    statut: 'disponible',
+    statut: 'DISPONIBLE',
     dateAcquisition: '12/01/2024',
     description: 'MacBook Pro 14" puce M3, 16Go RAM, 512Go SSD'
   };
@@ -34,9 +34,9 @@ export class EquipmentDetailComponent {
   ];
 
   historique = [
-    { utilisateur: 'Julie Fontaine', debut: '03/03/2026', fin: '10/03/2026', statut: 'termine',   label: 'Terminé'   },
-    { utilisateur: 'Kevin Leclerc',  debut: '15/02/2026', fin: '20/02/2026', statut: 'termine',   label: 'Terminé'   },
-    { utilisateur: 'Marc Durand',    debut: '01/03/2026', fin: '07/03/2026', statut: 'en-retard', label: 'En retard' },
+    { utilisateur: 'Julie Fontaine', debut: '03/03/2026', fin: '10/03/2026', statut: 'TERMINE', label: 'Terminé'   },
+    { utilisateur: 'Kevin Leclerc',  debut: '15/02/2026', fin: '20/02/2026', statut: 'TERMINE', label: 'Terminé'   },
+    { utilisateur: 'Marc Durand',    debut: '01/03/2026', fin: '07/03/2026', statut: 'RETARD',  label: 'En retard' },
   ];
 
   documents = [
@@ -54,11 +54,12 @@ export class EquipmentDetailComponent {
 
   getStatutLabel(statut: string): string {
     const labels: Record<string, string> = {
-      'disponible':   'Disponible',
-      'en-pret':      'En prêt',
-      'hors-service': 'Hors service',
-      'en-retard':    'En retard',
-      'termine':      'Terminé',
+      DISPONIBLE:     'Disponible',
+      EN_PRET:        'En prêt',
+      OUT_OF_SERVICE: 'Hors service',
+      UNDER_REPAIR:   'En réparation',
+      RETARD:         'En retard',
+      TERMINE:        'Terminé',
     };
     return labels[statut] || statut;
   }
