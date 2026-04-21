@@ -5,7 +5,7 @@
     <div class="page-title">Utilisateurs</div>
     <div class="header-actions">
       <app-export [data]="usersExport()" filename="utilisateurs"></app-export>
-      <button class="btn-add">
+      <button class="btn-add" (click)="navigateToCreate()">
         <span class="btn-full">+ Ajouter un utilisateur</span>
         <span class="btn-short">+ Ajouter</span>
       </button>
@@ -77,7 +77,7 @@
                     </td>
                     <td class="text-muted">{{ formatDate(user.createdAt) }}</td>
                     <td>
-                        <a class="btn-ghost" [routerLink]="['/utilisateurs', user.id]">Voir</a>
+                        <button class="btn-ghost" (click)="navigateToDetail(user.id)">Voir</button>
                     </td>
                 </tr>
                 }

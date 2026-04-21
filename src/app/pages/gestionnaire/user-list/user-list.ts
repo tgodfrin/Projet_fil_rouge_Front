@@ -1,6 +1,6 @@
 import { Component, signal, computed } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { RouterLink } from '@angular/router';
+import { Router } from '@angular/router';
 import { ExportComponent } from '../../../shared/export/export';
 
 export type UserRole = 'GESTIONNAIRE' | 'COLLABORATEUR' | 'INTERVENANT' | 'STAGIAIRE';
@@ -18,11 +18,13 @@ export interface User {
 @Component({
   selector: 'app-user-list',
   standalone: true,
-  imports: [CommonModule, RouterLink, ExportComponent],
+  imports: [CommonModule, ExportComponent],
   templateUrl: './user-list.html',
   styleUrl: './user-list.scss'
 })
 export class UserListComponent {
+
+  constructor(private router: Router) {}
 
   searchTerm = signal('');
   activeFilter = signal<UserRole | 'TOUS'>('TOUS');
@@ -146,6 +148,14 @@ getRoleClass(role: UserRole): string {
   };
   return classes[role];
 }
+
+  navigateToDetail(id: number): void {
+    this.router.navigate(['/utilisateurs', id]);
+  }
+
+  navigateToCreate(): void {
+    this.router.navigate(['/utilisateurs/nouveau']);
+  }
 
   formatDate(dateStr: string): string {
     return new Date(dateStr).toLocaleDateString('fr-FR', {

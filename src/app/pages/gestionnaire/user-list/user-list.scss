@@ -44,9 +44,13 @@
   border-radius: var(--r-md);
   font-size: 0.85rem;
   font-weight: 600;
+  font-family: var(--font);
   cursor: pointer;
   transition: background 0.2s;
   white-space: nowrap;
+  text-decoration: none;
+  display: inline-flex;
+  align-items: center;
 
   &:hover { background: var(--primary-dark); }
 
@@ -241,8 +245,12 @@
   border: none;
   border-radius: var(--r-sm);
   font-size: 0.78rem;
+  font-family: var(--font);
   cursor: pointer;
   transition: background 0.2s;
+  text-decoration: none;
+  display: inline-flex;
+  align-items: center;
 
   &:hover { background: var(--grey-200); }
 }
