@@ -1,0 +1,149 @@
+<div class="user-detail">
+
+  <!-- EN-TÊTE -->
+  <div class="page-header">
+    <button class="btn btn-retour" (click)="retour()">← Retour</button>
+    <div class="header-actions">
+      <button class="btn btn-edit">✎ Éditer</button>
+      <button class="btn btn-delete">🗑 Supprimer</button>
+    </div>
+  </div>
+
+  @if (user() === null) {
+    <div class="empty-state">Utilisateur introuvable.</div>
+  } @else {
+
+  <!-- FICHE UTILISATEUR -->
+  <div class="fiche">
+    <div class="fiche-top">
+      <div class="avatar-lg">{{ getInitials(user()!) }}</div>
+      <div class="fiche-info">
+        <div class="fiche-nom">{{ user()!.firstName }} {{ user()!.lastName }}</div>
+        <div class="fiche-email">{{ user()!.email }}</div>
+        <span class="badge" [ngClass]="getRoleClass(user()!.role)">
+          {{ getRoleLabel(user()!.role) }}
+        </span>
+      </div>
+    </div>
+
+    <div class="fiche-details">
+      <div class="detail-item">
+        <div class="detail-label">Téléphone</div>
+        <div class="detail-value">{{ user()!.phone }}</div>
+      </div>
+      <div class="detail-item">
+        <div class="detail-label">Rôle</div>
+        <div class="detail-value">{{ getRoleLabel(user()!.role) }}</div>
+      </div>
+      <div class="detail-item">
+        <div class="detail-label">Membre depuis</div>
+        <div class="detail-value">{{ formatDate(user()!.createdAt) }}</div>
+      </div>
+      <div class="detail-item">
+        <div class="detail-label">Emprunts actifs</div>
+        <div class="detail-value">{{ loanStats().enCours }}</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ONGLETS -->
+  <div class="tabs">
+    <div class="tab" [class.active]="ongletActif() === 'infos'"        (click)="changerOnglet('infos')">Informations</div>
+    <div class="tab" [class.active]="ongletActif() === 'emprunts'"     (click)="changerOnglet('emprunts')">Emprunts</div>
+    <div class="tab" [class.active]="ongletActif() === 'statistiques'" (click)="changerOnglet('statistiques')">Statistiques</div>
+  </div>
+
+  <!-- ONGLET : INFORMATIONS -->
+  @if (ongletActif() === 'infos') {
+    <div class="onglet-content">
+      <div class="carac-grid">
+        <div class="carac-row">
+          <span class="carac-label">Prénom</span>
+          <span class="carac-valeur">{{ user()!.firstName }}</span>
+        </div>
+        <div class="carac-row">
+          <span class="carac-label">Nom</span>
+          <span class="carac-valeur">{{ user()!.lastName }}</span>
+        </div>
+        <div class="carac-row">
+          <span class="carac-label">Email</span>
+          <span class="carac-valeur">{{ user()!.email }}</span>
+        </div>
+        <div class="carac-row">
+          <span class="carac-label">Téléphone</span>
+          <span class="carac-valeur">{{ user()!.phone }}</span>
+        </div>
+        <div class="carac-row">
+          <span class="carac-label">Rôle</span>
+          <span class="carac-valeur">{{ getRoleLabel(user()!.role) }}</span>
+        </div>
+        <div class="carac-row">
+          <span class="carac-label">Membre depuis</span>
+          <span class="carac-valeur">{{ formatDate(user()!.createdAt) }}</span>
+        </div>
+      </div>
+    </div>
+  }
+
+  <!-- ONGLET : EMPRUNTS -->
+  @if (ongletActif() === 'emprunts') {
+    @if (loans().length === 0) {
+      <div class="empty-state">Aucun emprunt pour cet utilisateur.</div>
+    } @else {
+      <div class="table-wrapper">
+        <div class="table">
+          <div class="table-head">
+            <div class="th">Équipement</div>
+            <div class="th">Référence</div>
+            <div class="th">Début</div>
+            <div class="th">Fin prévue</div>
+            <div class="th">Statut</div>
+          </div>
+          @for (loan of loans(); track loan.id) {
+            <div class="table-row">
+              <div class="td-main">{{ loan.equipmentName }}</div>
+              <div class="td-mono">{{ loan.equipmentRef }}</div>
+              <div class="td-muted">{{ formatDate(loan.startDate) }}</div>
+              <div class="td-muted">{{ formatDate(loan.endDate) }}</div>
+              <div>
+                <span class="badge" [ngClass]="getLoanStatusClass(loan.status)">
+                  <span class="badge-dot"></span>
+                  {{ getLoanStatusLabel(loan.status) }}
+                </span>
+              </div>
+            </div>
+          }
+        </div>
+      </div>
+    }
+  }
+
+  <!-- ONGLET : STATISTIQUES -->
+  @if (ongletActif() === 'statistiques') {
+    <div class="stats-grid">
+      <div class="stat-card">
+        <div class="stat-value">{{ loanStats().total }}</div>
+        <div class="stat-label">Total emprunts</div>
+      </div>
+      <div class="stat-card stat-info">
+        <div class="stat-value">{{ loanStats().enCours }}</div>
+        <div class="stat-label">En cours</div>
+      </div>
+      <div class="stat-card stat-warning">
+        <div class="stat-value">{{ loanStats().enAttente }}</div>
+        <div class="stat-label">En attente</div>
+      </div>
+      <div class="stat-card stat-success">
+        <div class="stat-value">{{ loanStats().termine }}</div>
+        <div class="stat-label">Terminés</div>
+      </div>
+      <div class="stat-card stat-danger">
+        <div class="stat-value">{{ loanStats().enRetard }}</div>
+        <div class="stat-label">En retard</div>
+      </div>
+    </div>
+  }
+
+  } <!-- fin @if user -->
+
+</div>

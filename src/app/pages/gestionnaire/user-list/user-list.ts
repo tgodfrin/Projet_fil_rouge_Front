@@ -1,5 +1,6 @@
 import { Component, signal, computed } from '@angular/core';
 import { CommonModule } from '@angular/common';
+import { RouterLink } from '@angular/router';
 import { ExportComponent } from '../../../shared/export/export';
 
 export type UserRole = 'GESTIONNAIRE' | 'COLLABORATEUR' | 'INTERVENANT' | 'STAGIAIRE';
@@ -17,7 +18,7 @@ export interface User {
 @Component({
   selector: 'app-user-list',
   standalone: true,
-  imports: [CommonModule, ExportComponent],
+  imports: [CommonModule, RouterLink, ExportComponent],
   templateUrl: './user-list.html',
   styleUrl: './user-list.scss'
 })
