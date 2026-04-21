@@ -7,13 +7,21 @@
   </div>
 
   <!-- Équipement concerné -->
-  <div class="equipment-card">
-    <div class="equipment-icon">{{ loan.categoryIcon }}</div>
-    <div class="equipment-info">
-      <div class="equipment-name">{{ loan.equipmentName }}</div>
-      <div class="equipment-dates">Emprunt du {{ loan.dateRange }}</div>
+  @if (loan(); as l) {
+    <div class="equipment-card">
+      <div class="equipment-icon">{{ l.categoryIcon }}</div>
+      <div class="equipment-info">
+        <div class="equipment-name">{{ l.equipmentName }}</div>
+        <div class="equipment-dates">Emprunt du {{ dateRange() }}</div>
+      </div>
     </div>
-  </div>
+  } @else {
+    <div class="equipment-card">
+      <div class="equipment-info">
+        <div class="equipment-name">Emprunt introuvable</div>
+      </div>
+    </div>
+  }
 
   <form [formGroup]="form" (ngSubmit)="submit()">
 
@@ -24,7 +32,7 @@
         <button
           type="button"
           class="incident-type"
-          [class.selected]="type.value === option.type"
+          [class.selected]="selectedType() === option.type"
           (click)="selectType(option.type)">
           <div class="incident-icon">{{ option.icon }}</div>
           <div class="incident-label">{{ option.label }}</div>

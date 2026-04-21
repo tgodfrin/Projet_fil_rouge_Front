@@ -27,10 +27,15 @@ export class UserLoanRequestComponent {
 
   // Données mockées — à remplacer par appel API
   equipmentMap: Record<string, Equipment> = {
-    '1': { id: 1, name: 'MacBook Pro M3',      ref: 'REF-PC-042',  category: 'PC',           icon: '💻' },
-    '4': { id: 4, name: 'iPad Pro 12.9"',       ref: 'REF-TAB-007', category: 'Tablette',     icon: '📱' },
-    '6': { id: 6, name: 'Dell UltraSharp 27"',  ref: 'REF-ECR-003', category: 'Écran',        icon: '🖥️' },
-    '8': { id: 8, name: 'Clavier Keychron K2',  ref: 'REF-PER-015', category: 'Périphérique', icon: '⌨️' },
+    '1': { id: 1, name: 'MacBook Pro M3',       ref: 'REF-PC-042',  category: 'PC',           icon: '💻' },
+    '2': { id: 2, name: 'HP EliteBook 840',      ref: 'REF-PC-031',  category: 'PC',           icon: '💻' },
+    '3': { id: 3, name: 'Meta Quest 3',          ref: 'REF-VR-008',  category: 'VR',           icon: '🥽' },
+    '4': { id: 4, name: 'iPad Pro 12.9"',        ref: 'REF-TAB-007', category: 'Tablette',     icon: '📱' },
+    '5': { id: 5, name: 'Samsung Galaxy Tab',    ref: 'REF-TAB-012', category: 'Tablette',     icon: '📱' },
+    '6': { id: 6, name: 'Dell UltraSharp 27"',   ref: 'REF-ECR-003', category: 'Écran',        icon: '🖥️' },
+    '7': { id: 7, name: 'LG 4K 32"',             ref: 'REF-ECR-009', category: 'Écran',        icon: '🖥️' },
+    '8': { id: 8, name: 'Clavier Keychron K2',   ref: 'REF-PER-015', category: 'Périphérique', icon: '⌨️' },
+    '9': { id: 9, name: 'Souris Logitech MX',    ref: 'REF-PER-021', category: 'Périphérique', icon: '🖱️' },
   };
 
   equipment = computed(() =>

@@ -28,9 +28,9 @@
 
   <div class="badges-row">
     <span class="badge b-neutral"  [class.active]="filtreActif === 'tous'"         (click)="filtreActif = 'tous'; onFiltreChange()">Tous ({{ totalTous }})</span>
-    <span class="badge b-success"  [class.active]="filtreActif === 'disponible'"   (click)="filtreActif = 'disponible'; onFiltreChange()">Disponible ({{ totalDisponibles }})</span>
-    <span class="badge b-warning"  [class.active]="filtreActif === 'en-pret'"      (click)="filtreActif = 'en-pret'; onFiltreChange()">En prêt ({{ totalEnPret }})</span>
-    <span class="badge b-danger"   [class.active]="filtreActif === 'hors-service'" (click)="filtreActif = 'hors-service'; onFiltreChange()">Hors service ({{ totalHorsService }})</span>
+    <span class="badge b-success"  [class.active]="filtreActif === 'DISPONIBLE'"   (click)="filtreActif = 'DISPONIBLE'; onFiltreChange()">Disponible ({{ totalDisponibles }})</span>
+    <span class="badge b-warning"  [class.active]="filtreActif === 'EN_PRET'"      (click)="filtreActif = 'EN_PRET'; onFiltreChange()">En prêt ({{ totalEnPret }})</span>
+    <span class="badge b-danger"   [class.active]="filtreActif === 'OUT_OF_SERVICE'" (click)="filtreActif = 'OUT_OF_SERVICE'; onFiltreChange()">Hors service ({{ totalHorsService }})</span>
   </div>
 
   <div class="table-wrapper">
@@ -54,9 +54,9 @@
           <div class="td-muted">{{ eq.localisation }}</div>
           <div>
             <span class="badge"
-              [class.b-success]="eq.statut === 'disponible'"
-              [class.b-warning]="eq.statut === 'en-pret'"
-              [class.b-danger]="eq.statut === 'hors-service'">
+              [class.b-success]="eq.statut === 'DISPONIBLE'"
+              [class.b-warning]="eq.statut === 'EN_PRET'"
+              [class.b-danger]="eq.statut === 'OUT_OF_SERVICE' || eq.statut === 'UNDER_REPAIR'">
               <span class="badge-dot"></span>
               {{ getStatutLabel(eq.statut) }}
             </span>

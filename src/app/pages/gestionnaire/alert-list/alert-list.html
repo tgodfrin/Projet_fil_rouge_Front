@@ -26,7 +26,7 @@
       <div class="kpi-lbl">Retards</div>
     </div>
     <div class="kpi-card">
-      <div class="kpi-val danger">{{ incidentCount() }}</div>
+      <div class="kpi-val danger">{{ panneCount() }}</div>
       <div class="kpi-lbl">Incidents</div>
     </div>
   </div>
@@ -39,8 +39,8 @@
     <button class="tab" [class.active]="activeTab() === 'RETARD'" (click)="setTab('RETARD')">
       Retards <span class="tab-count warning">{{ retardCount() }}</span>
     </button>
-    <button class="tab" [class.active]="activeTab() === 'INCIDENT'" (click)="setTab('INCIDENT')">
-      Incidents <span class="tab-count danger">{{ incidentCount() }}</span>
+    <button class="tab" [class.active]="activeTab() === 'PANNE'" (click)="setTab('PANNE')">
+      Incidents <span class="tab-count danger">{{ panneCount() }}</span>
     </button>
   </div>
 
@@ -53,7 +53,7 @@
         <div
           class="alert-card"
           [class.retard]="alert.type === 'RETARD'"
-          [class.incident]="alert.type === 'INCIDENT'"
+          [class.incident]="alert.type === 'PANNE'"
           [class.read]="alert.read">
 
           <div class="alert-body">
@@ -68,7 +68,7 @@
           </div>
 
           <div class="alert-right">
-            <span class="badge" [class.badge-warning]="alert.type === 'RETARD'" [class.badge-danger]="alert.type === 'INCIDENT'">
+            <span class="badge" [class.badge-warning]="alert.type === 'RETARD'" [class.badge-danger]="alert.type === 'PANNE'">
               {{ alert.type === 'RETARD' ? 'Retard' : 'Incident' }}
             </span>
             @if (!alert.read) {

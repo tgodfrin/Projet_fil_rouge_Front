@@ -6,7 +6,7 @@
     <div class="header-actions">
       <select class="filter-select" (change)="onFiltreStatutChange($event)">
         <option value="tous">Tous les statuts</option>
-        <option value="EN_COURS">En cours</option>
+        <option value="VALID">En cours</option>
         <option value="RETARD">Retard</option>
       </select>
       <select class="filter-select" (change)="onFiltreTempsChange($event)">
@@ -81,7 +81,7 @@
                 </span>
               </td>
               <td>
-                @if (loan.status === 'EN_COURS' || loan.status === 'RETARD') {
+                @if (loan.status === 'VALID' || loan.status === 'RETARD') {
                   <button class="btn-return" (click)="returnLoan(loan)">Rendu</button>
                 } @else {
                   <span class="rendu-label">—</span>
