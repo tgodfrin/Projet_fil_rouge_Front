@@ -2,7 +2,8 @@ import { Component } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { CommonModule } from '@angular/common';
 import { Router } from '@angular/router';
-import { EquipmentFormComponent, Equipement } from './equipment-form/equipment-form';
+import { EquipmentFormComponent } from './equipment-form/equipment-form';
+import { Equipement } from '../../../core/models/equipment.model';
 import { ExportComponent } from '../../../shared/export/export';
 
 interface EquipementItem {

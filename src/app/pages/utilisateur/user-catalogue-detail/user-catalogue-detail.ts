@@ -1,7 +1,7 @@
 import { Component, computed, inject, signal } from '@angular/core';
 import { ActivatedRoute, Router, RouterLink } from '@angular/router';
 import { CommonModule } from '@angular/common';
-import { EquipmentStatus, EquipmentCategory } from '../user-catalogue/user-catalogue';
+import { EquipmentStatus, EquipmentCategory } from '../../../core/models/equipment.model';
 
 interface CatalogueDetailItem {
   id: number;

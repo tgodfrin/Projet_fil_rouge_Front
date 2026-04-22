@@ -2,14 +2,7 @@ import { Component, computed, inject, signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { ReactiveFormsModule, FormBuilder, Validators } from '@angular/forms';
 import { Router, ActivatedRoute } from '@angular/router';
-
-export type IncidentType = 'PANNE' | 'RETOUR_ANTICIPE' | 'PROLONGATION';
-
-interface IncidentOption {
-  type: IncidentType;
-  label: string;
-  icon: string;
-}
+import { IncidentType, IncidentOption } from '../../../core/models/incident.model';
 
 interface LoanInfo {
   id: number;

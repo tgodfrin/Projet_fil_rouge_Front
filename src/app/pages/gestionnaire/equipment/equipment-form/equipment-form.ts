@@ -1,20 +1,7 @@
 import { Component, EventEmitter, Output, inject } from '@angular/core';
 import { ReactiveFormsModule, FormBuilder, FormArray, FormGroup, Validators } from '@angular/forms';
 import { CommonModule } from '@angular/common';
-
-export interface Composant {
-  type: string;
-  valeur: string;
-}
-
-export interface Equipement {
-  nom: string;
-  reference: string;
-  famille: string;
-  localisation: string;
-  statut: string;
-  composants: Composant[];
-}
+import { Composant, Equipement } from '../../../../core/models/equipment.model';
 
 @Component({
   selector: 'app-equipment-form',

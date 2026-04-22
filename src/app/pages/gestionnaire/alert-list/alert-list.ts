@@ -1,19 +1,7 @@
 import { Component, signal, computed } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { Router } from '@angular/router';
-
-export type AlertType = 'RETARD' | 'PANNE';
-
-export interface Alert {
-  id: number;
-  loanId: number;
-  type: AlertType;
-  equipmentName: string;
-  borrowerName: string;
-  description: string;
-  date: string;
-  read: boolean;
-}
+import { Alert, AlertType } from '../../../core/models/alert.model';
 
 @Component({
   selector: 'app-alert-list',

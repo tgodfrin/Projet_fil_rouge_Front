@@ -13,7 +13,7 @@ export interface UserDetail {
   createdAt: string;
 }
 
-export interface UserLoan {
+export interface UserDetailLoan {
   id: number;
   equipmentName: string;
   equipmentRef: string;
@@ -31,7 +31,7 @@ const MOCK_USERS: Record<number, UserDetail> = {
   6: { id: 6, firstName: 'Alice',  lastName: 'Martin',   email: 'alice.martin@mns.fr',   role: 'COLLABORATEUR', createdAt: '2024-09-06' },
 };
 
-const MOCK_LOANS: Record<number, UserLoan[]> = {
+const MOCK_LOANS: Record<number, UserDetailLoan[]> = {
   1: [],
   2: [
     { id: 10, equipmentName: 'MacBook Pro M3',  equipmentRef: 'REF-PC-042',  startDate: '2026-03-03', endDate: '2026-03-10', status: 'TERMINE'    },
@@ -64,7 +64,7 @@ export class UserDetailComponent implements OnInit {
   ongletActif = signal<'infos' | 'emprunts' | 'statistiques'>('infos');
 
   user = signal<UserDetail | null>(null);
-  loans = signal<UserLoan[]>([]);
+  loans = signal<UserDetailLoan[]>([]);
 
   loanStats = computed(() => {
     const l = this.loans();

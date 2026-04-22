@@ -22,7 +22,7 @@ export interface UserLoan {
   category?: string;
   startDate: string;
   endDate: string;
-  status?: UserLoanStatus;
+  status: UserLoanStatus;
 }
 
 // ── Demande d'emprunt ─────────────────────────────────
