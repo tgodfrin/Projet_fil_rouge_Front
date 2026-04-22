@@ -1,0 +1,134 @@
+<div class="profile-page">
+
+  <!-- Avatar + nom -->
+  <div class="profile-header">
+    <div class="avatar">{{ profile().initials }}</div>
+    <div class="profile-identity">
+      <div class="profile-name">{{ profile().firstName }} {{ profile().lastName }}</div>
+      <span class="role-badge">{{ profile().role }}</span>
+    </div>
+  </div>
+
+  <!-- Stats -->
+  <div class="stats-grid">
+    @for (stat of stats(); track stat.label) {
+      <div class="stat-card">
+        <div class="stat-val">{{ stat.value }}</div>
+        <div class="stat-lbl">{{ stat.label }}</div>
+      </div>
+    }
+  </div>
+
+  <!-- Informations -->
+  <div class="section-label">Informations</div>
+  <div class="info-card">
+
+    <!-- Email (lecture seule) -->
+    <div class="info-row">
+      <span class="info-key">Email</span>
+      <span class="info-val">{{ profile().email }}</span>
+    </div>
+
+    <!-- Rôle & membre depuis (non modifiables) -->
+    <div class="info-row">
+      <span class="info-key">Rôle</span>
+      <span class="info-val">{{ profile().role }}</span>
+    </div>
+    <div class="info-row">
+      <span class="info-key">Membre depuis</span>
+      <span class="info-val">{{ formatDate(profile().memberSince) }}</span>
+    </div>
+
+  </div>
+
+  <!-- Actions -->
+  <div class="section-label">Compte</div>
+  <div class="actions-card">
+
+    <button class="action-row" (click)="toggleEdit('email')">
+      <span>✉️ Modifier l'email</span>
+      <span class="arrow">{{ activeEdit() === 'email' ? '˅' : '›' }}</span>
+    </button>
+    @if (activeEdit() === 'email') {
+      <form class="edit-form edit-form-incard" [formGroup]="emailForm" (ngSubmit)="submitEmail()">
+        <div class="form-group">
+          <label>Nouvel email</label>
+          <input type="email" class="form-input" formControlName="newEmail" placeholder="nouveau@email.fr" />
+          @if (emailForm.get('newEmail')?.invalid && emailForm.get('newEmail')?.touched) {
+            <small class="form-error">
+              @if (emailForm.get('newEmail')?.hasError('required')) { L'email est requis. }
+              @else if (emailForm.get('newEmail')?.hasError('email')) { Format invalide. }
+            </small>
+          }
+        </div>
+        <div class="form-group">
+          <label>Confirmer l'email</label>
+          <input type="email" class="form-input" formControlName="confirmEmail" placeholder="nouveau@email.fr" />
+          @if (emailForm.get('confirmEmail')?.invalid && emailForm.get('confirmEmail')?.touched) {
+            <small class="form-error">
+              @if (emailForm.get('confirmEmail')?.hasError('required')) { La confirmation est requise. }
+              @else if (emailForm.get('confirmEmail')?.hasError('mismatch')) { Les emails ne correspondent pas. }
+            </small>
+          }
+        </div>
+        @if (successMessage()) {
+          <div class="msg msg-success">{{ successMessage() }}</div>
+        }
+        <div class="form-actions">
+          <button class="btn-save" type="submit">Enregistrer</button>
+          <button class="btn-cancel" type="button" (click)="closeEdit()">Annuler</button>
+        </div>
+      </form>
+    }
+
+    <button class="action-row" (click)="toggleEdit('password')">
+      <span>🔑 Changer le mot de passe</span>
+      <span class="arrow">{{ activeEdit() === 'password' ? '˅' : '›' }}</span>
+    </button>
+    @if (activeEdit() === 'password') {
+      <form class="edit-form edit-form-incard" [formGroup]="passwordForm" (ngSubmit)="submitPassword()">
+        <div class="form-group">
+          <label>Mot de passe actuel</label>
+          <input type="password" class="form-input" formControlName="currentPassword" placeholder="••••••••" />
+          @if (passwordForm.get('currentPassword')?.invalid && passwordForm.get('currentPassword')?.touched) {
+            <small class="form-error">Le mot de passe actuel est requis.</small>
+          }
+        </div>
+        <div class="form-group">
+          <label>Nouveau mot de passe</label>
+          <input type="password" class="form-input" formControlName="newPassword" placeholder="••••••••" />
+          @if (passwordForm.get('newPassword')?.invalid && passwordForm.get('newPassword')?.touched) {
+            <small class="form-error">
+              @if (passwordForm.get('newPassword')?.hasError('required')) { Le nouveau mot de passe est requis. }
+              @else if (passwordForm.get('newPassword')?.hasError('minlength')) { Minimum 8 caractères. }
+            </small>
+          }
+        </div>
+        <div class="form-group">
+          <label>Confirmer le nouveau mot de passe</label>
+          <input type="password" class="form-input" formControlName="confirmPassword" placeholder="••••••••" />
+          @if (passwordForm.get('confirmPassword')?.invalid && passwordForm.get('confirmPassword')?.touched) {
+            <small class="form-error">
+              @if (passwordForm.get('confirmPassword')?.hasError('required')) { La confirmation est requise. }
+              @else if (passwordForm.get('confirmPassword')?.hasError('mismatch')) { Les mots de passe ne correspondent pas. }
+            </small>
+          }
+        </div>
+        @if (successMessage()) {
+          <div class="msg msg-success">{{ successMessage() }}</div>
+        }
+        <div class="form-actions">
+          <button class="btn-save" type="submit">Enregistrer</button>
+          <button class="btn-cancel" type="button" (click)="closeEdit()">Annuler</button>
+        </div>
+      </form>
+    }
+
+    <button class="action-row danger">
+      <span>🚪 Se déconnecter</span>
+      <span class="arrow">›</span>
+    </button>
+
+  </div>
+
+</div>
