@@ -1,4 +1,64 @@
-/* You can add global styles to this file, and also import other style files */
-@tailwind base;
-@tailwind components;
-@tailwind utilities;
+:root {
+  // Couleurs principales
+  --primary:        #E8620A;
+  --primary-light:  #F4854A;
+  --primary-dark:   #B84D08;
+  --primary-xlight: #FDF0E8;
+
+  --secondary:      #25176E;
+  --secondary-light:#3A2694;
+
+  // Niveaux de gris
+  --white:     #FFFFFF;
+  --grey-50:   #F8F9FB;
+  --grey-100:  #EEF0F5;
+  --grey-200:  #D8DCE8;
+  --grey-400:  #A0A8C0;
+  --grey-500:  #6B7494;
+  --grey-700:  #3A4060;
+  --grey-900:  #1E2333;
+
+  // Couleurs sémantiques
+  --success:      #22C55E;
+  --success-bg:   #DCFCE7;
+  --success-text: #16A34A;
+
+  --warning:      #F59E0B;
+  --warning-bg:   #FEF9C3;
+  --warning-text: #A16207;
+
+  --danger:       #EF4444;
+  --danger-bg:    #FEE2E2;
+  --danger-text:  #DC2626;
+
+  --info:         #3B82F6;
+  --info-bg:      #DBEAFE;
+  --info-text:    #1D4ED8;
+
+  // Typographie
+  --font: 'Inter', system-ui, sans-serif;
+
+  // Border radius
+  --r-sm: 6px;
+  --r-md: 10px;
+  --r-lg: 16px;
+  --r-xl: 24px;
+
+  // Ombres
+  --shadow-sm: 0 1px 4px rgba(30, 35, 51, 0.08);
+  --shadow-md: 0 4px 16px rgba(30, 35, 51, 0.12);
+}
+
+// Reset navigateur
+*, *::before, *::after {
+  box-sizing: border-box;
+}
+
+// Fond général de l'application
+body {
+  margin: 0;
+  padding: 0;
+  font-family: var(--font);
+  background: var(--grey-50);
+  color: var(--grey-900);
+}

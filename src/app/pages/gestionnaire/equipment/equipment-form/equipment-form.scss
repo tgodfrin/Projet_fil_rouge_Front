@@ -1,0 +1,227 @@
+// ── Overlay ───────────────────────────────────────────
+.overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.4);
+  z-index: 100;
+  animation: fadeIn 0.15s ease;
+}
+
+// ── Modal ─────────────────────────────────────────────
+.modal {
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  z-index: 101;
+  background: white;
+  border-radius: var(--r-lg);
+  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.15);
+  width: 100%;
+  max-width: 460px;
+  max-height: 90vh;
+  overflow-y: auto;
+  animation: slideUp 0.2s ease;
+
+  @media (max-width: 480px) {
+    top: auto;
+    left: 0;
+    bottom: 0;
+    transform: none;
+    max-width: 100%;
+    border-bottom-left-radius: 0;
+    border-bottom-right-radius: 0;
+  }
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to   { opacity: 1; }
+}
+
+@keyframes slideUp {
+  from { opacity: 0; transform: translate(-50%, -48%); }
+  to   { opacity: 1; transform: translate(-50%, -50%); }
+}
+
+// ── Header ────────────────────────────────────────────
+.modal-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 1.25rem 1.5rem;
+  border-bottom: 1px solid var(--grey-100);
+}
+
+.modal-title {
+  font-size: 1rem;
+  font-weight: 800;
+  color: var(--grey-900);
+  margin: 0;
+}
+
+.btn-close {
+  background: none;
+  border: none;
+  font-size: 1rem;
+  color: var(--grey-400);
+  cursor: pointer;
+  padding: 4px;
+  line-height: 1;
+  transition: color 0.2s;
+
+  &:hover { color: var(--grey-700); }
+}
+
+// ── Body ──────────────────────────────────────────────
+.modal-body {
+  padding: 1.25rem 1.5rem;
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+// ── Form ──────────────────────────────────────────────
+.form-group {
+  display: flex;
+  flex-direction: column;
+  gap: 0.3rem;
+}
+
+.form-label {
+  font-size: 0.75rem;
+  font-weight: 600;
+  color: var(--grey-600);
+}
+
+.required {
+  color: var(--danger-text);
+}
+
+.form-input,
+.form-select {
+  height: 38px;
+  border: 1px solid var(--grey-200);
+  border-radius: var(--r-sm);
+  padding: 0 0.75rem;
+  font-size: 0.82rem;
+  font-family: var(--font);
+  color: var(--grey-900);
+  background: white;
+  width: 100%;
+  box-sizing: border-box;
+  transition: border-color 0.2s;
+
+  &:focus {
+    outline: none;
+    border-color: var(--primary);
+  }
+
+  &.error {
+    border-color: var(--danger-text);
+  }
+
+  &::placeholder {
+    color: var(--grey-400);
+  }
+}
+
+.form-error {
+  font-size: 0.7rem;
+  color: var(--danger-text);
+  font-weight: 500;
+}
+
+// ── Footer ────────────────────────────────────────────
+.modal-footer {
+  display: flex;
+  justify-content: flex-end;
+  gap: 0.5rem;
+  padding-top: 0.5rem;
+  border-top: 1px solid var(--grey-100);
+  margin-top: 0.5rem;
+}
+
+.btn {
+  height: 36px;
+  padding: 0 1.25rem;
+  border-radius: var(--r-sm);
+  font-size: 0.78rem;
+  font-weight: 600;
+  border: none;
+  cursor: pointer;
+  font-family: var(--font);
+  transition: opacity 0.2s;
+
+  &:hover { opacity: 0.85; }
+
+  &.btn-primary { background: var(--primary); color: white; }
+  &.btn-ghost   { background: var(--grey-100); color: var(--grey-700); }
+}
+
+// ── Composants ────────────────────────────────────────
+.composants-section {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  padding-top: 0.25rem;
+}
+
+.composants-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.btn-add-composant {
+  background: none;
+  border: 1px dashed var(--primary);
+  color: var(--primary);
+  border-radius: var(--r-sm);
+  font-size: 0.72rem;
+  font-weight: 600;
+  padding: 4px 10px;
+  cursor: pointer;
+  font-family: var(--font);
+  transition: background 0.2s;
+
+  &:hover { background: rgba(var(--primary-rgb, 0,0,0), 0.05); }
+}
+
+.composants-empty {
+  font-size: 0.75rem;
+  color: var(--grey-400);
+  font-style: italic;
+  margin: 0;
+  padding: 0.5rem 0;
+}
+
+.composant-row {
+  display: grid;
+  grid-template-columns: 140px 1fr 32px;
+  gap: 0.5rem;
+  align-items: center;
+  animation: slideDown 0.15s ease;
+}
+
+.composant-type  { width: 100%; }
+.composant-valeur { width: 100%; }
+
+.btn-remove {
+  width: 32px;
+  height: 32px;
+  border: none;
+  border-radius: var(--r-sm);
+  background: var(--danger-bg);
+  color: var(--danger-text);
+  font-size: 0.7rem;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: opacity 0.2s;
+  font-family: var(--font);
+  flex-shrink: 0;
+
+  &:hover { opacity: 0.75; }
+}

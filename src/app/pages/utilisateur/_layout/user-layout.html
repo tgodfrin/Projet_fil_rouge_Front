@@ -1,0 +1,66 @@
+<div class="app-wrapper">
+
+  <!-- SIDEBAR desktop uniquement -->
+  <aside class="sidebar">
+    <div class="sidebar-logo">
+      <span class="logo-icon">L</span>
+      <span class="logo-text">LOC <span class="logo-accent">MNS</span></span>
+    </div>
+    <nav class="sidebar-nav">
+      <a class="sidebar-link" routerLink="/utilisateur/accueil" routerLinkActive="active">
+        🏠 Accueil
+      </a>
+      <a class="sidebar-link" routerLink="/utilisateur/catalogue" routerLinkActive="active">
+        💻 Catalogue
+      </a>
+      <a class="sidebar-link" routerLink="/utilisateur/mes-emprunts" routerLinkActive="active">
+        📦 Mes emprunts
+      </a>
+      <a class="sidebar-link" routerLink="/utilisateur/profil" routerLinkActive="active">
+        👤 Profil
+      </a>
+    </nav>
+    <div class="sidebar-bottom">
+      <div class="user-avatar">JF</div>
+      <div class="user-info">
+        <span class="user-name">Julie Fontaine</span>
+        <span class="user-role">Collaboratrice</span>
+      </div>
+    </div>
+  </aside>
+
+  <!-- CONTENU PRINCIPAL -->
+  <div class="main-wrapper">
+
+    <!-- TOPBAR mobile uniquement -->
+    <header class="header">
+      <div class="header-title">LOC <span class="header-accent">MNS</span></div>
+      <div class="user-avatar">JF</div>
+    </header>
+
+    <main class="content">
+      <router-outlet />
+    </main>
+
+    <!-- BOTTOM NAV mobile uniquement -->
+    <nav class="bottom-nav">
+      <a class="bnav-item" routerLink="/utilisateur/accueil" routerLinkActive="active">
+        <span class="bnav-icon">🏠</span>
+        <span class="bnav-label">Accueil</span>
+      </a>
+      <a class="bnav-item" routerLink="/utilisateur/catalogue" routerLinkActive="active">
+        <span class="bnav-icon">💻</span>
+        <span class="bnav-label">Catalogue</span>
+      </a>
+      <a class="bnav-item" routerLink="/utilisateur/mes-emprunts" routerLinkActive="active">
+        <span class="bnav-icon">📦</span>
+        <span class="bnav-label">Emprunts</span>
+      </a>
+      <a class="bnav-item" routerLink="/utilisateur/profil" routerLinkActive="active">
+        <span class="bnav-icon">👤</span>
+        <span class="bnav-label">Profil</span>
+      </a>
+    </nav>
+
+  </div>
+</div>

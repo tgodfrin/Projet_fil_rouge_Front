@@ -1,0 +1,327 @@
+.planning-page {
+  padding: 2rem;
+  display: flex;
+  flex-direction: column;
+  gap: 1.25rem;
+}
+
+// ── En-tête ───────────────────────────────────────────
+.page-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 1rem;
+}
+
+.page-title {
+  font-size: 1.4rem;
+  font-weight: 700;
+  color: var(--grey-900);
+}
+
+.header-right {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  flex-wrap: wrap;
+}
+
+.date-picker {
+  height: 32px;
+  padding: 0 0.75rem;
+  border: 1px solid var(--grey-200);
+  border-radius: var(--r-sm);
+  font-size: 0.8rem;
+  color: var(--grey-700);
+  background: white;
+  cursor: pointer;
+
+  &:focus {
+    outline: none;
+    border-color: var(--primary);
+  }
+}
+
+.week-nav {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.btn-nav {
+  height: 32px;
+  padding: 0 0.875rem;
+  background: white;
+  border: 1px solid var(--grey-200);
+  border-radius: var(--r-sm);
+  font-size: 0.8rem;
+  color: var(--grey-700);
+  cursor: pointer;
+  transition: all 0.2s;
+
+  &:hover {
+    border-color: var(--primary);
+    color: var(--primary);
+  }
+}
+
+.period-label {
+  font-size: 0.85rem;
+  font-weight: 700;
+  color: var(--grey-700);
+  padding: 0 0.75rem;
+  height: 32px;
+  display: flex;
+  align-items: center;
+  background: white;
+  border: 1px solid var(--grey-200);
+  border-radius: var(--r-sm);
+  white-space: nowrap;
+  text-transform: capitalize;
+}
+
+.view-toggle {
+  display: flex;
+  background: var(--grey-100);
+  border-radius: var(--r-sm);
+  padding: 3px;
+  gap: 2px;
+}
+
+.toggle-btn {
+  height: 28px;
+  padding: 0 0.875rem;
+  border: none;
+  border-radius: var(--r-sm);
+  font-size: 0.8rem;
+  font-weight: 500;
+  color: var(--grey-500);
+  background: transparent;
+  cursor: pointer;
+  transition: all 0.2s;
+
+  &.active {
+    background: white;
+    color: var(--primary);
+    box-shadow: var(--shadow-sm);
+    font-weight: 600;
+  }
+}
+
+// ── Filtres catégories ────────────────────────────────
+.category-filters {
+  display: flex;
+  gap: 0.5rem;
+  flex-wrap: wrap;
+}
+
+.filter-btn {
+  padding: 0.35rem 0.875rem;
+  border: 1px solid var(--grey-200);
+  border-radius: var(--r-md);
+  background: white;
+  color: var(--grey-700);
+  font-size: 0.8rem;
+  cursor: pointer;
+  transition: all 0.2s;
+
+  &:hover {
+    border-color: var(--primary);
+    color: var(--primary);
+  }
+
+  &.active {
+    background: var(--primary);
+    border-color: var(--primary);
+    color: white;
+  }
+}
+
+// ── Grille semaine ────────────────────────────────────
+// ── Responsive wrapper ────────────────────────────────
+.planning-scroll-wrapper {
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
+  width: 100%;
+  border-radius: var(--r-md);
+}
+
+// ── Grille semaine ────────────────────────────────────
+.planning-grid {
+  min-width: 700px;        // ← ajoute cette ligne
+  background: white;
+  border: 1px solid var(--grey-200);
+  border-radius: var(--r-md);
+  overflow: hidden;
+}
+
+.grid-head {
+  display: grid;
+  grid-template-columns: 140px repeat(7, 1fr);
+  background: var(--secondary);
+  color: white;
+}
+
+.col-label {
+  padding: 0.6rem 0.875rem;
+  font-size: 0.75rem;
+  font-weight: 600;
+  border-right: 1px solid rgba(255,255,255,0.1);
+}
+
+.col-day {
+  padding: 0.6rem 0.5rem;
+  font-size: 0.75rem;
+  font-weight: 600;
+  text-align: center;
+  border-right: 1px solid rgba(255,255,255,0.1);
+  text-transform: capitalize;
+
+  &:last-child { border-right: none; }
+
+  &.today {
+    background: var(--primary);
+  }
+}
+
+.grid-row {
+  display: grid;
+  grid-template-columns: 140px repeat(7, 1fr);
+  border-top: 1px solid var(--grey-100);
+  min-height: 48px;
+  align-items: center;
+
+  &:hover { background: var(--grey-50); }
+}
+
+.row-label {
+  padding: 0.5rem 0.875rem;
+  background: var(--grey-50);
+  border-right: 1px solid var(--grey-200);
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  gap: 0.15rem;
+}
+
+.row-name {
+  font-size: 0.8rem;
+  font-weight: 600;
+  color: var(--grey-900);
+}
+
+.row-category {
+  font-size: 0.7rem;
+  color: var(--grey-400);
+}
+
+.cell {
+  padding: 0.3rem;
+  border-right: 1px solid var(--grey-100);
+  height: 100%;
+  display: flex;
+  align-items: center;
+
+  &:last-child { border-right: none; }
+
+  &.today-col {
+    background: var(--primary-xlight);
+  }
+}
+
+.event-cell {
+  background: var(--primary-xlight);
+  color: var(--primary);
+  font-size: 0.75rem;
+  font-weight: 600;
+  border-radius: 4px;
+  padding: 0.25rem 0.625rem;
+  height: 28px;
+  margin: 0.3rem;
+  border-left: 3px solid var(--primary);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+
+  &.today-col {
+    background: var(--primary-xlight);
+  }
+}
+
+.empty-state {
+  padding: 2rem;
+  text-align: center;
+  color: var(--grey-400);
+  font-size: 0.875rem;
+  grid-column: 1 / -1;
+}
+
+// ── Grille mois ───────────────────────────────────────
+.month-grid {
+  background: white;
+  border: 1px solid var(--grey-200);
+  border-radius: var(--r-md);
+  overflow: hidden;
+}
+
+.month-head {
+  display: grid;
+  grid-template-columns: repeat(7, 1fr);
+  background: var(--secondary);
+  color: white;
+}
+
+.month-head-cell {
+  padding: 0.6rem 0.5rem;
+  font-size: 0.75rem;
+  font-weight: 600;
+  text-align: center;
+  border-right: 1px solid rgba(255,255,255,0.1);
+
+  &:last-child { border-right: none; }
+}
+
+.month-body {
+  display: grid;
+  grid-template-columns: repeat(7, 1fr);
+}
+
+.month-cell {
+  min-height: 80px;
+  padding: 0.4rem;
+  border-right: 1px solid var(--grey-100);
+  border-bottom: 1px solid var(--grey-100);
+  display: flex;
+  flex-direction: column;
+  gap: 0.2rem;
+
+  &:nth-child(7n) { border-right: none; }
+  &.empty { background: var(--grey-50); }
+
+  &.today {
+    background: var(--primary-xlight);
+    .month-day-num { color: var(--primary); font-weight: 700; }
+  }
+}
+
+.month-day-num {
+  font-size: 0.78rem;
+  font-weight: 600;
+  color: var(--grey-700);
+  margin-bottom: 0.2rem;
+}
+
+.month-event {
+  background: var(--primary-xlight);
+  color: var(--primary);
+  font-size: 0.68rem;
+  font-weight: 600;
+  padding: 0.15rem 0.4rem;
+  border-radius: 3px;
+  border-left: 2px solid var(--primary);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}

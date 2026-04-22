@@ -1,0 +1,56 @@
+<div class="dashboard">
+
+  <div class="page-title">Tableau de bord</div>
+
+  <!-- KPIs -->
+  <div class="kpi-grid">
+    @for (kpi of kpis; track kpi.label) {
+    <div class="kpi-card">
+      <div class="kpi-value" [style.color]="kpi.color">{{ kpi.value }}</div>
+      <div class="kpi-label">{{ kpi.label }}</div>
+    </div>
+    }
+  </div>
+
+  <!-- ALERTES -->
+  @for (alerte of alertes; track alerte.titre) {
+  <div class="alerte-banner" [class.danger]="alerte.type === 'danger'" [class.warning]="alerte.type === 'warning'">
+    <div class="alerte-titre">{{ alerte.titre }}</div>
+    <button class="btn" [class.btn-danger]="alerte.type === 'danger'" [class.btn-warning]="alerte.type === 'warning'"
+      (click)="navigate(alerte.route)">
+      {{ alerte.btnLabel }}
+    </button>
+  </div>
+  }
+
+  <!-- NOTIFICATIONS -->
+  <div class="section-label">Notifications</div>
+  <div class="table-wrapper">
+    <div class="table">
+
+      <div class="table-head">
+        <div class="th">Utilisateur</div>
+        <div class="th">Matériel</div>
+        <div class="th">Dates</div>
+        <div class="th">Statut</div>
+      </div>
+
+      @for (notif of notifications; track notif.utilisateur) {
+      <div class="table-row">
+        <div class="td-main">{{ notif.utilisateur }}</div>
+        <div class="td-main">{{ notif.materiel }}</div>
+        <div class="td-muted">{{ notif.dates }}</div>
+        <div>
+          <span class="badge" [class.b-warning]="notif.statut === 'warning'"
+            [class.b-danger]="notif.statut === 'danger'">
+            <span class="badge-dot"></span>
+            {{ notif.label }}
+          </span>
+        </div>
+      </div>
+      }
+
+    </div>
+  </div>
+
+</div>

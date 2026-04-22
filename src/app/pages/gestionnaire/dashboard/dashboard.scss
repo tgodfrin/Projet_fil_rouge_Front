@@ -1,0 +1,194 @@
+.dashboard {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  padding: 2rem;
+
+  @media (max-width: 768px) {
+    padding: 1rem;
+  }
+}
+
+// ── Titre ─────────────────────────────────────────────
+.page-title {
+  font-size: 20px;
+  font-weight: 800;
+  color: var(--grey-900);
+}
+
+// ── KPIs ──────────────────────────────────────────────
+.kpi-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 12px;
+
+  @media (max-width: 768px) {
+    grid-template-columns: repeat(2, 1fr);
+  }
+
+  @media (max-width: 400px) {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+.kpi-card {
+  background: white;
+  border-radius: var(--r-md);
+  padding: 16px;
+  border: 1px solid var(--grey-200);
+  box-shadow: var(--shadow-sm);
+}
+
+.kpi-value {
+  font-size: 28px;
+  font-weight: 900;
+}
+
+.kpi-label {
+  font-size: 11px;
+  color: var(--grey-400);
+  margin-top: 4px;
+}
+
+// ── Alertes ───────────────────────────────────────────
+.alerte-banner {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 12px 16px;
+  border-radius: var(--r-md);
+  border-left: 3px solid;
+
+  &.danger {
+    background: var(--danger-bg);
+    border-left-color: var(--danger);
+    .alerte-titre { color: var(--danger-text); }
+  }
+
+  &.warning {
+    background: var(--warning-bg);
+    border-left-color: var(--warning);
+    .alerte-titre { color: var(--warning-text); }
+  }
+}
+
+.alerte-titre {
+  font-size: 13px;
+  font-weight: 700;
+  flex: 1;
+}
+
+// ── Boutons ───────────────────────────────────────────
+.btn {
+  padding: 6px 14px;
+  border-radius: var(--r-sm);
+  font-size: 11px;
+  font-weight: 600;
+  border: none;
+  cursor: pointer;
+  font-family: var(--font);
+  white-space: nowrap;
+  transition: opacity 0.2s;
+
+  &:hover { opacity: 0.85; }
+
+  &.btn-danger {
+    background: var(--danger-bg);
+    color: var(--danger-text);
+    border: 1px solid var(--danger);
+  }
+
+  &.btn-ghost {
+    background: var(--grey-100);
+    color: var(--grey-700);
+  }
+
+  &.btn-warning {
+    background: var(--warning-bg);
+    color: var(--warning-text);
+    border: 1px solid var(--warning);
+  }
+}
+
+// ── Section label ─────────────────────────────────────
+.section-label {
+  font-size: 11px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.8px;
+  color: var(--grey-400);
+}
+
+// ── Tableau ───────────────────────────────────────────
+.table-wrapper {
+  overflow-x: auto;
+  border-radius: var(--r-md);
+  box-shadow: var(--shadow-sm);
+  border: 1px solid var(--grey-200);
+}
+
+.table {
+  background: white;
+  min-width: 480px;
+  width: 100%;
+}
+
+.table-head {
+  display: grid;
+  grid-template-columns: 1.5fr 1fr 1fr 90px;
+  padding: 10px 16px;
+  background: var(--grey-50);
+  border-bottom: 1px solid var(--grey-200);
+}
+
+.table-row {
+  display: grid;
+  grid-template-columns: 1.5fr 1fr 1fr 90px;
+  padding: 10px 16px;
+  border-bottom: 1px solid var(--grey-100);
+  align-items: center;
+
+  &:last-child { border-bottom: none; }
+  &:hover { background: var(--grey-50); }
+}
+
+.td-main {
+  font-size: 13px;
+  font-weight: 500;
+  color: var(--grey-900);
+}
+
+.td-muted {
+  font-size: 12px;
+  color: var(--grey-400);
+}
+
+// ── Badges ────────────────────────────────────────────
+.badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  padding: 3px 10px;
+  border-radius: 99px;
+  font-size: 11px;
+  font-weight: 700;
+
+  .badge-dot {
+    width: 6px;
+    height: 6px;
+    border-radius: 50%;
+  }
+
+  &.b-warning {
+    background: var(--warning-bg);
+    color: var(--warning-text);
+    .badge-dot { background: var(--warning); }
+  }
+
+  &.b-danger {
+    background: var(--danger-bg);
+    color: var(--danger-text);
+    .badge-dot { background: var(--danger-text); }
+  }
+}

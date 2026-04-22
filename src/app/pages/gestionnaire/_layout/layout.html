@@ -1,0 +1,85 @@
+<div class="app-wrapper">
+
+  @if (menuOpen()) {
+    <div class="overlay" (click)="closeMenu()"></div>
+  }
+
+  <!-- SIDEBAR desktop uniquement -->
+  <aside class="sidebar" [class.open]="menuOpen()">
+    <div class="sidebar-logo">
+      <span class="logo-icon">L</span>
+      <span class="logo-text">LOC <span class="logo-accent">MNS</span></span>
+    </div>
+    <nav class="sidebar-nav">
+      <a class="sidebar-link" routerLink="/dashboard" routerLinkActive="active" (click)="closeMenu()">
+        📊 Dashboard
+      </a>
+      <a class="sidebar-link" routerLink="/equipements" routerLinkActive="active" (click)="closeMenu()">
+        💻 Équipements
+      </a>
+      <a class="sidebar-link" routerLink="/emprunts" routerLinkActive="active" (click)="closeMenu()">
+        📦 Emprunts
+      </a>
+      <a class="sidebar-link" routerLink="/planning" routerLinkActive="active" (click)="closeMenu()">
+        📅 Planning
+      </a>
+      <a class="sidebar-link" routerLink="/alertes" routerLinkActive="active" (click)="closeMenu()">
+        🔔 Alertes
+      </a>
+      <a class="sidebar-link" routerLink="/utilisateurs" routerLinkActive="active" (click)="closeMenu()">
+        👥 Utilisateurs
+      </a>
+    </nav>
+    <div class="sidebar-bottom">
+      <div class="user-avatar">JD</div>
+      <div class="user-info">
+        <span class="user-name">John Doe</span>
+        <span class="user-role">Gestionnaire</span>
+      </div>
+    </div>
+  </aside>
+
+  <!-- CONTENU PRINCIPAL -->
+  <div class="main-wrapper">
+
+    <!-- TOPBAR mobile uniquement -->
+    <header class="header">
+      <div class="header-title">LOC <span class="header-accent">MNS</span></div>
+      <div class="user-avatar">JD</div>
+    </header>
+
+    <!-- PAGE COURANTE -->
+    <main class="content">
+      <router-outlet />
+    </main>
+
+    <!-- BOTTOM NAV mobile uniquement -->
+<nav class="bottom-nav">
+  <a class="bnav-item" routerLink="/dashboard" routerLinkActive="active">
+    <span class="bnav-icon">📊</span>
+    <span class="bnav-label">Dashboard</span>
+  </a>
+  <a class="bnav-item" routerLink="/equipements" routerLinkActive="active">
+    <span class="bnav-icon">💻</span>
+    <span class="bnav-label">Équipements</span>
+  </a>
+  <a class="bnav-item" routerLink="/emprunts" routerLinkActive="active">
+    <span class="bnav-icon">📦</span>
+    <span class="bnav-label">Emprunts</span>
+  </a>
+  <a class="bnav-item" routerLink="/planning" routerLinkActive="active">
+    <span class="bnav-icon">📅</span>
+    <span class="bnav-label">Planning</span>
+  </a>
+  <a class="bnav-item" routerLink="/alertes" routerLinkActive="active">
+    <span class="bnav-icon">🔔</span>
+    <span class="bnav-label">Alertes</span>
+  </a>
+  <a class="bnav-item" routerLink="/utilisateurs" routerLinkActive="active">
+    <span class="bnav-icon">👥</span>
+    <span class="bnav-label">Utilisateurs</span>
+  </a>
+</nav>
+
+  </div>
+</div>

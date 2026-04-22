@@ -1,0 +1,79 @@
+<div class="incident-page">
+
+  <!-- Header -->
+  <div class="page-header">
+    <button class="btn-back" (click)="goBack()">‹ Retour</button>
+    <div class="page-title">Signaler un incident</div>
+  </div>
+
+  <!-- Équipement concerné -->
+  @if (loan(); as l) {
+    <div class="equipment-card">
+      <div class="equipment-icon">{{ l.categoryIcon }}</div>
+      <div class="equipment-info">
+        <div class="equipment-name">{{ l.equipmentName }}</div>
+        <div class="equipment-dates">Emprunt du {{ dateRange() }}</div>
+      </div>
+    </div>
+  } @else {
+    <div class="equipment-card">
+      <div class="equipment-info">
+        <div class="equipment-name">Emprunt introuvable</div>
+      </div>
+    </div>
+  }
+
+  <form [formGroup]="form" (ngSubmit)="submit()">
+
+    <!-- Type d'incident -->
+    <div class="section-label">Type d'incident</div>
+    <div class="incident-grid">
+      @for (option of incidentOptions; track option.type) {
+        <button
+          type="button"
+          class="incident-type"
+          [class.selected]="selectedType() === option.type"
+          (click)="selectType(option.type)">
+          <div class="incident-icon">{{ option.icon }}</div>
+          <div class="incident-label">{{ option.label }}</div>
+        </button>
+      }
+    </div>
+    @if (type.invalid && type.touched) {
+      <small class="form-error">Veuillez sélectionner un type d'incident.</small>
+    }
+
+    <!-- Description -->
+    <div class="form-group">
+      <label class="form-label">Description</label>
+      <textarea
+        class="form-textarea"
+        placeholder="Décrivez le problème rencontré..."
+        rows="4"
+        formControlName="description">
+      </textarea>
+      @if (description.invalid && description.touched) {
+        <small class="form-error">
+          @if (description.hasError('required')) { La description est requise. }
+          @else if (description.hasError('minlength')) { Minimum 10 caractères. }
+        </small>
+      }
+    </div>
+
+    <!-- Photo -->
+    <div class="form-group">
+      <label class="form-label">Photo (optionnel)</label>
+      <div class="photo-upload">
+        <span class="photo-icon">📷</span>
+        <span class="photo-label">Ajouter une photo</span>
+      </div>
+    </div>
+
+    <!-- Submit -->
+    <button class="btn-submit" type="submit">
+      Envoyer le signalement
+    </button>
+
+  </form>
+
+</div>

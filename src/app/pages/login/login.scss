@@ -1,0 +1,179 @@
+.login-page {
+  min-height: 100vh;
+  background: var(--secondary);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 1.5rem 1rem;
+
+}
+
+.login-wrapper {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 1.25rem;
+  width: 100%;
+  max-width: 360px;
+}
+
+// ── Logo ──────────────────────────────────────────────
+.login-logo {
+  display: flex;
+  align-items: center;
+  gap: 0.875rem;
+}
+
+.logo-icon {
+  width: 48px;
+  height: 48px;
+  background: var(--primary);
+  border-radius: 14px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: white;
+  font-size: 1.4rem;
+  font-weight: 900;
+  box-shadow: 0 8px 20px rgba(232, 98, 10, 0.35);
+  flex-shrink: 0;
+}
+
+.logo-text-block {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.logo-title {
+  font-size: 1.4rem;
+  font-weight: 900;
+  color: white;
+
+}
+
+.logo-accent {
+  color: var(--primary);
+}
+
+.logo-subtitle {
+  font-size: 0.72rem;
+  color: var(--grey-400);
+
+  @media (min-width: 769px) {
+    color: rgba(255, 255, 255, 0.5);
+  }
+}
+
+// ── Carte ─────────────────────────────────────────────
+.login-card {
+  background: white;
+  border-radius: var(--r-xl);
+  padding: 1.75rem;
+  width: 100%;
+  box-shadow: var(--shadow-md);
+  display: flex;
+  flex-direction: column;
+  gap: 0.875rem;
+}
+
+.card-title {
+  font-size: 1rem;
+  font-weight: 800;
+  color: var(--grey-900);
+  margin-bottom: 0.25rem;
+}
+
+// ── Formulaire ────────────────────────────────────────
+.form-group {
+  display: flex;
+  flex-direction: column;
+  gap: 0.3rem;
+
+  label {
+    font-size: 0.72rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    color: var(--grey-700);
+  }
+}
+
+.input-wrapper {
+  position: relative;
+}
+
+.form-input {
+  width: 100%;
+  height: 38px;
+  border: 1.5px solid var(--grey-200);
+  border-radius: var(--r-sm);
+  padding: 0 2.5rem 0 0.75rem;
+  font-size: 0.8rem;
+  font-family: var(--font);
+  color: var(--grey-900);
+  background: white;
+  outline: none;
+  box-sizing: border-box;
+  transition: border-color 0.2s;
+
+  &:focus { border-color: var(--primary); }
+  &::placeholder { color: var(--grey-300, var(--grey-400)); }
+}
+
+.toggle-password {
+  position: absolute;
+  right: 0.625rem;
+  top: 50%;
+  transform: translateY(-50%);
+  background: none;
+  border: none;
+  cursor: pointer;
+  font-size: 0.9rem;
+  line-height: 1;
+  padding: 0;
+}
+
+// ── Mot de passe oublié ───────────────────────────────
+.forgot-password {
+  text-align: right;
+  margin-top: -0.25rem;
+
+  span {
+    font-size: 0.72rem;
+    color: var(--primary);
+    cursor: pointer;
+    transition: opacity 0.2s;
+
+    &:hover { opacity: 0.75; }
+  }
+}
+
+// ── Erreur ────────────────────────────────────────────
+.error-msg {
+  background: var(--danger-bg);
+  color: var(--danger-text);
+  font-size: 0.75rem;
+  font-weight: 600;
+  padding: 0.5rem 0.75rem;
+  border-radius: var(--r-sm);
+}
+
+// ── Bouton ────────────────────────────────────────────
+.btn-login {
+  width: 100%;
+  height: 40px;
+  background: var(--primary);
+  color: white;
+  border: none;
+  border-radius: var(--r-md);
+  font-size: 0.875rem;
+  font-weight: 700;
+  font-family: var(--font);
+  cursor: pointer;
+  transition: opacity 0.2s;
+  margin-top: 0.25rem;
+
+  &:hover:not(:disabled) { opacity: 0.88; }
+  &:disabled { opacity: 0.6; cursor: default; }
+}

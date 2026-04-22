@@ -26,7 +26,6 @@ des étudiants, stagiaires et intervenants de MNS.
 
 - Angular 
 - TypeScript 
-- Tailwind CSS 
 - PrimeNG 
 - Node.js 
 - npm 

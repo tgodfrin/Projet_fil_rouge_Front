@@ -1,0 +1,293 @@
+.loan-page {
+  padding: 2rem;
+  display: flex;
+  flex-direction: column;
+  gap: 1.25rem;
+
+  @media (max-width: 768px) {
+    padding: 1rem;
+  }
+}
+
+// ── En-tête ───────────────────────────────────────────
+.page-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 0.75rem;
+}
+
+.page-title {
+  font-size: 1.4rem;
+  font-weight: 700;
+  color: var(--grey-900);
+
+  @media (max-width: 768px) {
+    font-size: 1.2rem;
+  }
+}
+
+.header-actions {
+  display: flex;
+  gap: 0.5rem;
+  align-items: center;
+  flex-wrap: wrap;
+
+  @media (max-width: 480px) {
+    width: 100%;
+  }
+}
+
+.filter-select {
+  height: 34px;
+  padding: 0 0.75rem;
+  border: 1px solid var(--grey-200);
+  border-radius: var(--r-sm);
+  font-size: 0.8rem;
+  color: var(--grey-700);
+  background: white;
+  cursor: pointer;
+
+  &:focus { outline: none; border-color: var(--primary); }
+
+  @media (max-width: 480px) {
+    flex: 1;
+  }
+}
+
+.btn-export {
+  height: 34px;
+  padding: 0 1rem;
+  background: white;
+  border: 1px solid var(--grey-200);
+  border-radius: var(--r-sm);
+  font-size: 0.8rem;
+  color: var(--grey-700);
+  cursor: pointer;
+  transition: all 0.2s;
+  white-space: nowrap;
+
+  &:hover { border-color: var(--primary); color: var(--primary); }
+
+  @media (max-width: 480px) {
+    width: 100%;
+  }
+}
+
+// ── Section label ─────────────────────────────────────
+.section-label {
+  font-size: 0.7rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: var(--grey-400);
+}
+
+// ── Cartes à valider ──────────────────────────────────
+.cards-list {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 0.75rem;
+
+  @media (max-width: 640px) {
+    grid-template-columns: 1fr;
+  }
+}
+
+.emprunt-card {
+  background: white;
+  border: 1px solid var(--grey-200);
+  border-radius: var(--r-md);
+  padding: 0.75rem;
+  box-shadow: var(--shadow-sm);
+}
+
+.card-top {
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+}
+
+.avatar {
+  width: 30px;
+  height: 30px;
+  border-radius: 6px;
+  background: var(--primary-xlight);
+  color: var(--primary);
+  font-size: 0.7rem;
+  font-weight: 700;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+.card-info {
+  flex: 1;
+  min-width: 0;
+}
+
+.card-title {
+  font-size: 0.8rem;
+  font-weight: 600;
+  color: var(--grey-900);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.card-dates {
+  font-size: 0.7rem;
+  color: var(--grey-400);
+  margin-top: 0.1rem;
+}
+
+.card-comment {
+  font-size: 0.75rem;
+  color: var(--grey-700);
+  background: var(--grey-50);
+  border-left: 3px solid var(--primary);
+  border-radius: var(--r-sm);
+  padding: 0.4rem 0.6rem;
+  margin-top: 0.6rem;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.card-actions {
+  display: flex;
+  gap: 0.4rem;
+  margin-top: 0.6rem;
+}
+
+// ── Boutons ───────────────────────────────────────────
+.btn-validate,
+.btn-refuse,
+.btn-ghost,
+.btn-return {
+  flex: 1;
+  height: 28px;
+  border: none;
+  border-radius: var(--r-sm);
+  font-size: 0.75rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition: opacity 0.2s;
+
+  &:hover { opacity: 0.8; }
+}
+
+.btn-validate {
+  background: var(--success-bg);
+  color: var(--success-text);
+}
+
+.btn-refuse {
+  background: var(--danger-bg);
+  color: var(--danger-text);
+}
+
+.btn-ghost {
+  flex: 0;
+  padding: 0 0.6rem;
+  background: var(--grey-100);
+  color: var(--grey-700);
+}
+
+.btn-return {
+  flex: 0;
+  padding: 0 0.6rem;
+  background: var(--info-bg);
+  color: var(--info-text);
+  font-weight: 600;
+}
+
+.rendu-label {
+  color: var(--grey-300);
+  font-size: 0.85rem;
+}
+
+// ── Tableau en cours ──────────────────────────────────
+.table-wrapper {
+  overflow-x: auto;
+  border-radius: var(--r-lg);
+  border: 1px solid var(--grey-200);
+  box-shadow: var(--shadow-sm);
+}
+
+.loan-table {
+  width: 100%;
+  min-width: 560px;
+  border-collapse: collapse;
+  background: white;
+
+  thead tr {
+    background: var(--grey-50);
+    border-bottom: 1px solid var(--grey-200);
+  }
+
+  th {
+    padding: 0.75rem 1rem;
+    text-align: left;
+    font-size: 0.7rem;
+    font-weight: 600;
+    color: var(--grey-500);
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    white-space: nowrap;
+  }
+
+  tbody tr {
+    border-bottom: 1px solid var(--grey-100);
+    transition: background 0.15s;
+
+    &:hover { background: var(--grey-50); }
+    &:last-child { border-bottom: none; }
+  }
+
+  td {
+    padding: 0.875rem 1rem;
+    font-size: 0.875rem;
+    color: var(--grey-700);
+    white-space: nowrap;
+  }
+}
+
+.cell-main {
+  font-weight: 600;
+  color: var(--grey-900);
+}
+
+.retard {
+  color: var(--danger-text);
+  font-weight: 600;
+}
+
+// ── Badges ────────────────────────────────────────────
+.badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.3rem;
+  padding: 0.2rem 0.6rem;
+  border-radius: 999px;
+  font-size: 0.72rem;
+  font-weight: 600;
+
+  &.badge-warning { background: var(--warning-bg); color: var(--warning-text); }
+  &.badge-success { background: var(--success-bg); color: var(--success-text); }
+  &.badge-danger  { background: var(--danger-bg);  color: var(--danger-text);  }
+  &.badge-neutral { background: var(--grey-100);   color: var(--grey-500);     }
+}
+
+// ── État vide ─────────────────────────────────────────
+.empty-state {
+  padding: 2rem;
+  text-align: center;
+  color: var(--grey-400);
+  font-size: 0.875rem;
+  background: white;
+  border-radius: var(--r-lg);
+  box-shadow: var(--shadow-sm);
+}

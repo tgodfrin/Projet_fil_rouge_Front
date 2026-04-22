@@ -1,0 +1,164 @@
+<div class="user-create">
+
+  <!-- EN-TÊTE -->
+  <div class="page-header">
+    <button class="btn btn-retour" type="button" (click)="retour()">← Retour</button>
+  </div>
+
+  <!-- TITRE -->
+  <div class="section-title">
+    <div class="title-icon">👤</div>
+    <div>
+      <div class="title-main">Nouvel utilisateur</div>
+      <div class="title-sub">Remplissez les informations pour créer un compte.</div>
+    </div>
+  </div>
+
+  <!-- FORMULAIRE -->
+  <form class="form-card" [formGroup]="form" (ngSubmit)="onSubmit()" novalidate>
+
+    <!-- Identité -->
+    <div class="form-section">
+      <div class="form-section-title">Identité</div>
+      <div class="form-row">
+
+        <div class="form-group">
+          <label class="form-label" for="firstName">Prénom <span class="required">*</span></label>
+          <input
+            id="firstName"
+            class="form-input"
+            [class.error]="hasError('firstName', 'required') || hasError('firstName', 'minlength')"
+            type="text"
+            placeholder="Julie"
+            formControlName="firstName"
+          />
+          @if (hasError('firstName', 'required')) {
+            <span class="form-error">Le prénom est requis.</span>
+          } @else if (hasError('firstName', 'minlength')) {
+            <span class="form-error">Minimum 2 caractères.</span>
+          }
+        </div>
+
+        <div class="form-group">
+          <label class="form-label" for="lastName">Nom <span class="required">*</span></label>
+          <input
+            id="lastName"
+            class="form-input"
+            [class.error]="hasError('lastName', 'required') || hasError('lastName', 'minlength')"
+            type="text"
+            placeholder="Fontaine"
+            formControlName="lastName"
+          />
+          @if (hasError('lastName', 'required')) {
+            <span class="form-error">Le nom est requis.</span>
+          } @else if (hasError('lastName', 'minlength')) {
+            <span class="form-error">Minimum 2 caractères.</span>
+          }
+        </div>
+
+      </div>
+    </div>
+
+    <!-- Contact -->
+    <div class="form-section">
+      <div class="form-section-title">Contact</div>
+      <div class="form-row">
+
+        <div class="form-group">
+          <label class="form-label" for="email">Email <span class="required">*</span></label>
+          <input
+            id="email"
+            class="form-input"
+            [class.error]="hasError('email', 'required') || hasError('email', 'email')"
+            type="email"
+            placeholder="julie.fontaine@mns.fr"
+            formControlName="email"
+          />
+          @if (hasError('email', 'required')) {
+            <span class="form-error">L'email est requis.</span>
+          } @else if (hasError('email', 'email')) {
+            <span class="form-error">Format email invalide.</span>
+          }
+        </div>
+
+      </div>
+    </div>
+
+    <!-- Rôle -->
+    <div class="form-section">
+      <div class="form-section-title">Rôle</div>
+      <div class="form-row form-row-single">
+
+        <div class="form-group">
+          <label class="form-label" for="role">Rôle <span class="required">*</span></label>
+          <select id="role" class="form-input form-select" formControlName="role">
+            @for (r of roles; track r.value) {
+              <option [value]="r.value">{{ r.label }}</option>
+            }
+          </select>
+        </div>
+
+      </div>
+    </div>
+
+    <!-- Mot de passe -->
+    <div class="form-section">
+      <div class="form-section-title">Mot de passe temporaire</div>
+      <div class="form-row">
+
+        <div class="form-group">
+          <label class="form-label" for="password">Mot de passe <span class="required">*</span></label>
+          <div class="input-password">
+            <input
+              id="password"
+              class="form-input"
+              [class.error]="hasError('password', 'required') || hasError('password', 'minlength')"
+              [type]="showPwd() ? 'text' : 'password'"
+              placeholder="Min. 8 caractères"
+              formControlName="password"
+            />
+            <button type="button" class="toggle-pwd" (click)="showPwd.set(!showPwd())">
+              {{ showPwd() ? '🙈' : '👁️' }}
+            </button>
+          </div>
+          @if (hasError('password', 'required')) {
+            <span class="form-error">Le mot de passe est requis.</span>
+          } @else if (hasError('password', 'minlength')) {
+            <span class="form-error">Minimum 8 caractères.</span>
+          }
+        </div>
+
+        <div class="form-group">
+          <label class="form-label" for="confirmPassword">Confirmer <span class="required">*</span></label>
+          <div class="input-password">
+            <input
+              id="confirmPassword"
+              class="form-input"
+              [class.error]="hasError('confirmPassword', 'required') || hasError('confirmPassword', 'mismatch')"
+              [type]="showPwdCfm() ? 'text' : 'password'"
+              placeholder="Répéter le mot de passe"
+              formControlName="confirmPassword"
+            />
+            <button type="button" class="toggle-pwd" (click)="showPwdCfm.set(!showPwdCfm())">
+              {{ showPwdCfm() ? '🙈' : '👁️' }}
+            </button>
+          </div>
+          @if (hasError('confirmPassword', 'required')) {
+            <span class="form-error">La confirmation est requise.</span>
+          } @else if (hasError('confirmPassword', 'mismatch')) {
+            <span class="form-error">Les mots de passe ne correspondent pas.</span>
+          }
+        </div>
+
+      </div>
+    </div>
+
+    <!-- Actions -->
+    <div class="form-actions">
+      <button type="button" class="btn btn-cancel" (click)="retour()">Annuler</button>
+      <button type="submit" class="btn btn-submit">Créer l'utilisateur</button>
+    </div>
+
+  </form>
+
+</div>

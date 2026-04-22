@@ -1,0 +1,115 @@
+<div class="equipment">
+
+  <div class="page-header">
+    <div class="page-title">Équipements</div>
+    <div class="header-actions">
+      <app-export [data]="equipementsExport" filename="equipements"></app-export>
+      <button class="btn btn-primary" (click)="ouvrirModal()">+ Ajouter</button>
+    </div>
+  </div>
+
+  <div class="search-bar">
+    <input
+      class="search-input"
+      type="text"
+      placeholder="Rechercher un matériel..."
+      [(ngModel)]="recherche"
+      (ngModelChange)="onFiltreChange()"
+    />
+    <select
+      class="filter-select"
+      [(ngModel)]="familles"
+      (ngModelChange)="onFiltreChange()">
+      @for (f of famillesDisponibles; track f) {
+        <option [value]="f">{{ f === 'toutes' ? 'Toutes familles' : f }}</option>
+      }
+    </select>
+  </div>
+
+  <div class="badges-row">
+    <span class="badge b-neutral"  [class.active]="filtreActif === 'tous'"         (click)="filtreActif = 'tous'; onFiltreChange()">Tous ({{ totalTous }})</span>
+    <span class="badge b-success"  [class.active]="filtreActif === 'DISPONIBLE'"   (click)="filtreActif = 'DISPONIBLE'; onFiltreChange()">Disponible ({{ totalDisponibles }})</span>
+    <span class="badge b-warning"  [class.active]="filtreActif === 'EN_PRET'"      (click)="filtreActif = 'EN_PRET'; onFiltreChange()">En prêt ({{ totalEnPret }})</span>
+    <span class="badge b-danger"   [class.active]="filtreActif === 'OUT_OF_SERVICE'" (click)="filtreActif = 'OUT_OF_SERVICE'; onFiltreChange()">Hors service ({{ totalHorsService }})</span>
+  </div>
+
+  <div class="table-wrapper">
+    <div class="table">
+
+      <div class="table-head">
+        <div class="th">Matériel</div>
+        <div class="th">Famille</div>
+        <div class="th">Localisation</div>
+        <div class="th">Statut</div>
+        <div class="th"></div>
+      </div>
+
+      @for (eq of equipementsPagines; track eq.reference) {
+        <div class="table-row">
+          <div>
+            <div class="td-main">{{ eq.nom }}</div>
+            <div class="td-muted">{{ eq.reference }}</div>
+          </div>
+          <div class="td-muted">{{ eq.famille }}</div>
+          <div class="td-muted">{{ eq.localisation }}</div>
+          <div>
+            <span class="badge"
+              [class.b-success]="eq.statut === 'DISPONIBLE'"
+              [class.b-warning]="eq.statut === 'EN_PRET'"
+              [class.b-danger]="eq.statut === 'OUT_OF_SERVICE' || eq.statut === 'UNDER_REPAIR'">
+              <span class="badge-dot"></span>
+              {{ getStatutLabel(eq.statut) }}
+            </span>
+          </div>
+          <div>
+            <button class="btn btn-ghost btn-sm" (click)="navigateToDetail(eq.id)">Voir</button>
+          </div>
+        </div>
+      }
+
+      @if (equipementsFiltres.length === 0) {
+        <div class="empty-state">Aucun équipement trouvé.</div>
+      }
+
+    </div>
+  </div>
+
+  <!-- PAGINATION -->
+  @if (totalPages > 1) {
+    <div class="pagination">
+      <span class="pagination-info">
+        {{ debutIndex }} à {{ finIndex }} sur {{ equipementsFiltres.length }}
+      </span>
+      <div class="pagination-controls">
+        <button
+          class="page-btn"
+          [disabled]="pageCourante === 1"
+          (click)="setPage(pageCourante - 1)">
+          Préc.
+        </button>
+        @for (page of pages; track page) {
+          <button
+            class="page-btn"
+            [class.active]="page === pageCourante"
+            (click)="setPage(page)">
+            {{ page }}
+          </button>
+        }
+        <button
+          class="page-btn"
+          [disabled]="pageCourante === totalPages"
+          (click)="setPage(pageCourante + 1)">
+          Suiv.
+        </button>
+      </div>
+    </div>
+  }
+
+</div>
+
+@if (modalOuvert) {
+  <app-equipment-form
+    (fermer)="fermerModal()"
+    (ajouter)="onAjouter($event)">
+  </app-equipment-form>
+}
