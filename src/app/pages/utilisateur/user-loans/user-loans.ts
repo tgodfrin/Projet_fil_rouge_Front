@@ -2,15 +2,7 @@ import { Component, signal, computed, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { ReactiveFormsModule, FormBuilder, Validators } from '@angular/forms';
 import { RouterLink } from '@angular/router';
-
-interface Loan {
-  id: number;
-  equipmentName: string;
-  categoryIcon: string;
-  startDate: string;
-  endDate: string;
-  status: 'VALID' | 'IN_PROGRESS' | 'HISTORIQUE' | 'RETARD' | 'TERMINE' | 'INVALID';
-}
+import { UserLoan } from '../../../core/models/loan.model';
 
 @Component({
   selector: 'app-user-loans',
@@ -23,7 +15,7 @@ export class UserLoansComponent {
   private fb = inject(FormBuilder);
 
   // ── Données mock ───────────────────────────────────────
-  private loans: Loan[] = [
+  private loans: UserLoan[] = [
     {
       id: 1,
       equipmentName: 'MacBook Pro 14"',
@@ -117,7 +109,7 @@ export class UserLoansComponent {
     return `${fmt(start)} → ${fmt(end)}`;
   }
 
-  getProgressPercent(loan: Loan): number {
+  getProgressPercent(loan: UserLoan): number {
     const start = new Date(loan.startDate).getTime();
     const end   = new Date(loan.endDate).getTime();
     const now   = Date.now();
@@ -126,7 +118,7 @@ export class UserLoansComponent {
     return Math.round(((now - start) / (end - start)) * 100);
   }
 
-  getDaysLeft(loan: Loan): number {
+  getDaysLeft(loan: UserLoan): number {
     const end = new Date(loan.endDate).getTime();
     const diff = end - Date.now();
     return Math.max(0, Math.ceil(diff / (1000 * 60 * 60 * 24)));
@@ -164,7 +156,7 @@ export class UserLoansComponent {
     this.prolongForm.reset();
   }
 
-  submitReturn(loan: Loan) {
+  submitReturn(loan: UserLoan) {
     if (this.returnForm.invalid) {
       this.returnForm.markAllAsTouched();
       return;
@@ -174,7 +166,7 @@ export class UserLoansComponent {
     this.closeForm();
   }
 
-  submitProlong(loan: Loan) {
+  submitProlong(loan: UserLoan) {
     if (this.prolongForm.invalid) {
       this.prolongForm.markAllAsTouched();
       return;

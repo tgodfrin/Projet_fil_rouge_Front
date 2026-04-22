@@ -1,14 +1,7 @@
 import { Component, computed, signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { RouterLink } from '@angular/router';
-
-export interface UserLoan {
-  id: number;
-  equipmentName: string;
-  category: string;
-  startDate: string;
-  endDate: string;
-}
+import { UserLoan } from '../../../core/models/loan.model';
 
 @Component({
   selector: 'app-user-home',
@@ -26,14 +19,16 @@ export class UserHomeComponent {
       equipmentName: 'MacBook Pro M3',
       category: 'PC',
       startDate: '2026-04-10',
-      endDate: '2026-04-17'
+      endDate: '2026-04-17',
+      status: 'VALID'
     },
     {
       id: 2,
       equipmentName: 'Pc Asus ROG',
       category: 'PC',
       startDate: '2026-04-03',
-      endDate: '2026-04-30'
+      endDate: '2026-04-30',
+      status: 'VALID'
     }
   ]);
 

@@ -1,18 +1,7 @@
 import { Component, signal, computed, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { Router, RouterLink } from '@angular/router';
-
-
-export type EquipmentStatus = 'DISPONIBLE' | 'EN_PRET' | 'OUT_OF_SERVICE' | 'UNDER_REPAIR';
-export type EquipmentCategory = 'PC' | 'VR' | 'Tablette' | 'Écran' | 'Périphérique';
-
-export interface CatalogueItem {
-  id: number;
-  name: string;
-  ref: string;
-  category: EquipmentCategory;
-  status: EquipmentStatus;
-}
+import { CatalogueItem, EquipmentStatus, EquipmentCategory } from '../../../core/models/equipment.model';
 
 @Component({
   selector: 'app-user-catalogue',

@@ -2,6 +2,7 @@ export type AlertType = 'RETARD' | 'PANNE';
 
 export interface Alert {
   id: number;
+  loanId: number;
   type: AlertType;
   equipmentName: string;
   borrowerName: string;
