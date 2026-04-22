@@ -47,7 +47,6 @@ export class UserCreateComponent {
     firstName:       ['', [Validators.required, Validators.minLength(2)]],
     lastName:        ['', [Validators.required, Validators.minLength(2)]],
     email:           ['', [Validators.required, Validators.email]],
-    phone:           ['', [Validators.pattern(/^[0-9\s\+\-\.]{10,15}$/)]],
     role:            ['COLLABORATEUR' as UserRole, Validators.required],
     password:        ['', [Validators.required, Validators.minLength(8)]],
     confirmPassword: ['', Validators.required],

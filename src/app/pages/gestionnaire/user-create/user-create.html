@@ -81,21 +81,6 @@
           }
         </div>
 
-        <div class="form-group">
-          <label class="form-label" for="phone">Téléphone <span class="optional">(optionnel)</span></label>
-          <input
-            id="phone"
-            class="form-input"
-            [class.error]="hasError('phone', 'pattern')"
-            type="tel"
-            placeholder="06 12 34 56 78"
-            formControlName="phone"
-          />
-          @if (hasError('phone', 'pattern')) {
-            <span class="form-error">Format téléphone invalide.</span>
-          }
-        </div>
-
       </div>
     </div>
 

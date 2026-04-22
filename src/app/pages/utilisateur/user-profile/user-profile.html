@@ -23,18 +23,34 @@
   <div class="section-label">Informations</div>
   <div class="info-card">
 
-    <!-- Email -->
-    <div class="info-row" [class.active]="activeEdit() === 'email'">
+    <!-- Email (lecture seule) -->
+    <div class="info-row">
       <span class="info-key">Email</span>
-      <div class="info-row-right">
-        <span class="info-val">{{ profile().email }}</span>
-        <button class="btn-edit" (click)="toggleEdit('email')">
-          {{ activeEdit() === 'email' ? 'Annuler' : 'Modifier' }}
-        </button>
-      </div>
+      <span class="info-val">{{ profile().email }}</span>
     </div>
+
+    <!-- Rôle & membre depuis (non modifiables) -->
+    <div class="info-row">
+      <span class="info-key">Rôle</span>
+      <span class="info-val">{{ profile().role }}</span>
+    </div>
+    <div class="info-row">
+      <span class="info-key">Membre depuis</span>
+      <span class="info-val">{{ formatDate(profile().memberSince) }}</span>
+    </div>
+
+  </div>
+
+  <!-- Actions -->
+  <div class="section-label">Compte</div>
+  <div class="actions-card">
+
+    <button class="action-row" (click)="toggleEdit('email')">
+      <span>✉️ Modifier l'email</span>
+      <span class="arrow">{{ activeEdit() === 'email' ? '˅' : '›' }}</span>
+    </button>
     @if (activeEdit() === 'email') {
-      <form class="edit-form" [formGroup]="emailForm" (ngSubmit)="submitEmail()">
+      <form class="edit-form edit-form-incard" [formGroup]="emailForm" (ngSubmit)="submitEmail()">
         <div class="form-group">
           <label>Nouvel email</label>
           <input type="email" class="form-input" formControlName="newEmail" placeholder="nouveau@email.fr" />
@@ -58,54 +74,12 @@
         @if (successMessage()) {
           <div class="msg msg-success">{{ successMessage() }}</div>
         }
-        <button class="btn-save" type="submit">Enregistrer</button>
-      </form>
-    }
-
-    <!-- Téléphone -->
-    <div class="info-row" [class.active]="activeEdit() === 'phone'">
-      <span class="info-key">Téléphone</span>
-      <div class="info-row-right">
-        <span class="info-val">{{ profile().phone }}</span>
-        <button class="btn-edit" (click)="toggleEdit('phone')">
-          {{ activeEdit() === 'phone' ? 'Annuler' : 'Modifier' }}
-        </button>
-      </div>
-    </div>
-    @if (activeEdit() === 'phone') {
-      <form class="edit-form" [formGroup]="phoneForm" (ngSubmit)="submitPhone()">
-        <div class="form-group">
-          <label>Nouveau numéro</label>
-          <input type="tel" class="form-input" formControlName="newPhone" placeholder="06 00 00 00 00" />
-          @if (phoneForm.get('newPhone')?.invalid && phoneForm.get('newPhone')?.touched) {
-            <small class="form-error">
-              @if (phoneForm.get('newPhone')?.hasError('required')) { Le numéro est requis. }
-              @else if (phoneForm.get('newPhone')?.hasError('pattern')) { Format invalide (ex: 06 12 34 56 78). }
-            </small>
-          }
+        <div class="form-actions">
+          <button class="btn-save" type="submit">Enregistrer</button>
+          <button class="btn-cancel" type="button" (click)="closeEdit()">Annuler</button>
         </div>
-        @if (successMessage()) {
-          <div class="msg msg-success">{{ successMessage() }}</div>
-        }
-        <button class="btn-save" type="submit">Enregistrer</button>
       </form>
     }
-
-    <!-- Rôle & membre depuis (non modifiables) -->
-    <div class="info-row">
-      <span class="info-key">Rôle</span>
-      <span class="info-val">{{ profile().role }}</span>
-    </div>
-    <div class="info-row">
-      <span class="info-key">Membre depuis</span>
-      <span class="info-val">{{ formatDate(profile().memberSince) }}</span>
-    </div>
-
-  </div>
-
-  <!-- Actions -->
-  <div class="section-label">Compte</div>
-  <div class="actions-card">
 
     <button class="action-row" (click)="toggleEdit('password')">
       <span>🔑 Changer le mot de passe</span>

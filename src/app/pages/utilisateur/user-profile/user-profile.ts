@@ -6,7 +6,6 @@ interface UserProfile {
   firstName: string;
   lastName: string;
   email: string;
-  phone: string;
   role: string;
   initials: string;
   memberSince: string;
@@ -26,7 +25,6 @@ export class UserProfileComponent {
     firstName: 'Julie',
     lastName: 'Fontaine',
     email: 'julie.fontaine@mns.fr',
-    phone: '06 12 34 56 78',
     role: 'Collaboratrice',
     initials: 'JF',
     memberSince: '2024-09-03'
@@ -39,7 +37,7 @@ export class UserProfileComponent {
   ]);
 
   // ── Formulaires inline ─────────────────────────────────
-  activeEdit    = signal<'email' | 'phone' | 'password' | null>(null);
+  activeEdit    = signal<'email' | 'password' | null>(null);
   successMessage = signal<string | null>(null);
   errorMessage   = signal<string | null>(null);
 
@@ -66,23 +64,18 @@ export class UserProfileComponent {
     confirmEmail: ['', [Validators.required, Validators.email]]
   }, { validators: this.matchValidator('newEmail', 'confirmEmail') });
 
-  phoneForm = this.fb.group({
-    newPhone: ['', [Validators.required, Validators.pattern(/^[0-9\s\+\-\.]{10,15}$/)]]
-  });
-
   passwordForm = this.fb.group({
     currentPassword: ['', Validators.required],
     newPassword:     ['', [Validators.required, Validators.minLength(8)]],
     confirmPassword: ['', Validators.required]
   }, { validators: this.matchValidator('newPassword', 'confirmPassword') });
 
-  toggleEdit(field: 'email' | 'phone' | 'password') {
+  toggleEdit(field: 'email' | 'password') {
     if (this.activeEdit() === field) {
       this.closeEdit();
     } else {
       this.activeEdit.set(field);
       this.emailForm.reset();
-      this.phoneForm.reset();
       this.passwordForm.reset();
       this.clearMessages();
     }
@@ -91,7 +84,6 @@ export class UserProfileComponent {
   closeEdit() {
     this.activeEdit.set(null);
     this.emailForm.reset();
-    this.phoneForm.reset();
     this.passwordForm.reset();
     this.clearMessages();
   }
@@ -109,17 +101,6 @@ export class UserProfileComponent {
     const { newEmail } = this.emailForm.value;
     this.profile.update(p => ({ ...p, email: newEmail! }));
     this.successMessage.set('Email mis à jour.');
-    setTimeout(() => this.closeEdit(), 1500);
-  }
-
-  submitPhone() {
-    if (this.phoneForm.invalid) {
-      this.phoneForm.markAllAsTouched();
-      return;
-    }
-    const { newPhone } = this.phoneForm.value;
-    this.profile.update(p => ({ ...p, phone: newPhone! }));
-    this.successMessage.set('Téléphone mis à jour.');
     setTimeout(() => this.closeEdit(), 1500);
   }
 

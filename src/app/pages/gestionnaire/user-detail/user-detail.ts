@@ -9,7 +9,6 @@ export interface UserDetail {
   firstName: string;
   lastName: string;
   email: string;
-  phone: string;
   role: UserRole;
   createdAt: string;
 }
@@ -24,12 +23,12 @@ export interface UserLoan {
 }
 
 const MOCK_USERS: Record<number, UserDetail> = {
-  1: { id: 1, firstName: 'John',   lastName: 'Doe',      email: 'john.doe@mns.fr',      phone: '06 10 00 00 01', role: 'GESTIONNAIRE',  createdAt: '2024-09-01' },
-  2: { id: 2, firstName: 'Julie',  lastName: 'Fontaine', email: 'julie.fontaine@mns.fr', phone: '06 10 00 00 02', role: 'COLLABORATEUR', createdAt: '2024-09-03' },
-  3: { id: 3, firstName: 'Kevin',  lastName: 'Leclerc',  email: 'kevin.leclerc@mns.fr',  phone: '06 10 00 00 03', role: 'STAGIAIRE',     createdAt: '2024-09-03' },
-  4: { id: 4, firstName: 'Sophie', lastName: 'Renard',   email: 'sophie.renard@mns.fr',  phone: '06 10 00 00 04', role: 'INTERVENANT',   createdAt: '2024-09-05' },
-  5: { id: 5, firstName: 'Marc',   lastName: 'Durand',   email: 'marc.durand@mns.fr',    phone: '06 10 00 00 05', role: 'STAGIAIRE',     createdAt: '2024-09-05' },
-  6: { id: 6, firstName: 'Alice',  lastName: 'Martin',   email: 'alice.martin@mns.fr',   phone: '06 10 00 00 06', role: 'COLLABORATEUR', createdAt: '2024-09-06' },
+  1: { id: 1, firstName: 'John',   lastName: 'Doe',      email: 'john.doe@mns.fr',      role: 'GESTIONNAIRE',  createdAt: '2024-09-01' },
+  2: { id: 2, firstName: 'Julie',  lastName: 'Fontaine', email: 'julie.fontaine@mns.fr', role: 'COLLABORATEUR', createdAt: '2024-09-03' },
+  3: { id: 3, firstName: 'Kevin',  lastName: 'Leclerc',  email: 'kevin.leclerc@mns.fr',  role: 'STAGIAIRE',     createdAt: '2024-09-03' },
+  4: { id: 4, firstName: 'Sophie', lastName: 'Renard',   email: 'sophie.renard@mns.fr',  role: 'INTERVENANT',   createdAt: '2024-09-05' },
+  5: { id: 5, firstName: 'Marc',   lastName: 'Durand',   email: 'marc.durand@mns.fr',    role: 'STAGIAIRE',     createdAt: '2024-09-05' },
+  6: { id: 6, firstName: 'Alice',  lastName: 'Martin',   email: 'alice.martin@mns.fr',   role: 'COLLABORATEUR', createdAt: '2024-09-06' },
 };
 
 const MOCK_LOANS: Record<number, UserLoan[]> = {
