@@ -9,7 +9,6 @@ export interface Loan {
   startDate: string;
   endDate: string;
   status: LoanStatus;
-  comment?: string;
 }
 
 // ── Vue utilisateur ───────────────────────────────────

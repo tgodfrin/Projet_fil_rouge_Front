@@ -47,13 +47,11 @@ export class UserLoanRequestComponent {
   form = this.fb.group({
     startDate: ['', Validators.required],
     endDate:   ['', Validators.required],
-    motif:     ['', [Validators.required, Validators.minLength(5)]]
   });
 
   // ── Accesseurs FormControl ─────────────────────────────
   get startDateCtrl() { return this.form.get('startDate')!; }
   get endDateCtrl()   { return this.form.get('endDate')!;   }
-  get motifCtrl()     { return this.form.get('motif')!;     }
 
   // ── Valeurs calculées depuis le formulaire ─────────────
   get duration(): number {

@@ -6,8 +6,8 @@ import { LoanStatus } from '../../../core/models/loan.model';
 
 export interface UserDetail {
   id: number;
-  firstName: string;
-  lastName: string;
+  name: string;
+  lastname: string;
   email: string;
   role: UserRole;
   createdAt: string;
@@ -23,12 +23,12 @@ export interface UserDetailLoan {
 }
 
 const MOCK_USERS: Record<number, UserDetail> = {
-  1: { id: 1, firstName: 'John',   lastName: 'Doe',      email: 'john.doe@mns.fr',      role: 'GESTIONNAIRE',  createdAt: '2024-09-01' },
-  2: { id: 2, firstName: 'Julie',  lastName: 'Fontaine', email: 'julie.fontaine@mns.fr', role: 'COLLABORATEUR', createdAt: '2024-09-03' },
-  3: { id: 3, firstName: 'Kevin',  lastName: 'Leclerc',  email: 'kevin.leclerc@mns.fr',  role: 'STAGIAIRE',     createdAt: '2024-09-03' },
-  4: { id: 4, firstName: 'Sophie', lastName: 'Renard',   email: 'sophie.renard@mns.fr',  role: 'INTERVENANT',   createdAt: '2024-09-05' },
-  5: { id: 5, firstName: 'Marc',   lastName: 'Durand',   email: 'marc.durand@mns.fr',    role: 'STAGIAIRE',     createdAt: '2024-09-05' },
-  6: { id: 6, firstName: 'Alice',  lastName: 'Martin',   email: 'alice.martin@mns.fr',   role: 'COLLABORATEUR', createdAt: '2024-09-06' },
+  1: { id: 1, name: 'John',   lastname: 'Doe',      email: 'john.doe@mns.fr',      role: 'GESTIONNAIRE',  createdAt: '2024-09-01' },
+  2: { id: 2, name: 'Julie',  lastname: 'Fontaine', email: 'julie.fontaine@mns.fr', role: 'COLLABORATEUR', createdAt: '2024-09-03' },
+  3: { id: 3, name: 'Kevin',  lastname: 'Leclerc',  email: 'kevin.leclerc@mns.fr',  role: 'STAGIAIRE',     createdAt: '2024-09-03' },
+  4: { id: 4, name: 'Sophie', lastname: 'Renard',   email: 'sophie.renard@mns.fr',  role: 'INTERVENANT',   createdAt: '2024-09-05' },
+  5: { id: 5, name: 'Marc',   lastname: 'Durand',   email: 'marc.durand@mns.fr',    role: 'STAGIAIRE',     createdAt: '2024-09-05' },
+  6: { id: 6, name: 'Alice',  lastname: 'Martin',   email: 'alice.martin@mns.fr',   role: 'COLLABORATEUR', createdAt: '2024-09-06' },
 };
 
 const MOCK_LOANS: Record<number, UserDetailLoan[]> = {
@@ -94,7 +94,7 @@ export class UserDetailComponent implements OnInit {
   }
 
   getInitials(user: UserDetail): string {
-    return user.firstName[0] + user.lastName[0];
+    return user.name[0] + user.lastname[0];
   }
 
   getRoleLabel(role: UserRole): string {

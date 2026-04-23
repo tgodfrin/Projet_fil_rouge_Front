@@ -1,4 +1,4 @@
-export type IncidentType = 'PANNE' | 'RETOUR_ANTICIPE' | 'PROLONGATION';
+export type IncidentType = 'BREAKDOWN' | 'EARLY_RETURN' | 'EXTENSION';
 
 export interface IncidentOption {
   type: IncidentType;

@@ -2,8 +2,8 @@ export type UserRole = 'GESTIONNAIRE' | 'COLLABORATEUR' | 'INTERVENANT' | 'STAGI
 
 export interface User {
   id: number;
-  firstName: string;
-  lastName: string;
+  name: string;
+  lastname: string;
   email: string;
   role: UserRole;
   activeLoans: number;
@@ -11,8 +11,8 @@ export interface User {
 }
 
 export interface UserProfile {
-  firstName: string;
-  lastName: string;
+  name: string;
+  lastname: string;
   email: string;
   role: string;
   initials: string;

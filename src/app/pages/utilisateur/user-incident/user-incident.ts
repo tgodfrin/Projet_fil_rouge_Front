@@ -44,9 +44,9 @@ export class UserIncidentComponent {
   });
 
   incidentOptions: IncidentOption[] = [
-    { type: 'PANNE',           label: 'Panne',           icon: '🔴' },
-    { type: 'RETOUR_ANTICIPE', label: 'Retour anticipé', icon: '↩️' },
-    { type: 'PROLONGATION',    label: 'Prolongation',    icon: '📅' },
+    { type: 'BREAKDOWN',   label: 'Panne',           icon: '🔴' },
+    { type: 'EARLY_RETURN', label: 'Retour anticipé', icon: '↩️' },
+    { type: 'EXTENSION',   label: 'Prolongation',    icon: '📅' },
   ];
 
   selectedType = signal<IncidentType | null>(null);

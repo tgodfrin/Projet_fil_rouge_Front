@@ -3,8 +3,8 @@ import { CommonModule } from '@angular/common';
 import { ReactiveFormsModule, FormBuilder, Validators, AbstractControl, ValidationErrors } from '@angular/forms';
 
 interface UserProfile {
-  firstName: string;
-  lastName: string;
+  name: string;
+  lastname: string;
   email: string;
   role: string;
   initials: string;
@@ -22,8 +22,8 @@ export class UserProfileComponent {
   private fb = inject(FormBuilder);
 
   profile = signal<UserProfile>({
-    firstName: 'Julie',
-    lastName: 'Fontaine',
+    name: 'Julie',
+    lastname: 'Fontaine',
     email: 'julie.fontaine@mns.fr',
     role: 'Collaboratrice',
     initials: 'JF',

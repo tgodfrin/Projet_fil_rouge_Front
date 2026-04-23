@@ -35,8 +35,7 @@ export class LoanComponent {
     borrowerInitials: 'KL',
     startDate: '2026-04-12',
     endDate: '2026-04-15',
-    status: 'IN_PROGRESS',
-    comment: 'Pour le cours de UX immersif'
+    status: 'IN_PROGRESS'
   },
   {
     id: 3,
@@ -130,7 +129,7 @@ export class LoanComponent {
       debut: l.startDate,
       fin: l.endDate,
       statut: this.getStatusLabel(l.status),
-      commentaire: l.comment ?? ''
+      commentaire: ''
     }))
   );
 
