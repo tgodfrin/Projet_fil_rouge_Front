@@ -18,7 +18,7 @@
     <div class="fiche-top">
       <div class="avatar-lg">{{ getInitials(user()!) }}</div>
       <div class="fiche-info">
-        <div class="fiche-nom">{{ user()!.firstName }} {{ user()!.lastName }}</div>
+        <div class="fiche-nom">{{ user()!.name }} {{ user()!.lastname }}</div>
         <div class="fiche-email">{{ user()!.email }}</div>
         <span class="badge" [ngClass]="getRoleClass(user()!.role)">
           {{ getRoleLabel(user()!.role) }}
@@ -55,11 +55,11 @@
       <div class="carac-grid">
         <div class="carac-row">
           <span class="carac-label">Prénom</span>
-          <span class="carac-valeur">{{ user()!.firstName }}</span>
+          <span class="carac-valeur">{{ user()!.name }}</span>
         </div>
         <div class="carac-row">
           <span class="carac-label">Nom</span>
-          <span class="carac-valeur">{{ user()!.lastName }}</span>
+          <span class="carac-valeur">{{ user()!.lastname }}</span>
         </div>
         <div class="carac-row">
           <span class="carac-label">Email</span>
