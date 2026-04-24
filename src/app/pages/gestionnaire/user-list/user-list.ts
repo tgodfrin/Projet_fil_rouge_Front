@@ -21,8 +21,8 @@ export class UserListComponent {
   users = signal<User[]>([
   {
     id: 1,
-    firstName: 'John',
-    lastName: 'Doe',
+    name: 'John',
+    lastname: 'Doe',
     email: 'john.doe@mns.fr',
     role: 'GESTIONNAIRE',
     activeLoans: 0,
@@ -30,8 +30,8 @@ export class UserListComponent {
   },
   {
     id: 2,
-    firstName: 'Julie',
-    lastName: 'Fontaine',
+    name: 'Julie',
+    lastname: 'Fontaine',
     email: 'julie.fontaine@mns.fr',
     role: 'COLLABORATEUR',
     activeLoans: 1,
@@ -39,8 +39,8 @@ export class UserListComponent {
   },
   {
     id: 3,
-    firstName: 'Kevin',
-    lastName: 'Leclerc',
+    name: 'Kevin',
+    lastname: 'Leclerc',
     email: 'kevin.leclerc@mns.fr',
     role: 'STAGIAIRE',
     activeLoans: 2,
@@ -48,8 +48,8 @@ export class UserListComponent {
   },
   {
     id: 4,
-    firstName: 'Sophie',
-    lastName: 'Renard',
+    name: 'Sophie',
+    lastname: 'Renard',
     email: 'sophie.renard@mns.fr',
     role: 'INTERVENANT',
     activeLoans: 1,
@@ -57,8 +57,8 @@ export class UserListComponent {
   },
   {
     id: 5,
-    firstName: 'Marc',
-    lastName: 'Durand',
+    name: 'Marc',
+    lastname: 'Durand',
     email: 'marc.durand@mns.fr',
     role: 'STAGIAIRE',
     activeLoans: 1,
@@ -66,8 +66,8 @@ export class UserListComponent {
   },
   {
     id: 6,
-    firstName: 'Alice',
-    lastName: 'Martin',
+    name: 'Alice',
+    lastname: 'Martin',
     email: 'alice.martin@mns.fr',
     role: 'COLLABORATEUR',
     activeLoans: 0,
@@ -82,8 +82,8 @@ export class UserListComponent {
     return this.users().filter(u => {
       const matchRole = filter === 'TOUS' || u.role === filter;
       const matchSearch =
-        u.firstName.toLowerCase().includes(search) ||
-        u.lastName.toLowerCase().includes(search) ||
+        u.name.toLowerCase().includes(search) ||
+        u.lastname.toLowerCase().includes(search) ||
         u.email.toLowerCase().includes(search);
       return matchRole && matchSearch;
     });
@@ -97,8 +97,8 @@ export class UserListComponent {
   usersExport = computed(() =>
     this.users().map(u => ({
       id: u.id,
-      prenom: u.firstName,
-      nom: u.lastName,
+      prenom: u.name,
+      nom: u.lastname,
       email: u.email,
       role: this.getRoleLabel(u.role),
       emprunts_actifs: u.activeLoans,
@@ -115,7 +115,7 @@ export class UserListComponent {
   }
 
   getInitials(user: User): string {
-    return user.firstName[0] + user.lastName[0];
+    return user.name[0] + user.lastname[0];
   }
 
   getRoleLabel(role: UserRole): string {

@@ -63,23 +63,8 @@
         </div>
       }
 
-      <div class="form-group">
-        <label class="form-label">Motif</label>
-        <textarea
-          class="form-textarea"
-          placeholder="Expliquez brièvement la raison de l'emprunt..."
-          rows="3"
-          formControlName="motif">
-        </textarea>
-        @if (motifCtrl.invalid && motifCtrl.touched) {
-          <small class="form-error">
-            @if (motifCtrl.hasError('required')) { Le motif est requis. }
-            @else if (motifCtrl.hasError('minlength')) { Minimum 5 caractères. }
-          </small>
-        }
-      </div>
 
-      <div class="form-actions">
+<div class="form-actions">
         <button class="btn-ghost" type="button" (click)="cancel()">Annuler</button>
         <button class="btn-primary" type="submit">Suivant</button>
       </div>
@@ -102,11 +87,7 @@
         <span class="recap-key">Durée</span>
         <span class="recap-val">{{ duration }} jour(s)</span>
       </div>
-      <div class="recap-row">
-        <span class="recap-key">Motif</span>
-        <span class="recap-val">{{ form.value.motif }}</span>
-      </div>
-      <div class="recap-row">
+<div class="recap-row">
         <span class="recap-key">Statut</span>
         <span class="badge badge-warning"><span class="badge-dot"></span>En attente</span>
       </div>

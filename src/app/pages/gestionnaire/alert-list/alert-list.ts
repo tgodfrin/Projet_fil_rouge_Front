@@ -18,9 +18,9 @@ export class AlertListComponent {
 
   alerts = signal<Alert[]>([
     { id: 1, loanId: 3, type: 'RETARD',   equipmentName: 'MacBook Pro M3',    borrowerName: 'Marc Durand',   description: 'Retard de 3 jours',              date: '2026-03-04', read: false },
-    { id: 2, loanId: 4, type: 'PANNE',   equipmentName: 'iPad Pro 12.9"',    borrowerName: 'Sophie Renard', description: 'Dégradation écran signalée',     date: '2026-03-05', read: false },
-    { id: 3, loanId: 5, type: 'RETARD',  equipmentName: 'Dell UltraSharp 27"',borrowerName: 'Tom Vasseur',  description: 'Retard de 1 jour',               date: '2026-03-06', read: false },
-    { id: 4, loanId: 2, type: 'PANNE',   equipmentName: 'Meta Quest 3',      borrowerName: 'Kevin Leclerc', description: 'Manette droite défectueuse',     date: '2026-03-07', read: true  },
+    { id: 2, loanId: 4, type: 'BREAKDOWN',   equipmentName: 'iPad Pro 12.9"',    borrowerName: 'Sophie Renard', description: 'Dégradation écran signalée',     date: '2026-03-05', read: false },
+    { id: 3, loanId: 5, type: 'RETARD',     equipmentName: 'Dell UltraSharp 27"',borrowerName: 'Tom Vasseur',  description: 'Retard de 1 jour',               date: '2026-03-06', read: false },
+    { id: 4, loanId: 2, type: 'BREAKDOWN',  equipmentName: 'Meta Quest 3',      borrowerName: 'Kevin Leclerc', description: 'Manette droite défectueuse',     date: '2026-03-07', read: true  },
     { id: 5, loanId: 1, type: 'RETARD',   equipmentName: 'HP EliteBook 840',  borrowerName: 'Julie Fontaine',description: 'Retard de 2 jours',              date: '2026-03-07', read: true  },
   ]);
 
@@ -44,7 +44,7 @@ export class AlertListComponent {
   }
 
   panneCount(): number {
-    return this.alerts().filter(a => a.type === 'PANNE').length;
+    return this.alerts().filter(a => a.type === 'BREAKDOWN').length;
   }
 
   setTab(tab: 'TOUTES' | AlertType): void {

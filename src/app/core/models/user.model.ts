@@ -2,19 +2,21 @@ export type UserRole = 'GESTIONNAIRE' | 'COLLABORATEUR' | 'INTERVENANT' | 'STAGI
 
 export interface User {
   id: number;
-  firstName: string;
-  lastName: string;
+  name: string;
+  lastname: string;
   email: string;
   role: UserRole;
-  activeLoans: number;
+  activeLoans: number; // calculé côté service (count des emprunts IN_PROGRESS + VALID)
   createdAt: string;
 }
 
 export interface UserProfile {
-  firstName: string;
-  lastName: string;
+  id: number;
+  name: string;
+  lastname: string;
   email: string;
-  role: string;
-  initials: string;
-  memberSince: string;
+  role: UserRole;
+  createdAt: string;
+  // initials → calculé côté front : name[0] + lastname[0]
+  // memberSince supprimé : doublon de createdAt
 }

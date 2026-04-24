@@ -16,6 +16,7 @@ export type EquipmentStatus = 'DISPONIBLE' | 'EN_PRET' | 'OUT_OF_SERVICE' | 'UND
 
 export type EquipmentCategory = 'PC' | 'VR' | 'Tablette' | 'Écran' | 'Périphérique';
 
+// Les catégories viennent dynamiquement de l'API (EquipmentFamily) — ne pas hardcoder
 export interface CatalogueItem {
   id: number;
   name: string;

@@ -32,10 +32,7 @@
             </div>
             <span class="badge badge-warning">En attente</span>
           </div>
-          @if (loan.comment) {
-            <div class="card-comment">{{ loan.comment }}</div>
-          }
-          <div class="card-actions">
+<div class="card-actions">
             <button class="btn-validate" (click)="validateLoan(loan)">Valider</button>
             <button class="btn-refuse" (click)="refuseLoan(loan)">Refuser</button>
             <button class="btn-ghost" (click)="navigateToDetail(loan.id)">Détail</button>
