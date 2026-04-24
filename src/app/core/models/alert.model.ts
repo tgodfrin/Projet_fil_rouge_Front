@@ -1,4 +1,6 @@
-export type AlertType = 'RETARD' | 'PANNE';
+// BREAKDOWN | EARLY_RETURN | EXTENSION → viennent de l'entité Event (déclarés par l'utilisateur)
+// RETARD → généré automatiquement côté service (endDate dépassée + statut IN_PROGRESS)
+export type AlertType = 'BREAKDOWN' | 'EARLY_RETURN' | 'EXTENSION' | 'RETARD';
 
 export interface Alert {
   id: number;

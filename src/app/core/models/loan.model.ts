@@ -12,13 +12,14 @@ export interface Loan {
 }
 
 // ── Vue utilisateur ───────────────────────────────────
-export type UserLoanStatus = 'VALID' | 'IN_PROGRESS' | 'HISTORIQUE' | 'RETARD' | 'TERMINE' | 'INVALID';
+// HISTORIQUE supprimé — c'est un filtre UI (TERMINE + INVALID), pas un statut réel
+export type UserLoanStatus = 'VALID' | 'IN_PROGRESS' | 'RETARD' | 'TERMINE' | 'INVALID';
 
 export interface UserLoan {
   id: number;
   equipmentName: string;
-  categoryIcon?: string;
-  category?: string;
+  categoryIcon?: string; // icône calculée côté front selon la famille d'équipement
+  category?: string;     // equipmentFamily.nameEquipmentFamily
   startDate: string;
   endDate: string;
   status: UserLoanStatus;
