@@ -1,4 +1,4 @@
-import { Component, signal } from '@angular/core';
+import { Component } from '@angular/core';
 import { RouterOutlet, RouterLink, RouterLinkActive } from '@angular/router';
 
 @Component({
@@ -8,7 +8,4 @@ import { RouterOutlet, RouterLink, RouterLinkActive } from '@angular/router';
   templateUrl: './user-layout.html',
   styleUrl: './user-layout.scss'
 })
-export class UserLayoutComponent {
-  menuOpen = signal(false);
-  closeMenu(): void { this.menuOpen.set(false); }
-}
+export class UserLayoutComponent {}
