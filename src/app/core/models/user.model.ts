@@ -27,7 +27,7 @@ export interface AppUserCreate {
   profil: { id: number };
 }
 
-// ── Alias de compatibilité UI ─────────────────────────
+
 // Utilisés par les composants mockés — à supprimer au fur et à mesure du branchement
 
 /** @deprecated Utiliser ProfilType depuis profil.model.ts */

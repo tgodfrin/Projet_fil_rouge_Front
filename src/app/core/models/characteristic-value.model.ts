@@ -1,6 +1,5 @@
 // Correspond aux entités CharacteristicValue + Characteristic côté back
 // Sérialisé via @JsonView(CharacteristicValueView)
-// Note : le champ `equipments` de l'entité n'a pas de @JsonView → non exposé dans les réponses API
 // Endpoints :
 //   GET  /characteristic-value/equipment/:equipmentId
 //   POST /characteristic-value
