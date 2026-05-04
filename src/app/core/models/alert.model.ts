@@ -1,9 +1,7 @@
-// ⚠️ Interface UI-only — pas d'entité Alert côté back
+// Interface UI-only — pas d'entité Alert côté back
 // L'alert-list est construite en agrégeant deux sources :
 //   • GET /event/unread  → Event de type BREAKDOWN | EARLY_RETURN | EXTENSION
 //   • GET /loan/list     → filtrer les Loan IN_PROGRESS dont endDate est dépassée → RETARD
-//
-// Cette interface sera hydratée dans AlertListService lors du branchement du composant.
 
 import { EventType } from './event.model';
 

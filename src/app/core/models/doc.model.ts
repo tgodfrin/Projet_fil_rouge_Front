@@ -1,6 +1,5 @@
 // Correspond à l'entité Doc côté back
 // Sérialisé via @JsonView(DocView) → id, title, url, addedDate
-// Note : le champ `equipments` de l'entité n'a pas de @JsonView → non exposé dans les réponses API
 // Endpoints :
 //   GET    /doc/equipment/:equipmentId
 //   POST   /doc
