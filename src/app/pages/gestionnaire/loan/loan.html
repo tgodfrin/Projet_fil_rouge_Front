@@ -6,7 +6,7 @@
     <div class="header-actions">
       <select class="filter-select" (change)="onFiltreStatutChange($event)">
         <option value="tous">Tous les statuts</option>
-        <option value="VALID">En cours</option>
+        <option value="IN_PROGRESS">En cours</option>
         <option value="RETARD">Retard</option>
       </select>
       <select class="filter-select" (change)="onFiltreTempsChange($event)">
@@ -18,21 +18,21 @@
     </div>
   </div>
 
-  <!-- Section : À valider -->
+  <!-- Section : À valider (statusType VALID = demandes créées, en attente du gestionnaire) -->
   @if (pendingLoans().length > 0) {
     <div class="section-label">À valider ({{ pendingLoans().length }})</div>
     <div class="cards-list">
       @for (loan of pendingLoans(); track loan.id) {
         <div class="emprunt-card">
           <div class="card-top">
-            <div class="avatar">{{ loan.borrowerInitials }}</div>
+            <div class="avatar">{{ getBorrowerInitials(loan) }}</div>
             <div class="card-info">
-              <div class="card-title">{{ loan.borrowerName }} — {{ loan.equipmentName }}</div>
-              <div class="card-dates">{{ formatDate(loan.startDate) }} au {{ formatDate(loan.endDate) }}</div>
+              <div class="card-title">{{ getBorrowerName(loan) }} — {{ loan.equipment.equipmentName }}</div>
+              <div class="card-dates">{{ formatDate(loan.beginDate) }} au {{ formatDate(loan.endDate) }}</div>
             </div>
             <span class="badge badge-warning">En attente</span>
           </div>
-<div class="card-actions">
+          <div class="card-actions">
             <button class="btn-validate" (click)="validateLoan(loan)">Valider</button>
             <button class="btn-refuse" (click)="refuseLoan(loan)">Refuser</button>
             <button class="btn-ghost" (click)="navigateToDetail(loan.id)">Détail</button>
@@ -42,7 +42,7 @@
     </div>
   }
 
-  <!-- Section : En cours -->
+  <!-- Section : En cours (statusType IN_PROGRESS = validés, matériel sorti) -->
   <div class="section-label">
     En cours ({{ activeLoans().length }})
   </div>
@@ -65,24 +65,21 @@
           @for (loan of activeLoans(); track loan.id) {
             <tr>
               <td>
-                <div class="cell-main">{{ loan.borrowerName }} — {{ loan.equipmentName }}</div>
+                <div class="cell-main">{{ getBorrowerName(loan) }} — {{ loan.equipment.equipmentName }}</div>
               </td>
               <td>
-                <span [class.retard]="loan.status === 'RETARD'">
+                <span [class.retard]="isRetard(loan)">
                   {{ formatDate(loan.endDate) }}
                 </span>
               </td>
               <td>
-                <span class="badge" [ngClass]="getStatusClass(loan.status)">
-                  {{ getStatusLabel(loan.status) }}
+                <span class="badge" [ngClass]="getStatusClass(getDisplayStatus(loan))">
+                  {{ getStatusLabel(getDisplayStatus(loan)) }}
                 </span>
               </td>
               <td>
-                @if (loan.status === 'VALID' || loan.status === 'RETARD') {
-                  <button class="btn-return" (click)="returnLoan(loan)">Rendu</button>
-                } @else {
-                  <span class="rendu-label">—</span>
-                }
+                <!-- Tous les emprunts IN_PROGRESS peuvent être rendus -->
+                <button class="btn-return" (click)="returnLoan(loan)">Rendu</button>
               </td>
               <td>
                 <button class="btn-ghost" (click)="navigateToDetail(loan.id)">Détail</button>

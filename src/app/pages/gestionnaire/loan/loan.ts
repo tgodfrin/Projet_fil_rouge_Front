@@ -1,10 +1,12 @@
-import { Component, signal, computed } from '@angular/core';
+import { Component, computed, inject, signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { Router } from '@angular/router';
 import { ExportComponent } from '../../../shared/export/export';
-// Types locaux mock — seront remplacés lors du branchement sur LoanService
-type LoanStatus = 'IN_PROGRESS' | 'VALID' | 'RETARD' | 'TERMINE' | 'INVALID';
-interface Loan { id: number; equipmentName: string; borrowerName: string; borrowerInitials: string; startDate: string; endDate: string; status: LoanStatus; }
+import { LoanService } from '../../../core/services/loan.service';
+import { Loan, StatusLoanType } from '../../../core/models/loan.model';
+
+// RETARD n'est pas un statut en base — calculé côté front : IN_PROGRESS + endDate < now
+type LoanDisplayStatus = StatusLoanType | 'RETARD';
 
 @Component({
   selector: 'app-loan',
@@ -15,75 +17,40 @@ interface Loan { id: number; equipmentName: string; borrowerName: string; borrow
 })
 export class LoanComponent {
 
-  constructor(private router: Router) {}
+  private router      = inject(Router);
+  private loanService = inject(LoanService);
 
   filtreStatut = signal<string>('tous');
-  filtreTemps = signal<string>('tout');
+  filtreTemps  = signal<string>('tout');
 
-  loans = signal<Loan[]>([
-  {
-    id: 1,
-    equipmentName: 'iPad Pro 12.9"',
-    borrowerName: 'Julie Fontaine',
-    borrowerInitials: 'JF',
-    startDate: '2026-04-10',
-    endDate: '2026-04-17',
-    status: 'IN_PROGRESS'
-  },
-  {
-    id: 2,
-    equipmentName: 'Meta Quest 3',
-    borrowerName: 'Kevin Leclerc',
-    borrowerInitials: 'KL',
-    startDate: '2026-04-12',
-    endDate: '2026-04-15',
-    status: 'IN_PROGRESS'
-  },
-  {
-    id: 3,
-    equipmentName: 'MacBook Pro M3',
-    borrowerName: 'Marc Durand',
-    borrowerInitials: 'MD',
-    startDate: '2026-04-07',
-    endDate: '2026-04-11',
-    status: 'RETARD'
-  },
-  {
-    id: 4,
-    equipmentName: 'iPad Pro 12.9"',
-    borrowerName: 'Sophie Renard',
-    borrowerInitials: 'SR',
-    startDate: '2026-04-08',
-    endDate: '2026-04-14',
-    status: 'VALID'
-  },
-  {
-    id: 5,
-    equipmentName: 'HP EliteBook 840',
-    borrowerName: 'Tom Vasseur',
-    borrowerInitials: 'TV',
-    startDate: '2026-04-14',
-    endDate: '2026-04-22',
-    status: 'VALID'
+  // Signal mutable — peuplé via HTTP et mis à jour après chaque action
+  loans = signal<Loan[]>([]);
+
+  constructor() {
+    this.chargerEmprunts();
   }
-]);
 
+  // Rechargement de la liste depuis le back
+  private chargerEmprunts(): void {
+    this.loanService.getAll().subscribe(data => this.loans.set(data));
+  }
+
+  // "À valider" = demandes en attente de validation (statusType VALID = créé, pas encore validé)
   pendingLoans = computed(() =>
-    this.loans().filter(l => l.status === 'IN_PROGRESS')
+    this.loans().filter(l => l.statusType === 'VALID')
   );
 
+  // "En cours" = emprunts actifs (IN_PROGRESS), filtrés par statut et période
   activeLoans = computed(() => {
-    let list = this.loans().filter(l =>
-      l.status === 'VALID' || l.status === 'RETARD'
-    );
+    const now = new Date();
+    let list = this.loans().filter(l => l.statusType === 'IN_PROGRESS');
 
-    // Filtre statut
+    // Filtre statut : "En cours" = non retard / "Retard" = endDate dépassée
     const statut = this.filtreStatut();
-    if (statut === 'VALID') list = list.filter(l => l.status === 'VALID');
-    if (statut === 'RETARD') list = list.filter(l => l.status === 'RETARD');
+    if (statut === 'IN_PROGRESS') list = list.filter(l => new Date(l.endDate) >= now);
+    if (statut === 'RETARD')      list = list.filter(l => new Date(l.endDate) < now);
 
     // Filtre temporalité
-    const now = new Date();
     const temps = this.filtreTemps();
     if (temps === 'semaine') {
       const debutSemaine = new Date(now);
@@ -91,13 +58,13 @@ export class LoanComponent {
       const finSemaine = new Date(debutSemaine);
       finSemaine.setDate(debutSemaine.getDate() + 6);
       list = list.filter(l => {
-        const d = new Date(l.startDate);
+        const d = new Date(l.beginDate);
         return d >= debutSemaine && d <= finSemaine;
       });
     }
     if (temps === 'mois') {
       list = list.filter(l => {
-        const d = new Date(l.startDate);
+        const d = new Date(l.beginDate);
         return d.getMonth() === now.getMonth() && d.getFullYear() === now.getFullYear();
       });
     }
@@ -105,64 +72,77 @@ export class LoanComponent {
     return list;
   });
 
+  // RETARD = IN_PROGRESS dont endDate est dépassée
+  isRetard(loan: Loan): boolean {
+    return loan.statusType === 'IN_PROGRESS' && new Date(loan.endDate) < new Date();
+  }
+
+  getDisplayStatus(loan: Loan): LoanDisplayStatus {
+    return this.isRetard(loan) ? 'RETARD' : loan.statusType;
+  }
+
+  // Valider : VALID → IN_PROGRESS
+  // validatorId = 1 (John Doe, GESTIONNAIRE) — sera remplacé par le user connecté en Phase 3 JWT
   validateLoan(loan: Loan): void {
-    this.loans.update(list =>
-      list.map(l => l.id === loan.id ? { ...l, status: 'VALID' as LoanStatus } : l)
-    );
+    this.loanService.validate(loan.id, 1).subscribe(() => this.chargerEmprunts());
   }
 
+  // Refuser : VALID → INVALID
   refuseLoan(loan: Loan): void {
-    this.loans.update(list =>
-      list.map(l => l.id === loan.id ? { ...l, status: 'INVALID' as LoanStatus } : l)
-    );
+    this.loanService.invalidate(loan.id).subscribe(() => this.chargerEmprunts());
   }
 
+  // Retour matériel : IN_PROGRESS → TERMINE
   returnLoan(loan: Loan): void {
-    this.loans.update(list =>
-      list.map(l => l.id === loan.id ? { ...l, status: 'TERMINE' as LoanStatus } : l)
-    );
+    this.loanService.return(loan.id).subscribe(() => this.chargerEmprunts());
   }
 
   loansExport = computed(() =>
     this.loans().map(l => ({
-      id: l.id,
-      equipement: l.equipmentName,
-      emprunteur: l.borrowerName,
-      debut: l.startDate,
-      fin: l.endDate,
-      statut: this.getStatusLabel(l.status),
+      id:          l.id,
+      equipement:  l.equipment.equipmentName,
+      emprunteur:  this.getBorrowerName(l),
+      debut:       l.beginDate,
+      fin:         l.endDate,
+      statut:      this.getStatusLabel(this.getDisplayStatus(l)),
       commentaire: ''
     }))
   );
 
   onFiltreStatutChange(event: Event): void {
-    const value = (event.target as HTMLSelectElement).value;
-    this.filtreStatut.set(value);
+    this.filtreStatut.set((event.target as HTMLSelectElement).value);
   }
 
   onFiltreTempsChange(event: Event): void {
-    const value = (event.target as HTMLSelectElement).value;
-    this.filtreTemps.set(value);
+    this.filtreTemps.set((event.target as HTMLSelectElement).value);
   }
 
-  getStatusLabel(status: LoanStatus): string {
-    const labels: Record<LoanStatus, string> = {
-      IN_PROGRESS: 'En attente',
-      VALID: 'Actif',
-      RETARD: 'Retard',
-      TERMINE: 'Terminé',
-      INVALID: 'Refusé'
+  getBorrowerName(loan: Loan): string {
+    return `${loan.requester.name} ${loan.requester.lastname}`;
+  }
+
+  getBorrowerInitials(loan: Loan): string {
+    return loan.requester.name[0] + loan.requester.lastname[0];
+  }
+
+  getStatusLabel(status: LoanDisplayStatus): string {
+    const labels: Record<LoanDisplayStatus, string> = {
+      VALID:       'En attente',
+      IN_PROGRESS: 'En cours',
+      RETARD:      'Retard',
+      TERMINE:     'Terminé',
+      INVALID:     'Refusé'
     };
     return labels[status];
   }
 
-  getStatusClass(status: LoanStatus): string {
-    const classes: Record<LoanStatus, string> = {
-      IN_PROGRESS: 'badge-warning',
-      VALID: 'badge-success',
-      RETARD: 'badge-danger',
-      TERMINE: 'badge-neutral',
-      INVALID: 'badge-danger'
+  getStatusClass(status: LoanDisplayStatus): string {
+    const classes: Record<LoanDisplayStatus, string> = {
+      VALID:       'badge-warning',
+      IN_PROGRESS: 'badge-success',
+      RETARD:      'badge-danger',
+      TERMINE:     'badge-neutral',
+      INVALID:     'badge-danger'
     };
     return classes[status];
   }
