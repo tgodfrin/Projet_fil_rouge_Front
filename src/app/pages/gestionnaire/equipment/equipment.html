@@ -27,9 +27,9 @@
   </div>
 
   <div class="badges-row">
-    <span class="badge b-neutral"  [class.active]="filtreActif === 'tous'"         (click)="filtreActif = 'tous'; onFiltreChange()">Tous ({{ totalTous }})</span>
-    <span class="badge b-success"  [class.active]="filtreActif === 'DISPONIBLE'"   (click)="filtreActif = 'DISPONIBLE'; onFiltreChange()">Disponible ({{ totalDisponibles }})</span>
-    <span class="badge b-warning"  [class.active]="filtreActif === 'EN_PRET'"      (click)="filtreActif = 'EN_PRET'; onFiltreChange()">En prêt ({{ totalEnPret }})</span>
+    <span class="badge b-neutral"  [class.active]="filtreActif === 'tous'"           (click)="filtreActif = 'tous'; onFiltreChange()">Tous ({{ totalTous }})</span>
+    <span class="badge b-success"  [class.active]="filtreActif === 'DISPONIBLE'"     (click)="filtreActif = 'DISPONIBLE'; onFiltreChange()">Disponible ({{ totalDisponibles }})</span>
+    <span class="badge b-warning"  [class.active]="filtreActif === 'EN_PRET'"        (click)="filtreActif = 'EN_PRET'; onFiltreChange()">En prêt ({{ totalEnPret }})</span>
     <span class="badge b-danger"   [class.active]="filtreActif === 'OUT_OF_SERVICE'" (click)="filtreActif = 'OUT_OF_SERVICE'; onFiltreChange()">Hors service ({{ totalHorsService }})</span>
   </div>
 
@@ -44,21 +44,21 @@
         <div class="th"></div>
       </div>
 
-      @for (eq of equipementsPagines; track eq.reference) {
+      @for (eq of equipementsPagines; track eq.id) {
         <div class="table-row">
           <div>
-            <div class="td-main">{{ eq.nom }}</div>
+            <div class="td-main">{{ eq.equipmentName }}</div>
             <div class="td-muted">{{ eq.reference }}</div>
           </div>
-          <div class="td-muted">{{ eq.famille }}</div>
-          <div class="td-muted">{{ eq.localisation }}</div>
+          <div class="td-muted">{{ eq.equipmentFamily.nameEquipmentFamily }}</div>
+          <div class="td-muted">{{ eq.location ?? '—' }}</div>
           <div>
             <span class="badge"
-              [class.b-success]="eq.statut === 'DISPONIBLE'"
-              [class.b-warning]="eq.statut === 'EN_PRET'"
-              [class.b-danger]="eq.statut === 'OUT_OF_SERVICE' || eq.statut === 'UNDER_REPAIR'">
+              [class.b-success]="eq.status === 'DISPONIBLE'"
+              [class.b-warning]="eq.status === 'EN_PRET'"
+              [class.b-danger]="eq.status === 'OUT_OF_SERVICE' || eq.status === 'UNDER_REPAIR'">
               <span class="badge-dot"></span>
-              {{ getStatutLabel(eq.statut) }}
+              {{ getStatutLabel(eq.status ?? '') }}
             </span>
           </div>
           <div>
@@ -109,6 +109,7 @@
 
 @if (modalOuvert) {
   <app-equipment-form
+    [families]="families()"
     (fermer)="fermerModal()"
     (ajouter)="onAjouter($event)">
   </app-equipment-form>

@@ -16,12 +16,12 @@
       <label class="form-label">Nom <span class="required">*</span></label>
       <input
         class="form-input"
-        [class.error]="form.get('nom')?.invalid && form.get('nom')?.touched"
+        [class.error]="form.get('equipmentName')?.invalid && form.get('equipmentName')?.touched"
         type="text"
-        formControlName="nom"
+        formControlName="equipmentName"
         placeholder="Ex : MacBook Pro M3"
       />
-      @if (form.get('nom')?.invalid && form.get('nom')?.touched) {
+      @if (form.get('equipmentName')?.invalid && form.get('equipmentName')?.touched) {
         <span class="form-error">Le nom est requis.</span>
       }
     </div>
@@ -37,7 +37,7 @@
         placeholder="Ex : REF-PC-042"
       />
       @if (form.get('reference')?.invalid && form.get('reference')?.touched) {
-        <span class="form-error">La référence est requise.</span>
+        <span class="form-error">La référence est requise (3–20 caractères).</span>
       }
     </div>
 
@@ -46,73 +46,37 @@
       <label class="form-label">Famille <span class="required">*</span></label>
       <select
         class="form-select"
-        [class.error]="form.get('famille')?.invalid && form.get('famille')?.touched"
-        formControlName="famille">
+        [class.error]="form.get('familyId')?.invalid && form.get('familyId')?.touched"
+        formControlName="familyId">
         <option value="" disabled>Sélectionner une famille</option>
-        @for (f of famillesDisponibles; track f) {
-          <option [value]="f">{{ f }}</option>
+        @for (f of families; track f.id) {
+          <option [value]="f.id">{{ f.nameEquipmentFamily }}</option>
         }
       </select>
-      @if (form.get('famille')?.invalid && form.get('famille')?.touched) {
+      @if (form.get('familyId')?.invalid && form.get('familyId')?.touched) {
         <span class="form-error">La famille est requise.</span>
       }
     </div>
 
     <!-- Localisation -->
     <div class="form-group">
-      <label class="form-label">Localisation <span class="required">*</span></label>
+      <label class="form-label">Localisation</label>
       <input
         class="form-input"
-        [class.error]="form.get('localisation')?.invalid && form.get('localisation')?.touched"
         type="text"
-        formControlName="localisation"
+        formControlName="location"
         placeholder="Ex : Salle B204"
       />
-      @if (form.get('localisation')?.invalid && form.get('localisation')?.touched) {
-        <span class="form-error">La localisation est requise.</span>
-      }
     </div>
 
-    <!-- Statut -->
+    <!-- Date d'acquisition -->
     <div class="form-group">
-      <label class="form-label">Statut</label>
-      <select class="form-select" formControlName="statut">
-        @for (s of statutsDisponibles; track s.value) {
-          <option [value]="s.value">{{ s.label }}</option>
-        }
-      </select>
-    </div>
-
-    <!-- Composants (FormArray) -->
-    <div class="composants-section" formArrayName="composants">
-      <div class="composants-header">
-        <span class="form-label">Composants</span>
-        <button type="button" class="btn-add-composant" (click)="ajouterComposant()">
-          + Ajouter un composant
-        </button>
-      </div>
-
-      @if (composants.length === 0) {
-        <p class="composants-empty">Aucun composant ajouté. Cliquez sur "+ Ajouter un composant" pour en ajouter.</p>
-      }
-
-      @for (composant of composants.controls; track $index) {
-        <div class="composant-row" [formGroupName]="$index">
-          <select class="form-select composant-type" formControlName="type">
-            <option value="" disabled>Type</option>
-            @for (t of typesComposants; track t) {
-              <option [value]="t">{{ t }}</option>
-            }
-          </select>
-          <input
-            class="form-input composant-valeur"
-            type="text"
-            formControlName="valeur"
-            placeholder="Ex : 16 Go, 512 Go SSD, 14&quot;..."
-          />
-          <button type="button" class="btn-remove" (click)="supprimerComposant($index)">✕</button>
-        </div>
-      }
+      <label class="form-label">Date d'acquisition</label>
+      <input
+        class="form-input"
+        type="date"
+        formControlName="acquisitionDate"
+      />
     </div>
 
     <div class="modal-footer">

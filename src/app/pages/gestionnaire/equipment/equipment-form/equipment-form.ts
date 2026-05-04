@@ -1,9 +1,8 @@
-import { Component, EventEmitter, Output, inject } from '@angular/core';
-import { ReactiveFormsModule, FormBuilder, FormArray, FormGroup, Validators } from '@angular/forms';
+import { Component, EventEmitter, Input, Output, inject } from '@angular/core';
+import { ReactiveFormsModule, FormBuilder, Validators } from '@angular/forms';
 import { CommonModule } from '@angular/common';
-// Types locaux mock — seront remplacés lors du branchement sur EquipmentService
-interface Composant  { type: string; valeur: string; }
-interface Equipement { nom: string; reference: string; famille: string; localisation: string; statut: string; composants?: Composant[]; }
+import { EquipmentFamily } from '../../../../core/models/equipment-family.model';
+import { EquipmentPayload } from '../../../../core/services/equipment.service';
 
 @Component({
   selector: 'app-equipment-form',
@@ -15,46 +14,19 @@ interface Equipement { nom: string; reference: string; famille: string; localisa
 export class EquipmentFormComponent {
   private fb = inject(FormBuilder);
 
-  @Output() fermer  = new EventEmitter<void>();
-  @Output() ajouter = new EventEmitter<Equipement>();
+  // Familles passées par le parent (chargées via EquipmentFamilyService)
+  @Input() families: EquipmentFamily[] = [];
 
-  famillesDisponibles = ['PC', 'VR', 'Tablette', 'Écran', 'Audio', 'Périphérique'];
-  statutsDisponibles  = [
-    { value: 'DISPONIBLE',     label: 'Disponible'      },
-    { value: 'EN_PRET',        label: 'En prêt'         },
-    { value: 'OUT_OF_SERVICE', label: 'Hors service'    },
-    { value: 'UNDER_REPAIR',   label: 'En réparation'   },
-  ];
-  typesComposants = ['RAM', 'Stockage', 'Écran', 'Processeur', 'Batterie', 'Connectivité', 'Autre'];
+  @Output() fermer  = new EventEmitter<void>();
+  @Output() ajouter = new EventEmitter<EquipmentPayload>();
 
   form = this.fb.group({
-    nom:          ['', Validators.required],
-    reference:    ['', Validators.required],
-    famille:      ['', Validators.required],
-    localisation: ['', Validators.required],
-    statut:       ['DISPONIBLE'],
-    composants:   this.fb.array([])
+    equipmentName:   ['', Validators.required],
+    reference:       ['', [Validators.required, Validators.minLength(3), Validators.maxLength(20)]],
+    familyId:        ['', Validators.required],
+    location:        [''],
+    acquisitionDate: [''],
   });
-
-  // ── Accesseur FormArray ────────────────────────────────
-  get composants(): FormArray {
-    return this.form.get('composants') as FormArray;
-  }
-
-  composantGroup(index: number): FormGroup {
-    return this.composants.at(index) as FormGroup;
-  }
-
-  ajouterComposant(): void {
-    this.composants.push(this.fb.group({
-      type:  [''],
-      valeur: ['']
-    }));
-  }
-
-  supprimerComposant(index: number): void {
-    this.composants.removeAt(index);
-  }
 
   onSubmit(): void {
     if (this.form.invalid) {
@@ -62,18 +34,15 @@ export class EquipmentFormComponent {
       return;
     }
     const val = this.form.value;
-    const composantsFiltres = (val.composants as Composant[])
-      .filter(c => c.type && c.valeur?.trim());
-
-    this.ajouter.emit({
-      nom:          val.nom!,
-      reference:    val.reference!,
-      famille:      val.famille!,
-      localisation: val.localisation!,
-      statut:       val.statut!,
-      composants:   composantsFiltres
-    });
-    this.fermer.emit();
+    const payload: EquipmentPayload = {
+      equipmentName:   val.equipmentName!,
+      reference:       val.reference!,
+      location:        val.location || null,
+      acquisitionDate: val.acquisitionDate || null,
+      equipmentFamily: { id: Number(val.familyId) },
+    };
+    this.ajouter.emit(payload);
+    this.form.reset();
   }
 
   onFermer(): void {
