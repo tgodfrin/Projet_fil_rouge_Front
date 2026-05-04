@@ -6,7 +6,7 @@
   </div>
 
   @if (loan() === null) {
-    <div class="empty-state">Emprunt introuvable.</div>
+    <div class="empty-state">Chargement...</div>
   } @else {
 
   <!-- ALERTE RETARD -->
@@ -22,10 +22,12 @@
       <div class="fiche-icon">📋</div>
       <div class="fiche-info">
         <div class="fiche-titre">Emprunt #{{ loan()!.id }}</div>
-        <div class="fiche-sub">{{ loan()!.borrowerName }} — {{ loan()!.equipmentName }}</div>
-        <span class="badge" [ngClass]="getStatusClass(loan()!.status)">
+        <div class="fiche-sub">
+          {{ requester() ? fullName(requester()!) : '…' }} — {{ loan()!.equipment.equipmentName }}
+        </div>
+        <span class="badge" [ngClass]="getStatusClass(getDisplayStatus(loan()!))">
           <span class="badge-dot"></span>
-          {{ getStatusLabel(loan()!.status) }}
+          {{ getStatusLabel(getDisplayStatus(loan()!)) }}
         </span>
       </div>
     </div>
@@ -33,7 +35,7 @@
     <div class="fiche-details">
       <div class="detail-item">
         <div class="detail-label">Date de début</div>
-        <div class="detail-value">{{ formatDate(loan()!.startDate) }}</div>
+        <div class="detail-value">{{ formatDate(loan()!.beginDate) }}</div>
       </div>
       <div class="detail-item">
         <div class="detail-label">Retour prévu</div>
@@ -41,16 +43,10 @@
           {{ formatDate(loan()!.endDate) }}
         </div>
       </div>
-      @if (loan()!.returnDate) {
+      @if (loan()!.realEndDate) {
         <div class="detail-item">
           <div class="detail-label">Retour effectif</div>
-          <div class="detail-value">{{ formatDate(loan()!.returnDate!) }}</div>
-        </div>
-      }
-      @if (loan()!.comment) {
-        <div class="detail-item detail-item-full">
-          <div class="detail-label">Commentaire</div>
-          <div class="detail-value">{{ loan()!.comment }}</div>
+          <div class="detail-value">{{ formatDate(loan()!.realEndDate!) }}</div>
         </div>
       }
     </div>
@@ -63,15 +59,19 @@
     <div class="info-card">
       <div class="card-header">
         <div class="card-title">Emprunteur</div>
-        <button class="btn-link" (click)="voirUtilisateur(loan()!.borrowerName)">Voir le profil →</button>
+        <button class="btn-link" (click)="voirUtilisateur()">Voir le profil →</button>
       </div>
       <div class="card-body">
-        <div class="avatar-md">{{ loan()!.borrowerInitials }}</div>
-        <div class="card-info">
-          <div class="info-name">{{ loan()!.borrowerName }}</div>
-          <div class="info-sub">{{ loan()!.borrowerEmail }}</div>
-          <div class="info-sub">{{ loan()!.borrowerRole }}</div>
-        </div>
+        @if (requester()) {
+          <div class="avatar-md">{{ getInitials(requester()!) }}</div>
+          <div class="card-info">
+            <div class="info-name">{{ fullName(requester()!) }}</div>
+            <div class="info-sub">{{ requester()!.email }}</div>
+            <div class="info-sub">{{ getProfilLabel(requester()!.profil.type) }}</div>
+          </div>
+        } @else {
+          <div class="info-sub">Chargement...</div>
+        }
       </div>
     </div>
 
@@ -84,9 +84,8 @@
       <div class="card-body">
         <div class="equip-icon">💻</div>
         <div class="card-info">
-          <div class="info-name">{{ loan()!.equipmentName }}</div>
-          <div class="info-sub">{{ loan()!.equipmentRef }}</div>
-          <div class="info-sub">{{ loan()!.equipmentFamille }}</div>
+          <div class="info-name">{{ loan()!.equipment.equipmentName }}</div>
+          <div class="info-sub">{{ loan()!.equipment.reference }}</div>
         </div>
       </div>
     </div>
