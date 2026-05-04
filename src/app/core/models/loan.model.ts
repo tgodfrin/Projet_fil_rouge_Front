@@ -1,35 +1,55 @@
-// ── Vue gestionnaire ──────────────────────────────────
-export type LoanStatus = 'IN_PROGRESS' | 'VALID' | 'RETARD' | 'TERMINE' | 'INVALID';
+// Correspond à l'entité Loan + l'enum StatusLoanType côté back
+// Sérialisé via @JsonView(LoanView)
+// Endpoints :
+//   GET  /loan/list
+//   GET  /loan/:id
+//   GET  /loan/user/:userId
+//   GET  /loan/planning?begin=...&end=...
+//   POST /loan
+//   PUT  /loan/:id/validate?validatorId=X
+//   PUT  /loan/:id/invalidate
+//   PUT  /loan/:id/return
+
+// Enum StatusLoanType côté back — RETARD n'est pas un statut en base, c'est un état calculé
+// côté front (loan IN_PROGRESS dont endDate est dépassée)
+export type StatusLoanType = 'VALID' | 'INVALID' | 'IN_PROGRESS' | 'TERMINE';
+
+// Sous-objet AppUser dans Loan — champs exposés via @JsonView(LoanView) dans AppUser
+export interface LoanUser {
+  id: number;
+  name: string;
+  lastname: string;
+}
+
+// Sous-objet EquipmentFamily dans Loan — seul l'id est exposé en LoanView
+export interface LoanEquipmentFamily {
+  id: number;
+}
+
+// Sous-objet Equipment dans Loan — champs exposés via @JsonView(LoanView) dans Equipment
+export interface LoanEquipment {
+  id: number;
+  reference: string;
+  equipmentName: string;
+  equipmentFamily: LoanEquipmentFamily;
+}
 
 export interface Loan {
   id: number;
-  equipmentName: string;
-  borrowerName: string;
-  borrowerInitials: string;
-  startDate: string;
+  beginDate: string;            // LocalDateTime → ISO string
   endDate: string;
-  status: LoanStatus;
+  realEndDate: string | null;   // null jusqu'au retour effectif
+  statusType: StatusLoanType;
+  statusDate: string;           // date du dernier changement de statut
+  requester: LoanUser;
+  validator: LoanUser | null;   // null jusqu'à validation/refus
+  equipment: LoanEquipment;
 }
 
-// ── Vue utilisateur ───────────────────────────────────
-// HISTORIQUE supprimé — c'est un filtre UI (TERMINE + INVALID), pas un statut réel
-export type UserLoanStatus = 'VALID' | 'IN_PROGRESS' | 'RETARD' | 'TERMINE' | 'INVALID';
-
-export interface UserLoan {
-  id: number;
-  equipmentName: string;
-  categoryIcon?: string; // icône calculée côté front selon la famille d'équipement
-  category?: string;     // equipmentFamily.nameEquipmentFamily
-  startDate: string;
+// Body attendu par POST /loan
+export interface LoanCreate {
+  beginDate: string;
   endDate: string;
-  status: UserLoanStatus;
-}
-
-// ── Demande d'emprunt ─────────────────────────────────
-export interface LoanRequestEquipment {
-  id: number;
-  name: string;
-  ref: string;
-  category: string;
-  icon: string;
+  requester: { id: number };
+  equipment: { id: number };
 }

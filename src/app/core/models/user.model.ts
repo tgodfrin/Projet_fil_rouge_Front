@@ -1,22 +1,37 @@
-export type UserRole = 'GESTIONNAIRE' | 'COLLABORATEUR' | 'INTERVENANT' | 'STAGIAIRE';
+// Correspond à l'entité AppUser côté back
+// Sérialisé via @JsonView(AppUserView)
+// Endpoints :
+//   GET  /user/list
+//   GET  /user/:id
+//   POST /user
+//   PUT  /user/:id/email?email=...
+//   PUT  /user/:id/password?password=...
 
-export interface User {
+import { Profil, ProfilType } from './profil.model';
+
+export interface AppUser {
   id: number;
+  email: string;
   name: string;
   lastname: string;
-  email: string;
-  role: UserRole;
-  activeLoans: number; // calculé côté service (count des emprunts IN_PROGRESS + VALID)
-  createdAt: string;
+  createdAt: string; // LocalDateTime → ISO string (@CreationTimestamp)
+  profil: Profil;
 }
 
-export interface UserProfile {
-  id: number;
+// Body attendu par POST /user
+export interface AppUserCreate {
+  email: string;
   name: string;
   lastname: string;
-  email: string;
-  role: UserRole;
-  createdAt: string;
-  // initials → calculé côté front : name[0] + lastname[0]
-  // memberSince supprimé : doublon de createdAt
+  password: string;
+  profil: { id: number };
 }
+
+// ── Alias de compatibilité UI ─────────────────────────
+// Utilisés par les composants mockés — à supprimer au fur et à mesure du branchement
+
+/** @deprecated Utiliser ProfilType depuis profil.model.ts */
+export type UserRole = ProfilType;
+
+/** @deprecated Utiliser AppUser */
+export interface User extends AppUser {}
