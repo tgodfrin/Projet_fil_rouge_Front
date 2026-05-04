@@ -1,7 +1,8 @@
 import { Component, computed, signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { RouterLink } from '@angular/router';
-import { UserLoan } from '../../../core/models/loan.model';
+// Type local mock — sera remplacé lors du branchement sur LoanService
+interface UserLoan { id: number; equipmentName: string; category: string; startDate: string; endDate: string; status: string; }
 
 @Component({
   selector: 'app-user-home',

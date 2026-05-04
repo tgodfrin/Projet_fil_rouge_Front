@@ -3,7 +3,8 @@ import { FormsModule } from '@angular/forms';
 import { CommonModule } from '@angular/common';
 import { Router } from '@angular/router';
 import { EquipmentFormComponent } from './equipment-form/equipment-form';
-import { Equipement } from '../../../core/models/equipment.model';
+// Type local mock — sera remplacé lors du branchement sur EquipmentService
+interface Equipement { nom: string; reference: string; famille: string; localisation: string; statut: string; }
 import { ExportComponent } from '../../../shared/export/export';
 
 interface EquipementItem {

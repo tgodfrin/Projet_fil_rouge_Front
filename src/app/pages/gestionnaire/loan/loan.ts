@@ -2,7 +2,9 @@ import { Component, signal, computed } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { Router } from '@angular/router';
 import { ExportComponent } from '../../../shared/export/export';
-import { LoanStatus, Loan } from '../../../core/models/loan.model';
+// Types locaux mock — seront remplacés lors du branchement sur LoanService
+type LoanStatus = 'IN_PROGRESS' | 'VALID' | 'RETARD' | 'TERMINE' | 'INVALID';
+interface Loan { id: number; equipmentName: string; borrowerName: string; borrowerInitials: string; startDate: string; endDate: string; status: LoanStatus; }
 
 @Component({
   selector: 'app-loan',

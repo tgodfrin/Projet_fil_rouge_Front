@@ -1,7 +1,9 @@
 import { Component, computed, inject, signal } from '@angular/core';
 import { ActivatedRoute, Router, RouterLink } from '@angular/router';
 import { CommonModule } from '@angular/common';
-import { EquipmentStatus, EquipmentCategory } from '../../../core/models/equipment.model';
+import { EquipmentStatus } from '../../../core/models/equipment.model';
+// Type local mock — sera remplacé lors du branchement sur EquipmentService
+type EquipmentCategory = 'PC' | 'VR' | 'Tablette' | 'Écran' | 'Périphérique';
 
 interface CatalogueDetailItem {
   id: number;

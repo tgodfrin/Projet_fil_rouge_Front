@@ -1,7 +1,10 @@
 import { Component, signal, computed, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { Router, RouterLink } from '@angular/router';
-import { CatalogueItem, EquipmentStatus, EquipmentCategory } from '../../../core/models/equipment.model';
+import { EquipmentStatus } from '../../../core/models/equipment.model';
+// Types locaux mock — seront remplacés lors du branchement sur EquipmentService
+type EquipmentCategory = 'PC' | 'VR' | 'Tablette' | 'Écran' | 'Périphérique';
+interface CatalogueItem { id: number; name: string; ref: string; category: EquipmentCategory; status: EquipmentStatus; location?: string; selected?: boolean; }
 
 @Component({
   selector: 'app-user-catalogue',

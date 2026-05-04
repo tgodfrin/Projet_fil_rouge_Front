@@ -2,7 +2,8 @@ import { Component, signal, computed, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { ReactiveFormsModule, FormBuilder, Validators } from '@angular/forms';
 import { RouterLink } from '@angular/router';
-import { UserLoan } from '../../../core/models/loan.model';
+// Type local mock — sera remplacé lors du branchement sur LoanService
+interface UserLoan { id: number; equipmentName: string; category?: string; categoryIcon: string; startDate: string; endDate: string; status: string; returnDate?: string; }
 
 @Component({
   selector: 'app-user-loans',

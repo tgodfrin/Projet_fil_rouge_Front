@@ -2,7 +2,8 @@ import { Component, OnInit, signal, computed } from '@angular/core';
 import { CommonModule, Location } from '@angular/common';
 import { ActivatedRoute } from '@angular/router';
 import { UserRole } from '../../../core/models/user.model';
-import { LoanStatus } from '../../../core/models/loan.model';
+// Type local mock — sera remplacé lors du branchement sur LoanService
+type LoanStatus = 'VALID' | 'INVALID' | 'IN_PROGRESS' | 'TERMINE' | 'RETARD';
 
 export interface UserDetail {
   id: number;

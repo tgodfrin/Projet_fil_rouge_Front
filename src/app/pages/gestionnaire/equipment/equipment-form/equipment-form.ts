@@ -1,7 +1,9 @@
 import { Component, EventEmitter, Output, inject } from '@angular/core';
 import { ReactiveFormsModule, FormBuilder, FormArray, FormGroup, Validators } from '@angular/forms';
 import { CommonModule } from '@angular/common';
-import { Composant, Equipement } from '../../../../core/models/equipment.model';
+// Types locaux mock — seront remplacés lors du branchement sur EquipmentService
+interface Composant  { type: string; valeur: string; }
+interface Equipement { nom: string; reference: string; famille: string; localisation: string; statut: string; composants?: Composant[]; }
 
 @Component({
   selector: 'app-equipment-form',
