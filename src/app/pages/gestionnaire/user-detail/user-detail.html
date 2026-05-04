@@ -9,8 +9,8 @@
     </div>
   </div>
 
-  @if (user() === null) {
-    <div class="empty-state">Utilisateur introuvable.</div>
+  @if (!user()) {
+    <div class="empty-state">Chargement…</div>
   } @else {
 
   <!-- FICHE UTILISATEUR -->
@@ -20,8 +20,8 @@
       <div class="fiche-info">
         <div class="fiche-nom">{{ user()!.name }} {{ user()!.lastname }}</div>
         <div class="fiche-email">{{ user()!.email }}</div>
-        <span class="badge" [ngClass]="getRoleClass(user()!.role)">
-          {{ getRoleLabel(user()!.role) }}
+        <span class="badge" [ngClass]="getRoleClass(user()!.profil.type)">
+          {{ getRoleLabel(user()!.profil.type) }}
         </span>
       </div>
     </div>
@@ -29,7 +29,7 @@
     <div class="fiche-details">
       <div class="detail-item">
         <div class="detail-label">Rôle</div>
-        <div class="detail-value">{{ getRoleLabel(user()!.role) }}</div>
+        <div class="detail-value">{{ getRoleLabel(user()!.profil.type) }}</div>
       </div>
       <div class="detail-item">
         <div class="detail-label">Membre depuis</div>
@@ -67,7 +67,7 @@
         </div>
         <div class="carac-row">
           <span class="carac-label">Rôle</span>
-          <span class="carac-valeur">{{ getRoleLabel(user()!.role) }}</span>
+          <span class="carac-valeur">{{ getRoleLabel(user()!.profil.type) }}</span>
         </div>
         <div class="carac-row">
           <span class="carac-label">Membre depuis</span>
@@ -93,14 +93,14 @@
           </div>
           @for (loan of loans(); track loan.id) {
             <div class="table-row">
-              <div class="td-main">{{ loan.equipmentName }}</div>
-              <div class="td-mono">{{ loan.equipmentRef }}</div>
-              <div class="td-muted">{{ formatDate(loan.startDate) }}</div>
+              <div class="td-main">{{ loan.equipment.equipmentName }}</div>
+              <div class="td-mono">{{ loan.equipment.reference }}</div>
+              <div class="td-muted">{{ formatDate(loan.beginDate) }}</div>
               <div class="td-muted">{{ formatDate(loan.endDate) }}</div>
               <div>
-                <span class="badge" [ngClass]="getLoanStatusClass(loan.status)">
+                <span class="badge" [ngClass]="getLoanStatusClass(getDisplayStatus(loan))">
                   <span class="badge-dot"></span>
-                  {{ getLoanStatusLabel(loan.status) }}
+                  {{ getLoanStatusLabel(getDisplayStatus(loan)) }}
                 </span>
               </div>
             </div>

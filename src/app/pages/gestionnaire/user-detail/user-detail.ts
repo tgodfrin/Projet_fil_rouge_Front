@@ -1,57 +1,16 @@
-import { Component, OnInit, signal, computed } from '@angular/core';
+import { Component, computed, inject, signal } from '@angular/core';
 import { CommonModule, Location } from '@angular/common';
 import { ActivatedRoute } from '@angular/router';
-import { UserRole } from '../../../core/models/user.model';
-// Type local mock — sera remplacé lors du branchement sur LoanService
-type LoanStatus = 'VALID' | 'INVALID' | 'IN_PROGRESS' | 'TERMINE' | 'RETARD';
+import { toSignal } from '@angular/core/rxjs-interop';
 
-export interface UserDetail {
-  id: number;
-  name: string;
-  lastname: string;
-  email: string;
-  role: UserRole;
-  createdAt: string;
-}
+import { UserService } from '../../../core/services/user.service';
+import { LoanService } from '../../../core/services/loan.service';
+import { AppUser } from '../../../core/models/user.model';
+import { Loan, StatusLoanType } from '../../../core/models/loan.model';
+import { ProfilType } from '../../../core/models/profil.model';
 
-export interface UserDetailLoan {
-  id: number;
-  equipmentName: string;
-  equipmentRef: string;
-  startDate: string;
-  endDate: string;
-  status: LoanStatus;
-}
-
-const MOCK_USERS: Record<number, UserDetail> = {
-  1: { id: 1, name: 'John',   lastname: 'Doe',      email: 'john.doe@mns.fr',      role: 'GESTIONNAIRE',  createdAt: '2024-09-01' },
-  2: { id: 2, name: 'Julie',  lastname: 'Fontaine', email: 'julie.fontaine@mns.fr', role: 'COLLABORATEUR', createdAt: '2024-09-03' },
-  3: { id: 3, name: 'Kevin',  lastname: 'Leclerc',  email: 'kevin.leclerc@mns.fr',  role: 'STAGIAIRE',     createdAt: '2024-09-03' },
-  4: { id: 4, name: 'Sophie', lastname: 'Renard',   email: 'sophie.renard@mns.fr',  role: 'INTERVENANT',   createdAt: '2024-09-05' },
-  5: { id: 5, name: 'Marc',   lastname: 'Durand',   email: 'marc.durand@mns.fr',    role: 'STAGIAIRE',     createdAt: '2024-09-05' },
-  6: { id: 6, name: 'Alice',  lastname: 'Martin',   email: 'alice.martin@mns.fr',   role: 'COLLABORATEUR', createdAt: '2024-09-06' },
-};
-
-const MOCK_LOANS: Record<number, UserDetailLoan[]> = {
-  1: [],
-  2: [
-    { id: 10, equipmentName: 'MacBook Pro M3',  equipmentRef: 'REF-PC-042',  startDate: '2026-03-03', endDate: '2026-03-10', status: 'TERMINE'    },
-    { id: 11, equipmentName: 'iPad Pro 12"',    equipmentRef: 'REF-TAB-007', startDate: '2026-04-01', endDate: '2026-04-15', status: 'VALID'      },
-  ],
-  3: [
-    { id: 20, equipmentName: 'Casque VR Meta',  equipmentRef: 'REF-VR-003',  startDate: '2026-02-10', endDate: '2026-02-17', status: 'RETARD'     },
-    { id: 21, equipmentName: 'Surface Pro 9',   equipmentRef: 'REF-PC-051',  startDate: '2026-03-20', endDate: '2026-03-27', status: 'TERMINE'    },
-    { id: 22, equipmentName: 'Écran Dell 27"',  equipmentRef: 'REF-ECR-011', startDate: '2026-04-10', endDate: '2026-04-20', status: 'VALID'      },
-  ],
-  4: [
-    { id: 30, equipmentName: 'MacBook Air M2',  equipmentRef: 'REF-PC-038',  startDate: '2026-04-05', endDate: '2026-04-19', status: 'VALID'      },
-  ],
-  5: [
-    { id: 40, equipmentName: 'iPad Mini 6',     equipmentRef: 'REF-TAB-012', startDate: '2026-03-15', endDate: '2026-03-22', status: 'TERMINE'    },
-    { id: 41, equipmentName: 'Casque VR Meta',  equipmentRef: 'REF-VR-003',  startDate: '2026-04-08', endDate: '2026-04-18', status: 'IN_PROGRESS'},
-  ],
-  6: [],
-};
+// RETARD n'est pas un statut en base — calculé côté front : IN_PROGRESS + endDate < now
+type LoanDisplayStatus = StatusLoanType | 'RETARD';
 
 @Component({
   selector: 'app-user-detail',
@@ -60,31 +19,32 @@ const MOCK_LOANS: Record<number, UserDetailLoan[]> = {
   templateUrl: './user-detail.html',
   styleUrl: './user-detail.scss'
 })
-export class UserDetailComponent implements OnInit {
+export class UserDetailComponent {
+
+  private route       = inject(ActivatedRoute);
+  private location    = inject(Location);
+  private userService = inject(UserService);
+  private loanService = inject(LoanService);
+
+  private userId = Number(this.route.snapshot.paramMap.get('id'));
+
+  // Sans initialValue → Signal<AppUser | undefined> (undefined pendant le chargement)
+  user  = toSignal(this.userService.getById(this.userId));
+  loans = toSignal(this.loanService.getByUser(this.userId), { initialValue: [] as Loan[] });
 
   ongletActif = signal<'infos' | 'emprunts' | 'statistiques'>('infos');
 
-  user = signal<UserDetail | null>(null);
-  loans = signal<UserDetailLoan[]>([]);
-
   loanStats = computed(() => {
-    const l = this.loans();
+    const l   = this.loans();
+    const now = new Date();
     return {
       total:     l.length,
-      enCours:   l.filter(x => x.status === 'VALID').length,
-      enAttente: l.filter(x => x.status === 'IN_PROGRESS').length,
-      termine:   l.filter(x => x.status === 'TERMINE').length,
-      enRetard:  l.filter(x => x.status === 'RETARD').length,
+      enCours:   l.filter(x => x.statusType === 'IN_PROGRESS').length,
+      enAttente: l.filter(x => x.statusType === 'VALID').length,
+      termine:   l.filter(x => x.statusType === 'TERMINE').length,
+      enRetard:  l.filter(x => x.statusType === 'IN_PROGRESS' && new Date(x.endDate) < now).length,
     };
   });
-
-  constructor(private route: ActivatedRoute, private location: Location) {}
-
-  ngOnInit(): void {
-    const id = Number(this.route.snapshot.paramMap.get('id'));
-    this.user.set(MOCK_USERS[id] ?? null);
-    this.loans.set(MOCK_LOANS[id] ?? []);
-  }
 
   retour(): void {
     this.location.back();
@@ -94,12 +54,20 @@ export class UserDetailComponent implements OnInit {
     this.ongletActif.set(onglet);
   }
 
-  getInitials(user: UserDetail): string {
+  getInitials(user: AppUser): string {
     return user.name[0] + user.lastname[0];
   }
 
-  getRoleLabel(role: UserRole): string {
-    const labels: Record<UserRole, string> = {
+  /** RETARD = IN_PROGRESS dont endDate est dépassée */
+  getDisplayStatus(loan: Loan): LoanDisplayStatus {
+    if (loan.statusType === 'IN_PROGRESS' && new Date(loan.endDate) < new Date()) {
+      return 'RETARD';
+    }
+    return loan.statusType;
+  }
+
+  getRoleLabel(role: ProfilType): string {
+    const labels: Record<ProfilType, string> = {
       GESTIONNAIRE:  'Gestionnaire',
       COLLABORATEUR: 'Collaborateur',
       INTERVENANT:   'Intervenant',
@@ -108,8 +76,8 @@ export class UserDetailComponent implements OnInit {
     return labels[role];
   }
 
-  getRoleClass(role: UserRole): string {
-    const classes: Record<UserRole, string> = {
+  getRoleClass(role: ProfilType): string {
+    const classes: Record<ProfilType, string> = {
       GESTIONNAIRE:  'badge-info',
       COLLABORATEUR: 'badge-success',
       INTERVENANT:   'badge-warning',
@@ -118,10 +86,10 @@ export class UserDetailComponent implements OnInit {
     return classes[role];
   }
 
-  getLoanStatusLabel(status: LoanStatus): string {
-    const labels: Record<LoanStatus, string> = {
-      VALID:       'En cours',
-      IN_PROGRESS: 'En attente',
+  getLoanStatusLabel(status: LoanDisplayStatus): string {
+    const labels: Record<LoanDisplayStatus, string> = {
+      VALID:       'En attente',
+      IN_PROGRESS: 'En cours',
       TERMINE:     'Terminé',
       RETARD:      'En retard',
       INVALID:     'Refusé',
@@ -129,10 +97,10 @@ export class UserDetailComponent implements OnInit {
     return labels[status];
   }
 
-  getLoanStatusClass(status: LoanStatus): string {
-    const classes: Record<LoanStatus, string> = {
-      VALID:       'b-info',
-      IN_PROGRESS: 'b-warning',
+  getLoanStatusClass(status: LoanDisplayStatus): string {
+    const classes: Record<LoanDisplayStatus, string> = {
+      VALID:       'b-warning',
+      IN_PROGRESS: 'b-info',
       TERMINE:     'b-success',
       RETARD:      'b-danger',
       INVALID:     'b-neutral',
