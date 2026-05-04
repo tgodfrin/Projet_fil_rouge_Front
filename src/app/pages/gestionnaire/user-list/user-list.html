@@ -48,7 +48,6 @@
                     <th>Utilisateur</th>
                     <th>Email</th>
                     <th>Rôle</th>
-                    <th>Emprunts actifs</th>
                     <th>Membre depuis</th>
                     <th></th>
                 </tr>
@@ -64,16 +63,9 @@
                     </td>
                     <td class="text-muted">{{ user.email }}</td>
                     <td>
-                        <span class="badge" [ngClass]="getRoleClass(user.role)">
-                            {{ getRoleLabel(user.role) }}
+                        <span class="badge" [ngClass]="getRoleClass(user.profil.type)">
+                            {{ getRoleLabel(user.profil.type) }}
                         </span>
-                    </td>
-                    <td>
-                        @if (user.activeLoans > 0) {
-                        <span class="loans-count">{{ user.activeLoans }} en cours</span>
-                        } @else {
-                        <span class="text-muted">—</span>
-                        }
                     </td>
                     <td class="text-muted">{{ formatDate(user.createdAt) }}</td>
                     <td>

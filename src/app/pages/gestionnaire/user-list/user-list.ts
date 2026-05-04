@@ -1,8 +1,11 @@
-import { Component, signal, computed } from '@angular/core';
+import { Component, inject, signal, computed } from '@angular/core';
+import { toSignal } from '@angular/core/rxjs-interop';
 import { CommonModule } from '@angular/common';
 import { Router } from '@angular/router';
 import { ExportComponent } from '../../../shared/export/export';
-import { UserRole, User } from '../../../core/models/user.model';
+import { AppUser } from '../../../core/models/user.model';
+import { ProfilType } from '../../../core/models/profil.model';
+import { UserService } from '../../../core/services/user.service';
 
 @Component({
   selector: 'app-user-list',
@@ -13,100 +16,46 @@ import { UserRole, User } from '../../../core/models/user.model';
 })
 export class UserListComponent {
 
-  constructor(private router: Router) {}
+  private router      = inject(Router);
+  private userService = inject(UserService);
 
-  searchTerm = signal('');
-  activeFilter = signal<UserRole | 'TOUS'>('TOUS');
+  
+  users = toSignal(this.userService.getAll(), { initialValue: [] as AppUser[] });
 
-  users = signal<User[]>([
-  {
-    id: 1,
-    name: 'John',
-    lastname: 'Doe',
-    email: 'john.doe@mns.fr',
-    role: 'GESTIONNAIRE',
-    activeLoans: 0,
-    createdAt: '2024-09-01'
-  },
-  {
-    id: 2,
-    name: 'Julie',
-    lastname: 'Fontaine',
-    email: 'julie.fontaine@mns.fr',
-    role: 'COLLABORATEUR',
-    activeLoans: 1,
-    createdAt: '2024-09-03'
-  },
-  {
-    id: 3,
-    name: 'Kevin',
-    lastname: 'Leclerc',
-    email: 'kevin.leclerc@mns.fr',
-    role: 'STAGIAIRE',
-    activeLoans: 2,
-    createdAt: '2024-09-03'
-  },
-  {
-    id: 4,
-    name: 'Sophie',
-    lastname: 'Renard',
-    email: 'sophie.renard@mns.fr',
-    role: 'INTERVENANT',
-    activeLoans: 1,
-    createdAt: '2024-09-05'
-  },
-  {
-    id: 5,
-    name: 'Marc',
-    lastname: 'Durand',
-    email: 'marc.durand@mns.fr',
-    role: 'STAGIAIRE',
-    activeLoans: 1,
-    createdAt: '2024-09-05'
-  },
-  {
-    id: 6,
-    name: 'Alice',
-    lastname: 'Martin',
-    email: 'alice.martin@mns.fr',
-    role: 'COLLABORATEUR',
-    activeLoans: 0,
-    createdAt: '2024-09-06'
-  }
-]);
+  searchTerm   = signal('');
+  activeFilter = signal<ProfilType | 'TOUS'>('TOUS');
 
   filteredUsers = computed(() => {
     const search = this.searchTerm().toLowerCase();
     const filter = this.activeFilter();
 
     return this.users().filter(u => {
-      const matchRole = filter === 'TOUS' || u.role === filter;
+      const matchRole   = filter === 'TOUS' || u.profil.type === filter;
       const matchSearch =
-        u.name.toLowerCase().includes(search) ||
+        u.name.toLowerCase().includes(search)     ||
         u.lastname.toLowerCase().includes(search) ||
         u.email.toLowerCase().includes(search);
       return matchRole && matchSearch;
     });
   });
 
-  countByRole(role: UserRole | 'TOUS'): number {
+  countByRole(role: ProfilType | 'TOUS'): number {
     if (role === 'TOUS') return this.users().length;
-    return this.users().filter(u => u.role === role).length;
+    return this.users().filter(u => u.profil.type === role).length;
   }
 
   usersExport = computed(() =>
     this.users().map(u => ({
-      id: u.id,
-      prenom: u.name,
-      nom: u.lastname,
-      email: u.email,
-      role: this.getRoleLabel(u.role),
-      emprunts_actifs: u.activeLoans,
+      id:            u.id,
+      prenom:        u.name,
+      nom:           u.lastname,
+      email:         u.email,
+      role:          this.getRoleLabel(u.profil.type),
       membre_depuis: u.createdAt
     }))
   );
 
-  setFilter(filter: UserRole | 'TOUS'): void {
+  setFilter(filter: ProfilType | 'TOUS'): void {
     this.activeFilter.set(filter);
   }
 
@@ -114,29 +63,29 @@ export class UserListComponent {
     this.searchTerm.set((event.target as HTMLInputElement).value);
   }
 
-  getInitials(user: User): string {
+  getInitials(user: AppUser): string {
     return user.name[0] + user.lastname[0];
   }
 
-  getRoleLabel(role: UserRole): string {
-  const labels: Record<UserRole, string> = {
-    GESTIONNAIRE:  'Gestionnaire',
-    COLLABORATEUR: 'Collaborateur',
-    INTERVENANT:   'Intervenant',
-    STAGIAIRE:     'Stagiaire'
-  };
-  return labels[role];
-}
+  getRoleLabel(role: ProfilType): string {
+    const labels: Record<ProfilType, string> = {
+      GESTIONNAIRE:  'Gestionnaire',
+      COLLABORATEUR: 'Collaborateur',
+      INTERVENANT:   'Intervenant',
+      STAGIAIRE:     'Stagiaire'
+    };
+    return labels[role];
+  }
 
-getRoleClass(role: UserRole): string {
-  const classes: Record<UserRole, string> = {
-    GESTIONNAIRE:  'badge-info',
-    COLLABORATEUR: 'badge-success',
-    INTERVENANT:   'badge-warning',
-    STAGIAIRE:     'badge-neutral'
-  };
-  return classes[role];
-}
+  getRoleClass(role: ProfilType): string {
+    const classes: Record<ProfilType, string> = {
+      GESTIONNAIRE:  'badge-info',
+      COLLABORATEUR: 'badge-success',
+      INTERVENANT:   'badge-warning',
+      STAGIAIRE:     'badge-neutral'
+    };
+    return classes[role];
+  }
 
   navigateToDetail(id: number): void {
     this.router.navigate(['/utilisateurs', id]);
