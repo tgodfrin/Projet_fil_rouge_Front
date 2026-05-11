@@ -25,26 +25,30 @@
 
           <!-- Header -->
           <div class="loan-header">
-            <div class="loan-icon">{{ loan.categoryIcon }}</div>
+            <div class="loan-icon">{{ getCategoryIcon(loan) }}</div>
             <div class="loan-info">
-              <div class="loan-name">{{ loan.equipmentName }}</div>
-              <div class="loan-dates">{{ formatDateRange(loan.startDate, loan.endDate) }}</div>
+              <div class="loan-name">{{ loan.equipment.equipmentName }}</div>
+              <div class="loan-dates">{{ formatDateRange(loan.beginDate, loan.endDate) }}</div>
             </div>
-            <span class="badge" [ngClass]="getStatusClass(loan.status)">
-              <span class="badge-dot"></span>{{ getStatusLabel(loan.status) }}
+            <span class="badge" [ngClass]="getStatusClass(getDisplayStatus(loan))">
+              <span class="badge-dot"></span>{{ getStatusLabel(getDisplayStatus(loan)) }}
             </span>
           </div>
 
-          <!-- Progress -->
-          @if (loan.status === 'VALID' || loan.status === 'RETARD') {
+          <!-- Progress (emprunts actifs uniquement) -->
+          @if (loan.statusType === 'IN_PROGRESS') {
             <div class="progress-bar">
               <div class="progress-fill" [style.width.%]="getProgressPercent(loan)"></div>
             </div>
             <div class="days-left">
-              Retour dans
-              <strong [class.urgent]="getDaysLeft(loan) <= 1">
-                {{ getDaysLeft(loan) }} jour(s)
-              </strong>
+              @if (getDaysLeft(loan) > 0) {
+                Retour dans
+                <strong [class.urgent]="getDaysLeft(loan) <= 1">
+                  {{ getDaysLeft(loan) }} jour(s)
+                </strong>
+              } @else {
+                <strong class="urgent">En retard de {{ -getDaysLeft(loan) }} jour(s)</strong>
+              }
             </div>
 
             <!-- Actions -->
@@ -83,7 +87,7 @@
                 <div class="inline-form-title">📅 Demande de prolongation</div>
                 <div class="form-group">
                   <label>Nouvelle date de fin</label>
-                  <input type="date" class="form-input" formControlName="date" [min]="loan.endDate" />
+                  <input type="date" class="form-input" formControlName="date" [min]="loan.endDate.substring(0, 10)" />
                   @if (prolongForm.get('date')?.invalid && prolongForm.get('date')?.touched) {
                     <small class="form-error">La nouvelle date de fin est requise.</small>
                   }

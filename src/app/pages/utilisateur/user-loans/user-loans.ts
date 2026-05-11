@@ -2,8 +2,12 @@ import { Component, signal, computed, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { ReactiveFormsModule, FormBuilder, Validators } from '@angular/forms';
 import { RouterLink } from '@angular/router';
-// Type local mock — sera remplacé lors du branchement sur LoanService
-interface UserLoan { id: number; equipmentName: string; category?: string; categoryIcon: string; startDate: string; endDate: string; status: string; returnDate?: string; }
+import { toSignal } from '@angular/core/rxjs-interop';
+import { LoanService } from '../../../core/services/loan.service';
+import { Loan } from '../../../core/models/loan.model';
+
+// userId de l'utilisateur connecté — à remplacer par un vrai service d'auth
+const CURRENT_USER_ID = 1;
 
 @Component({
   selector: 'app-user-loans',
@@ -13,43 +17,14 @@ interface UserLoan { id: number; equipmentName: string; category?: string; categ
   styleUrl: './user-loans.scss'
 })
 export class UserLoansComponent {
-  private fb = inject(FormBuilder);
+  private loanService = inject(LoanService);
+  private fb          = inject(FormBuilder);
 
-  // ── Données mock ───────────────────────────────────────
-  private loans: UserLoan[] = [
-    {
-      id: 1,
-      equipmentName: 'MacBook Pro 14"',
-      categoryIcon: '💻',
-      startDate: '2026-04-01',
-      endDate: '2026-04-20',
-      status: 'VALID'
-    },
-    {
-      id: 2,
-      equipmentName: 'Appareil photo Sony A7',
-      categoryIcon: '📷',
-      startDate: '2026-04-10',
-      endDate: '2026-04-18',
-      status: 'RETARD'
-    },
-    {
-      id: 3,
-      equipmentName: 'Vidéoprojecteur Epson',
-      categoryIcon: '📽️',
-      startDate: '2026-04-20',
-      endDate: '2026-04-25',
-      status: 'IN_PROGRESS'
-    },
-    {
-      id: 4,
-      equipmentName: 'iPad Pro 12.9"',
-      categoryIcon: '📱',
-      startDate: '2026-03-01',
-      endDate: '2026-03-15',
-      status: 'TERMINE'
-    }
-  ];
+  // Tous les emprunts de l'utilisateur courant
+  private allLoans = toSignal(
+    this.loanService.getByUser(CURRENT_USER_ID),
+    { initialValue: [] as Loan[] }
+  );
 
   // ── Tabs ───────────────────────────────────────────────
   activeTab = signal<'EN_COURS' | 'EN_ATTENTE' | 'HISTORIQUE'>('EN_COURS');
@@ -60,32 +35,37 @@ export class UserLoansComponent {
   }
 
   countByTab(tab: string): number {
-    if (tab === 'EN_COURS') {
-      return this.loans.filter(l => l.status === 'VALID' || l.status === 'RETARD').length;
-    }
-    if (tab === 'EN_ATTENTE') {
-      return this.loans.filter(l => l.status === 'IN_PROGRESS').length;
-    }
-    return this.loans.filter(l => l.status === 'TERMINE' || l.status === 'INVALID').length;
+    const loans = this.allLoans();
+    // IN_PROGRESS = emprunt actif (y compris RETARD côté front)
+    // VALID       = en attente de validation
+    // TERMINE/INVALID = historique
+    if (tab === 'EN_COURS')   return loans.filter(l => l.statusType === 'IN_PROGRESS').length;
+    if (tab === 'EN_ATTENTE') return loans.filter(l => l.statusType === 'VALID').length;
+    return loans.filter(l => l.statusType === 'TERMINE' || l.statusType === 'INVALID').length;
   }
 
   filteredLoans = computed(() => {
-    const tab = this.activeTab();
-    if (tab === 'EN_COURS') {
-      return this.loans.filter(l => l.status === 'VALID' || l.status === 'RETARD');
-    }
-    if (tab === 'EN_ATTENTE') {
-      return this.loans.filter(l => l.status === 'IN_PROGRESS');
-    }
-    return this.loans.filter(l => l.status === 'TERMINE' || l.status === 'INVALID');
+    const tab   = this.activeTab();
+    const loans = this.allLoans();
+    if (tab === 'EN_COURS')   return loans.filter(l => l.statusType === 'IN_PROGRESS');
+    if (tab === 'EN_ATTENTE') return loans.filter(l => l.statusType === 'VALID');
+    return loans.filter(l => l.statusType === 'TERMINE' || l.statusType === 'INVALID');
   });
+
+  // ── Statut affiché (RETARD calculé côté front) ─────────
+  getDisplayStatus(loan: Loan): string {
+    if (loan.statusType === 'IN_PROGRESS' && new Date(loan.endDate) < new Date()) {
+      return 'RETARD';
+    }
+    return loan.statusType;
+  }
 
   // ── Badges ─────────────────────────────────────────────
   getStatusClass(status: string): string {
     const map: Record<string, string> = {
-      VALID:       'badge-success',
+      VALID:       'badge-warning',
       RETARD:      'badge-danger',
-      IN_PROGRESS: 'badge-warning',
+      IN_PROGRESS: 'badge-success',
       TERMINE:     'badge-neutral',
       INVALID:     'badge-danger'
     };
@@ -94,13 +74,18 @@ export class UserLoansComponent {
 
   getStatusLabel(status: string): string {
     const map: Record<string, string> = {
-      VALID:       'En cours',
+      VALID:       'En attente',
       RETARD:      'En retard',
-      IN_PROGRESS: 'En attente',
+      IN_PROGRESS: 'En cours',
       TERMINE:     'Terminé',
       INVALID:     'Refusé'
     };
     return map[status] ?? status;
+  }
+
+  // ── Icône équipement (family id → emoji) ───────────────
+  getCategoryIcon(_loan: Loan): string {
+    return '📦';
   }
 
   // ── Dates & progress ───────────────────────────────────
@@ -110,8 +95,8 @@ export class UserLoansComponent {
     return `${fmt(start)} → ${fmt(end)}`;
   }
 
-  getProgressPercent(loan: UserLoan): number {
-    const start = new Date(loan.startDate).getTime();
+  getProgressPercent(loan: Loan): number {
+    const start = new Date(loan.beginDate).getTime();
     const end   = new Date(loan.endDate).getTime();
     const now   = Date.now();
     if (now >= end) return 100;
@@ -119,10 +104,10 @@ export class UserLoansComponent {
     return Math.round(((now - start) / (end - start)) * 100);
   }
 
-  getDaysLeft(loan: UserLoan): number {
-    const end = new Date(loan.endDate).getTime();
+  getDaysLeft(loan: Loan): number {
+    const end  = new Date(loan.endDate).getTime();
     const diff = end - Date.now();
-    return Math.max(0, Math.ceil(diff / (1000 * 60 * 60 * 24)));
+    return Math.ceil(diff / (1000 * 60 * 60 * 24));
   }
 
   // ── Formulaires inline ─────────────────────────────────
@@ -130,13 +115,13 @@ export class UserLoansComponent {
   activeForm     = signal<'prolong' | 'return' | null>(null);
 
   returnForm = this.fb.group({
-    date:   ['', Validators.required],
-    motif:  ['']
+    date:  ['', Validators.required],
+    motif: ['']
   });
 
   prolongForm = this.fb.group({
-    date:   ['', Validators.required],
-    motif:  ['', Validators.required]
+    date:  ['', Validators.required],
+    motif: ['', Validators.required]
   });
 
   toggleForm(loanId: number, form: 'prolong' | 'return') {
@@ -157,17 +142,17 @@ export class UserLoansComponent {
     this.prolongForm.reset();
   }
 
-  submitReturn(loan: UserLoan) {
+  submitReturn(loan: Loan) {
     if (this.returnForm.invalid) {
       this.returnForm.markAllAsTouched();
       return;
     }
     console.log('Retour anticipé', { id: loan.id, ...this.returnForm.value });
-    // TODO: appel API
+    // TODO: appel API loanService.return(loan.id)
     this.closeForm();
   }
 
-  submitProlong(loan: UserLoan) {
+  submitProlong(loan: Loan) {
     if (this.prolongForm.invalid) {
       this.prolongForm.markAllAsTouched();
       return;
