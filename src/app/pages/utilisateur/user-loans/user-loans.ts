@@ -4,6 +4,7 @@ import { ReactiveFormsModule, FormBuilder, Validators } from '@angular/forms';
 import { RouterLink } from '@angular/router';
 import { toSignal } from '@angular/core/rxjs-interop';
 import { LoanService } from '../../../core/services/loan.service';
+import { EventService } from '../../../core/services/event.service';
 import { Loan } from '../../../core/models/loan.model';
 
 // userId de l'utilisateur connecté — à remplacer par un vrai service d'auth
@@ -17,8 +18,9 @@ const CURRENT_USER_ID = 1;
   styleUrl: './user-loans.scss'
 })
 export class UserLoansComponent {
-  private loanService = inject(LoanService);
-  private fb          = inject(FormBuilder);
+  private loanService  = inject(LoanService);
+  private eventService = inject(EventService);
+  private fb           = inject(FormBuilder);
 
   // Tous les emprunts de l'utilisateur courant
   private allLoans = toSignal(
@@ -147,9 +149,16 @@ export class UserLoansComponent {
       this.returnForm.markAllAsTouched();
       return;
     }
-    console.log('Retour anticipé', { id: loan.id, ...this.returnForm.value });
-    // TODO: appel API loanService.return(loan.id)
-    this.closeForm();
+    const { date, motif } = this.returnForm.value;
+    const description = motif
+      ? `Retour prévu le ${date} — ${motif}`
+      : `Retour prévu le ${date}`;
+    // Crée un event EARLY_RETURN → visible dans les alertes gestionnaire
+    this.eventService.create({
+      type:        'EARLY_RETURN',
+      description,
+      loan:        { id: loan.id }
+    }).subscribe(() => this.closeForm());
   }
 
   submitProlong(loan: Loan) {
@@ -157,8 +166,13 @@ export class UserLoansComponent {
       this.prolongForm.markAllAsTouched();
       return;
     }
-    console.log('Prolongation', { id: loan.id, ...this.prolongForm.value });
-    // TODO: appel API
-    this.closeForm();
+    const { date, motif } = this.prolongForm.value;
+    const description = `Nouvelle date souhaitée : ${date} — ${motif}`;
+    // Crée un event EXTENSION → visible dans les alertes gestionnaire
+    this.eventService.create({
+      type:        'EXTENSION',
+      description,
+      loan:        { id: loan.id }
+    }).subscribe(() => this.closeForm());
   }
 }
