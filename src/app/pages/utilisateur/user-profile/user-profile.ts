@@ -1,15 +1,12 @@
-import { Component, signal, inject } from '@angular/core';
+import { Component, signal, computed, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { ReactiveFormsModule, FormBuilder, Validators, AbstractControl, ValidationErrors } from '@angular/forms';
+import { UserService } from '../../../core/services/user.service';
+import { LoanService } from '../../../core/services/loan.service';
+import { AppUser } from '../../../core/models/user.model';
+import { Loan } from '../../../core/models/loan.model';
 
-interface UserProfile {
-  name: string;
-  lastname: string;
-  email: string;
-  role: string;
-  initials: string;
-  memberSince: string;
-}
+const CURRENT_USER_ID = 1;
 
 @Component({
   selector: 'app-user-profile',
@@ -19,27 +16,55 @@ interface UserProfile {
   styleUrl: './user-profile.scss'
 })
 export class UserProfileComponent {
-  private fb = inject(FormBuilder);
+  private fb          = inject(FormBuilder);
+  private userService = inject(UserService);
+  private loanService = inject(LoanService);
 
-  profile = signal<UserProfile>({
-    name: 'Julie',
-    lastname: 'Fontaine',
-    email: 'julie.fontaine@mns.fr',
-    role: 'Collaboratrice',
-    initials: 'JF',
-    memberSince: '2024-09-03'
+  // Chargement de l'utilisateur courant via subscribe → signal mutable
+  // (permet mise à jour optimiste après PUT email)
+  private userSig = signal<AppUser | undefined>(undefined);
+  user = this.userSig.asReadonly();
+
+  constructor() {
+    this.userService.getById(CURRENT_USER_ID).subscribe(u => this.userSig.set(u));
+    this.loanService.getByUser(CURRENT_USER_ID).subscribe(l => this.loansSig.set(l));
+  }
+
+  // Emprunts pour les stats
+  private loansSig = signal<Loan[]>([]);
+
+  // ── Valeurs dérivées ───────────────────────────────────
+  initials = computed(() => {
+    const u = this.user();
+    if (!u) return '';
+    return `${u.name[0]}${u.lastname[0]}`.toUpperCase();
   });
 
-  stats = signal([
-    { label: 'Emprunts effectués', value: 12 },
-    { label: 'En cours',           value: 2  },
-    { label: 'En attente',         value: 1  },
-  ]);
+  roleLabel = computed(() => {
+    const map: Record<string, string> = {
+      GESTIONNAIRE: 'Gestionnaire',
+      COLLABORATEUR: 'Collaborateur',
+      INTERVENANT: 'Intervenant',
+      STAGIAIRE: 'Stagiaire'
+    };
+    const type = this.user()?.profil?.type;
+    return type ? (map[type] ?? type) : '';
+  });
+
+  stats = computed(() => {
+    const loans = this.loansSig();
+    return [
+      { label: 'Emprunts effectués', value: loans.length },
+      { label: 'En cours',           value: loans.filter(l => l.statusType === 'VALID').length },
+      { label: 'En attente',         value: loans.filter(l => l.statusType === 'IN_PROGRESS').length },
+    ];
+  });
 
   // ── Formulaires inline ─────────────────────────────────
-  activeEdit    = signal<'email' | 'password' | null>(null);
+  activeEdit     = signal<'email' | 'password' | null>(null);
   successMessage = signal<string | null>(null);
   errorMessage   = signal<string | null>(null);
+  submitting     = signal(false);
 
   // Validator de correspondance entre deux champs
   private matchValidator(field1: string, field2: string) {
@@ -86,6 +111,7 @@ export class UserProfileComponent {
     this.emailForm.reset();
     this.passwordForm.reset();
     this.clearMessages();
+    this.submitting.set(false);
   }
 
   clearMessages() {
@@ -98,10 +124,20 @@ export class UserProfileComponent {
       this.emailForm.markAllAsTouched();
       return;
     }
-    const { newEmail } = this.emailForm.value;
-    this.profile.update(p => ({ ...p, email: newEmail! }));
-    this.successMessage.set('Email mis à jour.');
-    setTimeout(() => this.closeEdit(), 1500);
+    const newEmail = this.emailForm.value.newEmail!;
+    this.submitting.set(true);
+    this.userService.updateEmail(CURRENT_USER_ID, newEmail).subscribe({
+      next: () => {
+        // Mise à jour optimiste du signal local
+        this.userSig.update(u => u ? { ...u, email: newEmail } : u);
+        this.successMessage.set('Email mis à jour.');
+        setTimeout(() => this.closeEdit(), 1500);
+      },
+      error: () => {
+        this.errorMessage.set('Une erreur est survenue.');
+        this.submitting.set(false);
+      }
+    });
   }
 
   submitPassword() {
@@ -109,9 +145,18 @@ export class UserProfileComponent {
       this.passwordForm.markAllAsTouched();
       return;
     }
-    // TODO: appel API
-    this.successMessage.set('Mot de passe mis à jour.');
-    setTimeout(() => this.closeEdit(), 1500);
+    const newPassword = this.passwordForm.value.newPassword!;
+    this.submitting.set(true);
+    this.userService.updatePassword(CURRENT_USER_ID, newPassword).subscribe({
+      next: () => {
+        this.successMessage.set('Mot de passe mis à jour.');
+        setTimeout(() => this.closeEdit(), 1500);
+      },
+      error: () => {
+        this.errorMessage.set('Une erreur est survenue.');
+        this.submitting.set(false);
+      }
+    });
   }
 
   formatDate(dateStr: string): string {

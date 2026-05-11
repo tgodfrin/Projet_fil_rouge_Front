@@ -2,10 +2,10 @@
 
   <!-- Avatar + nom -->
   <div class="profile-header">
-    <div class="avatar">{{ profile().initials }}</div>
+    <div class="avatar">{{ initials() }}</div>
     <div class="profile-identity">
-      <div class="profile-name">{{ profile().name }} {{ profile().lastname }}</div>
-      <span class="role-badge">{{ profile().role }}</span>
+      <div class="profile-name">{{ user()?.name }} {{ user()?.lastname }}</div>
+      <span class="role-badge">{{ roleLabel() }}</span>
     </div>
   </div>
 
@@ -26,17 +26,17 @@
     <!-- Email (lecture seule) -->
     <div class="info-row">
       <span class="info-key">Email</span>
-      <span class="info-val">{{ profile().email }}</span>
+      <span class="info-val">{{ user()?.email }}</span>
     </div>
 
     <!-- Rôle & membre depuis (non modifiables) -->
     <div class="info-row">
       <span class="info-key">Rôle</span>
-      <span class="info-val">{{ profile().role }}</span>
+      <span class="info-val">{{ roleLabel() }}</span>
     </div>
     <div class="info-row">
       <span class="info-key">Membre depuis</span>
-      <span class="info-val">{{ formatDate(profile().memberSince) }}</span>
+      <span class="info-val">{{ user()?.createdAt ? formatDate(user()!.createdAt) : '' }}</span>
     </div>
 
   </div>
@@ -74,8 +74,13 @@
         @if (successMessage()) {
           <div class="msg msg-success">{{ successMessage() }}</div>
         }
+        @if (errorMessage()) {
+          <div class="msg msg-error">{{ errorMessage() }}</div>
+        }
         <div class="form-actions">
-          <button class="btn-save" type="submit">Enregistrer</button>
+          <button class="btn-save" type="submit" [disabled]="submitting()">
+            {{ submitting() ? 'Envoi...' : 'Enregistrer' }}
+          </button>
           <button class="btn-cancel" type="button" (click)="closeEdit()">Annuler</button>
         </div>
       </form>
@@ -117,8 +122,13 @@
         @if (successMessage()) {
           <div class="msg msg-success">{{ successMessage() }}</div>
         }
+        @if (errorMessage()) {
+          <div class="msg msg-error">{{ errorMessage() }}</div>
+        }
         <div class="form-actions">
-          <button class="btn-save" type="submit">Enregistrer</button>
+          <button class="btn-save" type="submit" [disabled]="submitting()">
+            {{ submitting() ? 'Envoi...' : 'Enregistrer' }}
+          </button>
           <button class="btn-cancel" type="button" (click)="closeEdit()">Annuler</button>
         </div>
       </form>
