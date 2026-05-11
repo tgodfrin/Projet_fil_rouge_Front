@@ -40,7 +40,7 @@
 
   <!-- Filtres catégories -->
   <div class="chip-row">
-    @for (cat of categories; track cat) {
+    @for (cat of categories(); track cat) {
       <button class="chip" [class.active]="activeCategory() === cat" (click)="setCategory(cat)">
         {{ cat }}
       </button>
@@ -65,10 +65,10 @@
             </div>
           }
 
-          <div class="item-icon">{{ getCategoryIcon(item.category) }}</div>
+          <div class="item-icon">{{ getCategoryIcon(item.equipmentFamily.nameEquipmentFamily) }}</div>
           <div class="item-info">
-            <div class="item-name">{{ item.name }}</div>
-            <div class="item-ref">{{ item.ref }}</div>
+            <div class="item-name">{{ item.equipmentName }}</div>
+            <div class="item-ref">{{ item.reference }}</div>
           </div>
           <div class="item-right">
             <span class="badge" [ngClass]="getStatusClass(item.status)">
