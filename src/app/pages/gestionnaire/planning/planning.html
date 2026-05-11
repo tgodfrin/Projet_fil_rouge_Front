@@ -33,7 +33,7 @@
 
   <!-- Filtres catégories -->
   <div class="category-filters">
-    @for (cat of categories; track cat) {
+    @for (cat of categories(); track cat) {
       <button class="filter-btn" [class.active]="activeCategory() === cat" (click)="setCategory(cat)">
         {{ cat }}
       </button>

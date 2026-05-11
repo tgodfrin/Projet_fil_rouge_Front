@@ -1,5 +1,11 @@
-import { Component, signal, computed } from '@angular/core';
+import { Component, computed, inject, signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
+import { toSignal } from '@angular/core/rxjs-interop';
+
+import { LoanService } from '../../../core/services/loan.service';
+import { EquipmentFamilyService } from '../../../core/services/equipment-family.service';
+import { Loan } from '../../../core/models/loan.model';
+import { EquipmentFamily } from '../../../core/models/equipment-family.model';
 import { PlanningEvent, PlanningRow } from '../../../core/models/planning.model';
 
 @Component({
@@ -10,59 +16,55 @@ import { PlanningEvent, PlanningRow } from '../../../core/models/planning.model'
   styleUrl: './planning.scss'
 })
 export class PlanningComponent {
-  viewMode = signal<'SEMAINE' | 'MOIS'>('SEMAINE');
-  weekOffset = signal(0);
-  selectedDate = signal<string>(this.getTodayString());
-  activeCategory = signal<string>('TOUS');
 
-  categories = ['TOUS', 'PC', 'VR', 'Tablette', 'Écran', 'Périphérique'];
+  private loanService   = inject(LoanService);
+  private familyService = inject(EquipmentFamilyService);
+
+  private allLoans = toSignal(this.loanService.getAll(),        { initialValue: [] as Loan[]            });
+  private families = toSignal(this.familyService.getAll(),      { initialValue: [] as EquipmentFamily[] });
+
+  viewMode      = signal<'SEMAINE' | 'MOIS'>('SEMAINE');
+  weekOffset    = signal(0);
+  selectedDate  = signal<string>(this.getTodayString());
+  activeCategory = signal<string>('TOUS');
 
   today = new Date().toDateString();
 
-  rows = signal<PlanningRow[]>([
-    {
-      equipmentName: 'MacBook M3',
-      category: 'PC',
-      events: [
-        { id: 1, borrowerName: 'Marc D.', equipmentName: 'MacBook M3', category: 'PC', startDate: '2026-04-14', endDate: '2026-04-15' }
-      ]
-    },
-    {
-      equipmentName: 'HP EliteBook',
-      category: 'PC',
-      events: [
-        { id: 2, borrowerName: 'Tom V.', equipmentName: 'HP EliteBook', category: 'PC', startDate: '2026-04-16', endDate: '2026-04-18' }
-      ]
-    },
-    {
-      equipmentName: 'Meta Quest 3',
-      category: 'VR',
-      events: [
-        { id: 3, borrowerName: 'Kevin L.', equipmentName: 'Meta Quest 3', category: 'VR', startDate: '2026-04-15', endDate: '2026-04-17' }
-      ]
-    },
-    {
-      equipmentName: 'iPad Pro 12.9"',
-      category: 'Tablette',
-      events: [
-        { id: 4, borrowerName: 'Sophie R.', equipmentName: 'iPad Pro 12.9"', category: 'Tablette', startDate: '2026-04-16', endDate: '2026-04-19' }
-      ]
-    },
-    {
-      equipmentName: 'Dell UltraSharp 27"',
-      category: 'Écran',
-      events: [
-        { id: 5, borrowerName: 'Julie F.', equipmentName: 'Dell UltraSharp 27"', category: 'Écran', startDate: '2026-04-14', endDate: '2026-04-14' }
-      ]
-    },
-    {
-      equipmentName: 'Clavier Keychron K2',
-      category: 'Périphérique',
-      events: [
-        { id: 6, borrowerName: 'Alice M.', equipmentName: 'Clavier Keychron K2', category: 'Périphérique', startDate: '2026-04-18', endDate: '2026-04-20' }
-      ]
-    }
-  ]);
+  // Catégories dynamiques depuis les vraies familles
+  categories = computed(() => ['TOUS', ...this.families().map(f => f.nameEquipmentFamily)]);
+
+  private familyName(id: number): string {
+    return this.families().find(f => f.id === id)?.nameEquipmentFamily ?? '—';
+  }
+
+  // Loans actifs (VALID ou IN_PROGRESS) groupés par équipement → PlanningRow[]
+  rows = computed((): PlanningRow[] => {
+    const activeLoans = this.allLoans().filter(
+      l => l.statusType === 'IN_PROGRESS' || l.statusType === 'VALID'
+    );
+
+    const byEquipment = new Map<string, PlanningRow>();
+    activeLoans.forEach(loan => {
+      const key      = loan.equipment.equipmentName;
+      const category = this.familyName(loan.equipment.equipmentFamily.id);
+
+      if (!byEquipment.has(key)) {
+        byEquipment.set(key, { equipmentName: key, category, events: [] });
+      }
+
+      const event: PlanningEvent = {
+        id:            loan.id,
+        borrowerName:  `${loan.requester.name} ${loan.requester.lastname[0]}.`,
+        equipmentName: key,
+        category,
+        startDate:     loan.beginDate.substring(0, 10),   // LocalDateTime → YYYY-MM-DD
+        endDate:       loan.endDate.substring(0, 10),
+      };
+      byEquipment.get(key)!.events.push(event);
+    });
+
+    return Array.from(byEquipment.values());
+  });
 
   // ── Semaine ───────────────────────────────────────────
 
