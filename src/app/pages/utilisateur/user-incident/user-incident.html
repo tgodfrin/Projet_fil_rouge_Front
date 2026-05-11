@@ -9,9 +9,9 @@
   <!-- Équipement concerné -->
   @if (loan(); as l) {
     <div class="equipment-card">
-      <div class="equipment-icon">{{ l.categoryIcon }}</div>
+      <div class="equipment-icon">📦</div>
       <div class="equipment-info">
-        <div class="equipment-name">{{ l.equipmentName }}</div>
+        <div class="equipment-name">{{ l.equipment.equipmentName }}</div>
         <div class="equipment-dates">Emprunt du {{ dateRange() }}</div>
       </div>
     </div>
@@ -70,8 +70,8 @@
     </div>
 
     <!-- Submit -->
-    <button class="btn-submit" type="submit">
-      Envoyer le signalement
+    <button class="btn-submit" type="submit" [disabled]="submitting()">
+      {{ submitting() ? 'Envoi...' : 'Envoyer le signalement' }}
     </button>
 
   </form>
