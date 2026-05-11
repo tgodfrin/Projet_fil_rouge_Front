@@ -37,14 +37,14 @@ export class UserHomeComponent {
     return { firstName: '—', lastName: '', initials: '?' };
   });
 
-  // Emprunts actifs : statusType IN_PROGRESS (RETARD inclus, calculé côté front)
+  // Emprunts actifs : VALID = validé par le gestionnaire (RETARD inclus, calculé côté front)
   activeLoans = computed(() =>
-    this.allLoans().filter(l => l.statusType === 'IN_PROGRESS')
+    this.allLoans().filter(l => l.statusType === 'VALID')
   );
 
-  // Nombre d'emprunts en attente de validation
+  // Nombre d'emprunts en attente de validation gestionnaire
   pendingCount = computed(() =>
-    this.allLoans().filter(l => l.statusType === 'VALID').length
+    this.allLoans().filter(l => l.statusType === 'IN_PROGRESS').length
   );
 
   // Emprunt dont le retour est prévu demain ou déjà en retard
@@ -53,7 +53,7 @@ export class UserHomeComponent {
   );
 
   isRetard(loan: Loan): boolean {
-    return loan.statusType === 'IN_PROGRESS' && new Date(loan.endDate) < new Date();
+    return loan.statusType === 'VALID' && new Date(loan.endDate) < new Date();
   }
 
   getDaysLeft(loan: Loan): number {
