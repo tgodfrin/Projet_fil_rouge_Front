@@ -18,7 +18,7 @@
     </div>
   </div>
 
-  <!-- Section : À valider (statusType VALID = demandes créées, en attente du gestionnaire) -->
+  <!-- Section : À valider (statusType IN_PROGRESS = demandes créées, en attente du gestionnaire) -->
   @if (pendingLoans().length > 0) {
     <div class="section-label">À valider ({{ pendingLoans().length }})</div>
     <div class="cards-list">
@@ -42,7 +42,7 @@
     </div>
   }
 
-  <!-- Section : En cours (statusType IN_PROGRESS = validés, matériel sorti) -->
+  <!-- Section : En cours (statusType VALID = validés par gestionnaire, matériel sorti) -->
   <div class="section-label">
     En cours ({{ activeLoans().length }})
   </div>
@@ -78,7 +78,7 @@
                 </span>
               </td>
               <td>
-                <!-- Tous les emprunts IN_PROGRESS peuvent être rendus -->
+                <!-- Tous les emprunts VALID peuvent être rendus (VALID → TERMINE) -->
                 <button class="btn-return" (click)="returnLoan(loan)">Rendu</button>
               </td>
               <td>

@@ -35,15 +35,15 @@ export class LoanComponent {
     this.loanService.getAll().subscribe(data => this.loans.set(data));
   }
 
-  // "À valider" = demandes en attente de validation (statusType VALID = créé, pas encore validé)
+  // "À valider" = demandes en attente de validation (statusType IN_PROGRESS = créé, pas encore validé)
   pendingLoans = computed(() =>
-    this.loans().filter(l => l.statusType === 'VALID')
+    this.loans().filter(l => l.statusType === 'IN_PROGRESS')
   );
 
-  // "En cours" = emprunts actifs (IN_PROGRESS), filtrés par statut et période
+  // "En cours" = emprunts actifs (VALID = validés par gestionnaire), filtrés par statut et période
   activeLoans = computed(() => {
     const now = new Date();
-    let list = this.loans().filter(l => l.statusType === 'IN_PROGRESS');
+    let list = this.loans().filter(l => l.statusType === 'VALID');
 
     // Filtre statut : "En cours" = non retard / "Retard" = endDate dépassée
     const statut = this.filtreStatut();
@@ -72,19 +72,19 @@ export class LoanComponent {
     return list;
   });
 
-  // RETARD = IN_PROGRESS dont endDate est dépassée
+  // RETARD = VALID dont endDate est dépassée
   isRetard(loan: Loan): boolean {
-    return loan.statusType === 'IN_PROGRESS' && new Date(loan.endDate) < new Date();
+    return loan.statusType === 'VALID' && new Date(loan.endDate) < new Date();
   }
 
   getDisplayStatus(loan: Loan): LoanDisplayStatus {
     return this.isRetard(loan) ? 'RETARD' : loan.statusType;
   }
 
-  // Valider : VALID → IN_PROGRESS
-  // validatorId = 1 (John Doe, GESTIONNAIRE) — sera remplacé par le user connecté en Phase 3 JWT
+  // Valider : IN_PROGRESS → VALID
+  // validatorId = 2 (Marc Dubois, GESTIONNAIRE) — sera remplacé par le user connecté en Phase 3 JWT
   validateLoan(loan: Loan): void {
-    this.loanService.validate(loan.id, 1).subscribe(() => this.chargerEmprunts());
+    this.loanService.validate(loan.id, 2).subscribe(() => this.chargerEmprunts());
   }
 
   // Refuser : VALID → INVALID
@@ -127,8 +127,8 @@ export class LoanComponent {
 
   getStatusLabel(status: LoanDisplayStatus): string {
     const labels: Record<LoanDisplayStatus, string> = {
-      VALID:       'En attente',
-      IN_PROGRESS: 'En cours',
+      IN_PROGRESS: 'En attente',
+      VALID:       'En cours',
       RETARD:      'Retard',
       TERMINE:     'Terminé',
       INVALID:     'Refusé'
@@ -138,8 +138,8 @@ export class LoanComponent {
 
   getStatusClass(status: LoanDisplayStatus): string {
     const classes: Record<LoanDisplayStatus, string> = {
-      VALID:       'badge-warning',
-      IN_PROGRESS: 'badge-success',
+      IN_PROGRESS: 'badge-warning',
+      VALID:       'badge-success',
       RETARD:      'badge-danger',
       TERMINE:     'badge-neutral',
       INVALID:     'badge-danger'
