@@ -9,7 +9,7 @@ import { AppUser } from '../../../core/models/user.model';
 import { Loan, StatusLoanType } from '../../../core/models/loan.model';
 import { ProfilType } from '../../../core/models/profil.model';
 
-// RETARD n'est pas un statut en base — calculé côté front : IN_PROGRESS + endDate < now
+// RETARD n'est pas un statut en base — calculé côté front : VALID + endDate < now
 type LoanDisplayStatus = StatusLoanType | 'RETARD';
 
 @Component({
@@ -39,10 +39,10 @@ export class UserDetailComponent {
     const now = new Date();
     return {
       total:     l.length,
-      enCours:   l.filter(x => x.statusType === 'IN_PROGRESS').length,
-      enAttente: l.filter(x => x.statusType === 'VALID').length,
+      enCours:   l.filter(x => x.statusType === 'VALID').length,
+      enAttente: l.filter(x => x.statusType === 'IN_PROGRESS').length,
       termine:   l.filter(x => x.statusType === 'TERMINE').length,
-      enRetard:  l.filter(x => x.statusType === 'IN_PROGRESS' && new Date(x.endDate) < now).length,
+      enRetard:  l.filter(x => x.statusType === 'VALID' && new Date(x.endDate) < now).length,
     };
   });
 
@@ -58,9 +58,9 @@ export class UserDetailComponent {
     return user.name[0] + user.lastname[0];
   }
 
-  /** RETARD = IN_PROGRESS dont endDate est dépassée */
+  /** RETARD = VALID dont endDate est dépassée */
   getDisplayStatus(loan: Loan): LoanDisplayStatus {
-    if (loan.statusType === 'IN_PROGRESS' && new Date(loan.endDate) < new Date()) {
+    if (loan.statusType === 'VALID' && new Date(loan.endDate) < new Date()) {
       return 'RETARD';
     }
     return loan.statusType;
@@ -88,8 +88,8 @@ export class UserDetailComponent {
 
   getLoanStatusLabel(status: LoanDisplayStatus): string {
     const labels: Record<LoanDisplayStatus, string> = {
-      VALID:       'En attente',
-      IN_PROGRESS: 'En cours',
+      IN_PROGRESS: 'En attente',
+      VALID:       'En cours',
       TERMINE:     'Terminé',
       RETARD:      'En retard',
       INVALID:     'Refusé',
@@ -99,8 +99,8 @@ export class UserDetailComponent {
 
   getLoanStatusClass(status: LoanDisplayStatus): string {
     const classes: Record<LoanDisplayStatus, string> = {
-      VALID:       'b-warning',
-      IN_PROGRESS: 'b-info',
+      IN_PROGRESS: 'b-warning',
+      VALID:       'b-success',
       TERMINE:     'b-success',
       RETARD:      'b-danger',
       INVALID:     'b-neutral',

@@ -24,14 +24,14 @@ export class DashboardComponent {
   private equipments = toSignal(this.equipmentService.getAll(), { initialValue: [] as Equipment[] });
   private loans      = toSignal(this.loanService.getAll(),      { initialValue: [] as Loan[]      });
 
-  // Loans en retard (IN_PROGRESS dont endDate est dépassée)
+  // Loans en retard (VALID dont endDate est dépassée)
   private retardLoans = computed(() =>
-    this.loans().filter(l => l.statusType === 'IN_PROGRESS' && new Date(l.endDate) < new Date())
+    this.loans().filter(l => l.statusType === 'VALID' && new Date(l.endDate) < new Date())
   );
 
-  // Loans en attente de validation
+  // Loans en attente de validation (IN_PROGRESS = demande créée, pas encore validée)
   private pendingLoans = computed(() =>
-    this.loans().filter(l => l.statusType === 'VALID')
+    this.loans().filter(l => l.statusType === 'IN_PROGRESS')
   );
 
   // KPIs équipements

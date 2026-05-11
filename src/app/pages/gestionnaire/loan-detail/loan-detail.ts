@@ -62,9 +62,9 @@ export class LoanDetailComponent {
     return (user.name[0] + user.lastname[0]).toUpperCase();
   }
 
-  // RETARD : IN_PROGRESS ET endDate dépassée
+  // RETARD : VALID ET endDate dépassée
   getDisplayStatus(loan: Loan): DisplayStatus {
-    if (loan.statusType === 'IN_PROGRESS' && new Date(loan.endDate) < new Date()) {
+    if (loan.statusType === 'VALID' && new Date(loan.endDate) < new Date()) {
       return 'RETARD';
     }
     return loan.statusType;

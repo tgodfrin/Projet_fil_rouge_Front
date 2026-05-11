@@ -55,7 +55,7 @@ export class AlertListComponent {
     });
 
     const retardAlerts: Alert[] = this.loans()
-      .filter(l => l.statusType === 'IN_PROGRESS' && new Date(l.endDate) < new Date())
+      .filter(l => l.statusType === 'VALID' && new Date(l.endDate) < new Date())
       .map(l => ({
         id:            l.id,
         loanId:        l.id,
