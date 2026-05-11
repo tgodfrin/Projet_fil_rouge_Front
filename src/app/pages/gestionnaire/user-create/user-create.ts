@@ -2,7 +2,12 @@ import { Component, signal, inject } from '@angular/core';
 import { CommonModule, Location } from '@angular/common';
 import { ReactiveFormsModule, FormBuilder, Validators, AbstractControl, ValidationErrors } from '@angular/forms';
 import { Router } from '@angular/router';
-import { UserRole } from '../../../core/models/user.model';
+import { toSignal } from '@angular/core/rxjs-interop';
+
+import { ProfilService } from '../../../core/services/profil.service';
+import { UserService } from '../../../core/services/user.service';
+import { AppUserCreate } from '../../../core/models/user.model';
+import { Profil, ProfilType } from '../../../core/models/profil.model';
 
 @Component({
   selector: 'app-user-create',
@@ -12,24 +17,20 @@ import { UserRole } from '../../../core/models/user.model';
   styleUrl: './user-create.scss'
 })
 export class UserCreateComponent {
-  private fb     = inject(FormBuilder);
-  private router = inject(Router);
+  private fb            = inject(FormBuilder);
+  private router        = inject(Router);
+  private location      = inject(Location);
+  private profilService = inject(ProfilService);
+  private userService   = inject(UserService);
 
-  constructor(private location: Location) {}
+  profils = toSignal(this.profilService.getAll(), { initialValue: [] as Profil[] });
 
   submitted  = signal(false);
   showPwd    = signal(false);
   showPwdCfm = signal(false);
 
-  roles: { value: UserRole; label: string }[] = [
-    { value: 'COLLABORATEUR', label: 'Collaborateur' },
-    { value: 'INTERVENANT',   label: 'Intervenant'   },
-    { value: 'STAGIAIRE',     label: 'Stagiaire'     },
-    { value: 'GESTIONNAIRE',  label: 'Gestionnaire'  },
-  ];
-
   private matchPasswords(group: AbstractControl): ValidationErrors | null {
-    const pwd    = group.get('password')?.value;
+    const pwd     = group.get('password')?.value;
     const confirm = group.get('confirmPassword')?.value;
     if (pwd && confirm && pwd !== confirm) {
       group.get('confirmPassword')?.setErrors({ mismatch: true });
@@ -44,15 +45,25 @@ export class UserCreateComponent {
   }
 
   form = this.fb.group({
-    name:       ['', [Validators.required, Validators.minLength(2)]],
+    name:            ['', [Validators.required, Validators.minLength(2)]],
     lastname:        ['', [Validators.required, Validators.minLength(2)]],
     email:           ['', [Validators.required, Validators.email]],
-    role:            ['COLLABORATEUR' as UserRole, Validators.required],
+    profilId:        ['', Validators.required],
     password:        ['', [Validators.required, Validators.minLength(8)]],
     confirmPassword: ['', Validators.required],
   }, { validators: this.matchPasswords });
 
   get f() { return this.form.controls; }
+
+  getProfilLabel(type: ProfilType): string {
+    const labels: Record<ProfilType, string> = {
+      GESTIONNAIRE:  'Gestionnaire',
+      COLLABORATEUR: 'Collaborateur',
+      INTERVENANT:   'Intervenant',
+      STAGIAIRE:     'Stagiaire',
+    };
+    return labels[type] ?? type;
+  }
 
   retour(): void {
     this.location.back();
@@ -64,9 +75,17 @@ export class UserCreateComponent {
       this.form.markAllAsTouched();
       return;
     }
-    // TODO: appel API POST /utilisateurs
-    console.log('Nouvel utilisateur :', this.form.value);
-    this.router.navigate(['/utilisateurs']);
+    const val = this.form.value;
+    const payload: AppUserCreate = {
+      name:     val.name!,
+      lastname: val.lastname!,
+      email:    val.email!,
+      password: val.password!,
+      profil:   { id: Number(val.profilId) },
+    };
+    this.userService.create(payload).subscribe(() => {
+      this.router.navigate(['/utilisateurs']);
+    });
   }
 
   hasError(field: string, error: string): boolean {

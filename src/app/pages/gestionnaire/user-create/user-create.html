@@ -90,10 +90,11 @@
       <div class="form-row form-row-single">
 
         <div class="form-group">
-          <label class="form-label" for="role">Rôle <span class="required">*</span></label>
-          <select id="role" class="form-input form-select" formControlName="role">
-            @for (r of roles; track r.value) {
-              <option [value]="r.value">{{ r.label }}</option>
+          <label class="form-label" for="profilId">Rôle <span class="required">*</span></label>
+          <select id="profilId" class="form-input form-select" formControlName="profilId">
+            <option value="" disabled>Sélectionner un rôle</option>
+            @for (p of profils(); track p.id) {
+              <option [value]="p.id">{{ getProfilLabel(p.type) }}</option>
             }
           </select>
         </div>
