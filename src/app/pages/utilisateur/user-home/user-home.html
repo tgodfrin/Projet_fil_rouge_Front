@@ -3,14 +3,14 @@
   <!-- Greeting -->
   <div class="greeting">
     <div class="greeting-sub">Bonjour,</div>
-    <div class="greeting-name">{{ user.firstName }} {{ user.lastName }}</div>
+    <div class="greeting-name">{{ user().firstName }} {{ user().lastName }}</div>
   </div>
 
   <!-- Bannière retour imminent -->
   @if (returnSoonLoan()) {
     <div class="return-banner">
       <div class="banner-title">⚠ Retour prévu demain</div>
-      <div class="banner-sub">{{ returnSoonLoan()!.equipmentName }} — avant 18h</div>
+      <div class="banner-sub">{{ returnSoonLoan()!.equipment.equipmentName }} — avant 18h</div>
     </div>
   }
 
@@ -35,11 +35,11 @@
           <div class="loan-card-header">
             <div>
               <div class="loan-label">En cours</div>
-              <div class="loan-name">{{ loan.equipmentName }}</div>
-              <div class="loan-dates">{{ formatDateRange(loan.startDate, loan.endDate) }}</div>
+              <div class="loan-name">{{ loan.equipment.equipmentName }}</div>
+              <div class="loan-dates">{{ formatDateRange(loan.beginDate, loan.endDate) }}</div>
             </div>
-            <span class="badge badge-success">
-              <span class="badge-dot"></span>Actif
+            <span class="badge" [class.badge-danger]="isRetard(loan)" [class.badge-success]="!isRetard(loan)">
+              <span class="badge-dot"></span>{{ isRetard(loan) ? 'En retard' : 'Actif' }}
             </span>
           </div>
           <div class="progress-bar">

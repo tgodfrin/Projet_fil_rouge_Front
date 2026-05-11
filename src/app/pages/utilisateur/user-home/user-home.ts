@@ -1,8 +1,12 @@
-import { Component, computed, signal } from '@angular/core';
+import { Component, computed, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { RouterLink } from '@angular/router';
-// Type local mock — sera remplacé lors du branchement sur LoanService
-interface UserLoan { id: number; equipmentName: string; category: string; startDate: string; endDate: string; status: string; }
+import { toSignal } from '@angular/core/rxjs-interop';
+import { LoanService } from '../../../core/services/loan.service';
+import { Loan } from '../../../core/models/loan.model';
+
+// userId de l'utilisateur connecté — à remplacer par un vrai service d'auth
+const CURRENT_USER_ID = 1;
 
 @Component({
   selector: 'app-user-home',
@@ -12,41 +16,54 @@ interface UserLoan { id: number; equipmentName: string; category: string; startD
   styleUrl: './user-home.scss'
 })
 export class UserHomeComponent {
-  user = { firstName: 'Julie', lastName: 'Fontaine', initials: 'JF' };
+  private loanService = inject(LoanService);
 
-  activeLoans = signal<UserLoan[]>([
-    {
-      id: 1,
-      equipmentName: 'MacBook Pro M3',
-      category: 'PC',
-      startDate: '2026-04-10',
-      endDate: '2026-04-17',
-      status: 'VALID'
-    },
-    {
-      id: 2,
-      equipmentName: 'Pc Asus ROG',
-      category: 'PC',
-      startDate: '2026-04-03',
-      endDate: '2026-04-30',
-      status: 'VALID'
+  // Tous les emprunts de l'utilisateur courant
+  private allLoans = toSignal(
+    this.loanService.getByUser(CURRENT_USER_ID),
+    { initialValue: [] as Loan[] }
+  );
+
+  // Nom de l'utilisateur déduit du requester du premier emprunt
+  user = computed(() => {
+    const requester = this.allLoans()[0]?.requester;
+    if (requester) {
+      return {
+        firstName: requester.name,
+        lastName:  requester.lastname,
+        initials:  `${requester.name[0]}${requester.lastname[0]}`
+      };
     }
-  ]);
+    return { firstName: '—', lastName: '', initials: '?' };
+  });
 
-  pendingCount = signal(1);
+  // Emprunts actifs : statusType IN_PROGRESS (RETARD inclus, calculé côté front)
+  activeLoans = computed(() =>
+    this.allLoans().filter(l => l.statusType === 'IN_PROGRESS')
+  );
 
+  // Nombre d'emprunts en attente de validation
+  pendingCount = computed(() =>
+    this.allLoans().filter(l => l.statusType === 'VALID').length
+  );
+
+  // Emprunt dont le retour est prévu demain ou déjà en retard
   returnSoonLoan = computed(() =>
     this.activeLoans().find(l => this.getDaysLeft(l) <= 1) ?? null
   );
 
-  getDaysLeft(loan: UserLoan): number {
+  isRetard(loan: Loan): boolean {
+    return loan.statusType === 'IN_PROGRESS' && new Date(loan.endDate) < new Date();
+  }
+
+  getDaysLeft(loan: Loan): number {
     const end = new Date(loan.endDate).getTime();
     return Math.ceil((end - Date.now()) / (1000 * 60 * 60 * 24));
   }
 
-  getProgressPercent(loan: UserLoan): number {
-    const start = new Date(loan.startDate).getTime();
-    const end = new Date(loan.endDate).getTime();
+  getProgressPercent(loan: Loan): number {
+    const start = new Date(loan.beginDate).getTime();
+    const end   = new Date(loan.endDate).getTime();
     return Math.min(100, Math.max(0, Math.round(((Date.now() - start) / (end - start)) * 100)));
   }
 
