@@ -4,7 +4,7 @@
 
   <!-- KPIs -->
   <div class="kpi-grid">
-    @for (kpi of kpis; track kpi.label) {
+    @for (kpi of kpis(); track kpi.label) {
     <div class="kpi-card">
       <div class="kpi-value" [style.color]="kpi.color">{{ kpi.value }}</div>
       <div class="kpi-label">{{ kpi.label }}</div>
@@ -13,7 +13,7 @@
   </div>
 
   <!-- ALERTES -->
-  @for (alerte of alertes; track alerte.titre) {
+  @for (alerte of alertes(); track alerte.titre) {
   <div class="alerte-banner" [class.danger]="alerte.type === 'danger'" [class.warning]="alerte.type === 'warning'">
     <div class="alerte-titre">{{ alerte.titre }}</div>
     <button class="btn" [class.btn-danger]="alerte.type === 'danger'" [class.btn-warning]="alerte.type === 'warning'"
@@ -35,7 +35,7 @@
         <div class="th">Statut</div>
       </div>
 
-      @for (notif of notifications; track notif.utilisateur) {
+      @for (notif of notifications(); track notif.utilisateur) {
       <div class="table-row">
         <div class="td-main">{{ notif.utilisateur }}</div>
         <div class="td-main">{{ notif.materiel }}</div>
