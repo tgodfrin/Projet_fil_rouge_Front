@@ -5,7 +5,7 @@ import { ExportComponent } from '../../../shared/export/export';
 import { LoanService } from '../../../core/services/loan.service';
 import { Loan, StatusLoanType } from '../../../core/models/loan.model';
 
-// RETARD n'est pas un statut en base — calculé côté front : IN_PROGRESS + endDate < now
+// RETARD n'est pas un statut en base — calculé côté front : VALID + endDate < now
 type LoanDisplayStatus = StatusLoanType | 'RETARD';
 
 @Component({
@@ -87,12 +87,12 @@ export class LoanComponent {
     this.loanService.validate(loan.id, 2).subscribe(() => this.chargerEmprunts());
   }
 
-  // Refuser : VALID → INVALID
+  // Refuser : IN_PROGRESS → INVALID
   refuseLoan(loan: Loan): void {
     this.loanService.invalidate(loan.id).subscribe(() => this.chargerEmprunts());
   }
 
-  // Retour matériel : IN_PROGRESS → TERMINE
+  // Retour matériel : VALID → TERMINE
   returnLoan(loan: Loan): void {
     this.loanService.return(loan.id).subscribe(() => this.chargerEmprunts());
   }

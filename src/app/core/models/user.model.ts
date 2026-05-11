@@ -26,12 +26,3 @@ export interface AppUserCreate {
   password: string;
   profil: { id: number };
 }
-
-
-// Utilisés par les composants mockés — à supprimer au fur et à mesure du branchement
-
-/** @deprecated Utiliser ProfilType depuis profil.model.ts */
-export type UserRole = ProfilType;
-
-/** @deprecated Utiliser AppUser */
-export interface User extends AppUser {}

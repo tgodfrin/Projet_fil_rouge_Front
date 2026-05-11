@@ -11,7 +11,7 @@
 //   PUT  /loan/:id/return
 
 // Enum StatusLoanType côté back — RETARD n'est pas un statut en base, c'est un état calculé
-// côté front (loan IN_PROGRESS dont endDate est dépassée)
+// côté front (loan VALID dont endDate est dépassée)
 export type StatusLoanType = 'VALID' | 'INVALID' | 'IN_PROGRESS' | 'TERMINE';
 
 // Sous-objet AppUser dans Loan — champs exposés via @JsonView(LoanView) dans AppUser

@@ -32,19 +32,19 @@ export class LoanService {
     return this.http.post<Loan>(`${this.apiUrl}/loan`, data);
   }
 
-  // PUT /loan/:id/validate?validatorId=X  →  VALID → IN_PROGRESS
+  // PUT /loan/:id/validate?validatorId=X  →  IN_PROGRESS → VALID
   validate(id: number, validatorId: number): Observable<Loan> {
     return this.http.put<Loan>(`${this.apiUrl}/loan/${id}/validate`, null, {
       params: { validatorId: String(validatorId) }
     });
   }
 
-  // PUT /loan/:id/invalidate  →  VALID → INVALID
+  // PUT /loan/:id/invalidate  →  IN_PROGRESS → INVALID
   invalidate(id: number): Observable<Loan> {
     return this.http.put<Loan>(`${this.apiUrl}/loan/${id}/invalidate`, null);
   }
 
-  // PUT /loan/:id/return  →  IN_PROGRESS → TERMINE
+  // PUT /loan/:id/return  →  VALID → TERMINE
   return(id: number): Observable<Loan> {
     return this.http.put<Loan>(`${this.apiUrl}/loan/${id}/return`, null);
   }
