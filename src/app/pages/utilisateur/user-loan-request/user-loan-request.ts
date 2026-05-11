@@ -2,14 +2,13 @@ import { Component, signal, computed, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { ReactiveFormsModule, FormBuilder, Validators } from '@angular/forms';
 import { Router, ActivatedRoute } from '@angular/router';
+import { toSignal } from '@angular/core/rxjs-interop';
+import { EquipmentService } from '../../../core/services/equipment.service';
+import { LoanService } from '../../../core/services/loan.service';
+import { Equipment } from '../../../core/models/equipment.model';
 
-interface Equipment {
-  id: number;
-  name: string;
-  ref: string;
-  category: string;
-  icon: string;
-}
+// userId de l'utilisateur connecté — à remplacer par un vrai service d'auth
+const CURRENT_USER_ID = 1;
 
 @Component({
   selector: 'app-user-loan-request',
@@ -19,30 +18,26 @@ interface Equipment {
   styleUrl: './user-loan-request.scss'
 })
 export class UserLoanRequestComponent {
-  private router = inject(Router);
-  private route  = inject(ActivatedRoute);
-  private fb     = inject(FormBuilder);
+  private router           = inject(Router);
+  private route            = inject(ActivatedRoute);
+  private fb               = inject(FormBuilder);
+  private equipmentService = inject(EquipmentService);
+  private loanService      = inject(LoanService);
 
-  equipmentId = this.route.snapshot.paramMap.get('id');
+  private equipmentId = Number(this.route.snapshot.paramMap.get('id'));
 
-  // Données mockées — à remplacer par appel API
-  equipmentMap: Record<string, Equipment> = {
-    '1': { id: 1, name: 'MacBook Pro M3',       ref: 'REF-PC-042',  category: 'PC',           icon: '💻' },
-    '2': { id: 2, name: 'HP EliteBook 840',      ref: 'REF-PC-031',  category: 'PC',           icon: '💻' },
-    '3': { id: 3, name: 'Meta Quest 3',          ref: 'REF-VR-008',  category: 'VR',           icon: '🥽' },
-    '4': { id: 4, name: 'iPad Pro 12.9"',        ref: 'REF-TAB-007', category: 'Tablette',     icon: '📱' },
-    '5': { id: 5, name: 'Samsung Galaxy Tab',    ref: 'REF-TAB-012', category: 'Tablette',     icon: '📱' },
-    '6': { id: 6, name: 'Dell UltraSharp 27"',   ref: 'REF-ECR-003', category: 'Écran',        icon: '🖥️' },
-    '7': { id: 7, name: 'LG 4K 32"',             ref: 'REF-ECR-009', category: 'Écran',        icon: '🖥️' },
-    '8': { id: 8, name: 'Clavier Keychron K2',   ref: 'REF-PER-015', category: 'Périphérique', icon: '⌨️' },
-    '9': { id: 9, name: 'Souris Logitech MX',    ref: 'REF-PER-021', category: 'Périphérique', icon: '🖱️' },
-  };
+  // Détails de l'équipement chargés par ID (EquipmentView complet)
+  equipment = toSignal(this.equipmentService.getById(this.equipmentId));
 
-  equipment = computed(() =>
-    this.equipmentId ? (this.equipmentMap[this.equipmentId] ?? null) : null
+  // Disponibilité vérifiée au passage à l'étape 2
+  private availableEquipments = signal<Equipment[]>([]);
+  availabilityChecked = signal(false);
+  isAvailable = computed(() =>
+    this.availableEquipments().some(e => e.id === this.equipmentId)
   );
 
   currentStep = signal(1);
+  submitting  = signal(false);
 
   form = this.fb.group({
     startDate: ['', Validators.required],
@@ -84,16 +79,33 @@ export class UserLoanRequestComponent {
       this.form.markAllAsTouched();
       return;
     }
-    this.currentStep.set(2);
+    // Vérification disponibilité via API avant de passer à l'étape 2
+    const begin = `${this.form.value.startDate}T08:00:00`;
+    const end   = `${this.form.value.endDate}T18:00:00`;
+    this.equipmentService.getAvailable(begin, end).subscribe(list => {
+      this.availableEquipments.set(list);
+      this.availabilityChecked.set(true);
+      this.currentStep.set(2);
+    });
   }
 
   prevStep(): void {
     this.currentStep.set(1);
+    this.availabilityChecked.set(false);
   }
 
   submit(): void {
-    // Future : appel API POST /loans
-    this.router.navigate(['/utilisateur/confirmation']);
+    if (!this.isAvailable() || this.submitting()) return;
+    this.submitting.set(true);
+    this.loanService.create({
+      beginDate: `${this.form.value.startDate}T08:00:00`,
+      endDate:   `${this.form.value.endDate}T18:00:00`,
+      requester: { id: CURRENT_USER_ID },
+      equipment: { id: this.equipmentId }
+    }).subscribe({
+      next:  () => this.router.navigate(['/utilisateur/confirmation']),
+      error: () => this.submitting.set(false)
+    });
   }
 
   cancel(): void {

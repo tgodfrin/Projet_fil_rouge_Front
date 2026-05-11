@@ -22,12 +22,20 @@
   <!-- Équipement sélectionné -->
   @if (equipment()) {
     <div class="equipment-card">
-      <div class="equipment-icon">{{ equipment()!.icon }}</div>
+      <div class="equipment-icon">📦</div>
       <div class="equipment-info">
-        <div class="equipment-name">{{ equipment()!.name }}</div>
-        <div class="equipment-ref">{{ equipment()!.ref }}</div>
+        <div class="equipment-name">{{ equipment()!.equipmentName }}</div>
+        <div class="equipment-ref">{{ equipment()!.reference }}</div>
       </div>
-      <span class="badge badge-success"><span class="badge-dot"></span>Dispo</span>
+      @if (availabilityChecked()) {
+        @if (isAvailable()) {
+          <span class="badge badge-success"><span class="badge-dot"></span>Dispo</span>
+        } @else {
+          <span class="badge badge-danger"><span class="badge-dot"></span>Indispo</span>
+        }
+      } @else {
+        <span class="badge badge-neutral"><span class="badge-dot"></span>—</span>
+      }
     </div>
   } @else {
     <div class="empty-state">Équipement introuvable.</div>
@@ -63,10 +71,9 @@
         </div>
       }
 
-
-<div class="form-actions">
+      <div class="form-actions">
         <button class="btn-ghost" type="button" (click)="cancel()">Annuler</button>
-        <button class="btn-primary" type="submit">Suivant</button>
+        <button class="btn-primary" type="submit">Vérifier la disponibilité</button>
       </div>
 
     </form>
@@ -74,10 +81,17 @@
 
   <!-- ÉTAPE 2 — Récapitulatif -->
   @if (currentStep() === 2) {
+
+    @if (!isAvailable()) {
+      <div class="error-banner">
+        ⚠ Cet équipement n'est pas disponible pour la période sélectionnée.
+      </div>
+    }
+
     <div class="recap-card">
       <div class="recap-row">
         <span class="recap-key">Matériel</span>
-        <span class="recap-val">{{ equipment()!.name }}</span>
+        <span class="recap-val">{{ equipment()!.equipmentName }}</span>
       </div>
       <div class="recap-row">
         <span class="recap-key">Période</span>
@@ -87,15 +101,18 @@
         <span class="recap-key">Durée</span>
         <span class="recap-val">{{ duration }} jour(s)</span>
       </div>
-<div class="recap-row">
+      <div class="recap-row">
         <span class="recap-key">Statut</span>
-        <span class="badge badge-warning"><span class="badge-dot"></span>En attente</span>
+        <span class="badge badge-warning"><span class="badge-dot"></span>En attente de validation</span>
       </div>
     </div>
 
     <div class="form-actions">
       <button class="btn-ghost" (click)="prevStep()">Retour</button>
-      <button class="btn-primary" (click)="submit()">Confirmer</button>
+      <button class="btn-primary" (click)="submit()"
+        [disabled]="!isAvailable() || submitting()">
+        {{ submitting() ? 'Envoi...' : 'Confirmer la demande' }}
+      </button>
     </div>
   }
 
