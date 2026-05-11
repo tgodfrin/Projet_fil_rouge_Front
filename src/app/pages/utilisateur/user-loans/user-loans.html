@@ -35,8 +35,8 @@
             </span>
           </div>
 
-          <!-- Progress (emprunts actifs uniquement) -->
-          @if (loan.statusType === 'IN_PROGRESS') {
+          <!-- Progress (emprunts actifs uniquement = VALID validé par gestionnaire) -->
+          @if (loan.statusType === 'VALID') {
             <div class="progress-bar">
               <div class="progress-fill" [style.width.%]="getProgressPercent(loan)"></div>
             </div>

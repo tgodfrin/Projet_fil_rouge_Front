@@ -36,25 +36,25 @@ export class UserLoansComponent {
 
   countByTab(tab: string): number {
     const loans = this.allLoans();
-    // IN_PROGRESS = emprunt actif (y compris RETARD côté front)
-    // VALID       = en attente de validation
+    // VALID       = emprunt validé et actif (y compris RETARD côté front)
+    // IN_PROGRESS = demande en attente de traitement gestionnaire
     // TERMINE/INVALID = historique
-    if (tab === 'EN_COURS')   return loans.filter(l => l.statusType === 'IN_PROGRESS').length;
-    if (tab === 'EN_ATTENTE') return loans.filter(l => l.statusType === 'VALID').length;
+    if (tab === 'EN_COURS')   return loans.filter(l => l.statusType === 'VALID').length;
+    if (tab === 'EN_ATTENTE') return loans.filter(l => l.statusType === 'IN_PROGRESS').length;
     return loans.filter(l => l.statusType === 'TERMINE' || l.statusType === 'INVALID').length;
   }
 
   filteredLoans = computed(() => {
     const tab   = this.activeTab();
     const loans = this.allLoans();
-    if (tab === 'EN_COURS')   return loans.filter(l => l.statusType === 'IN_PROGRESS');
-    if (tab === 'EN_ATTENTE') return loans.filter(l => l.statusType === 'VALID');
+    if (tab === 'EN_COURS')   return loans.filter(l => l.statusType === 'VALID');
+    if (tab === 'EN_ATTENTE') return loans.filter(l => l.statusType === 'IN_PROGRESS');
     return loans.filter(l => l.statusType === 'TERMINE' || l.statusType === 'INVALID');
   });
 
   // ── Statut affiché (RETARD calculé côté front) ─────────
   getDisplayStatus(loan: Loan): string {
-    if (loan.statusType === 'IN_PROGRESS' && new Date(loan.endDate) < new Date()) {
+    if (loan.statusType === 'VALID' && new Date(loan.endDate) < new Date()) {
       return 'RETARD';
     }
     return loan.statusType;
@@ -63,9 +63,9 @@ export class UserLoansComponent {
   // ── Badges ─────────────────────────────────────────────
   getStatusClass(status: string): string {
     const map: Record<string, string> = {
-      VALID:       'badge-warning',
+      VALID:       'badge-success',
       RETARD:      'badge-danger',
-      IN_PROGRESS: 'badge-success',
+      IN_PROGRESS: 'badge-warning',
       TERMINE:     'badge-neutral',
       INVALID:     'badge-danger'
     };
@@ -74,9 +74,9 @@ export class UserLoansComponent {
 
   getStatusLabel(status: string): string {
     const map: Record<string, string> = {
-      VALID:       'En attente',
+      VALID:       'En cours',
       RETARD:      'En retard',
-      IN_PROGRESS: 'En cours',
+      IN_PROGRESS: 'En attente',
       TERMINE:     'Terminé',
       INVALID:     'Refusé'
     };
