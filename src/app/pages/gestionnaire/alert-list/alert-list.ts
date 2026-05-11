@@ -1,6 +1,12 @@
-import { Component, signal, computed } from '@angular/core';
+import { Component, computed, inject, signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { Router } from '@angular/router';
+import { toSignal } from '@angular/core/rxjs-interop';
+
+import { EventService } from '../../../core/services/event.service';
+import { LoanService } from '../../../core/services/loan.service';
+import { Event } from '../../../core/models/event.model';
+import { Loan } from '../../../core/models/loan.model';
 import { Alert, AlertType } from '../../../core/models/alert.model';
 
 @Component({
@@ -12,39 +18,79 @@ import { Alert, AlertType } from '../../../core/models/alert.model';
 })
 export class AlertListComponent {
 
-  constructor(private router: Router) {}
+  private router       = inject(Router);
+  private eventService = inject(EventService);
+  private loanService  = inject(LoanService);
+
+  // Loans via toSignal (pas de mutation dessus)
+  private loans = toSignal(this.loanService.getAll(), { initialValue: [] as Loan[] });
+
+  // Events non lus : writable signal pour recharger après markAsRead
+  private events = signal<Event[]>([]);
+
+  constructor() {
+    this.chargerEvents();
+  }
+
+  private chargerEvents(): void {
+    this.eventService.getUnread().subscribe(data => this.events.set(data));
+  }
 
   activeTab = signal<'TOUTES' | AlertType>('TOUTES');
 
-  alerts = signal<Alert[]>([
-    { id: 1, loanId: 3, type: 'RETARD',   equipmentName: 'MacBook Pro M3',    borrowerName: 'Marc Durand',   description: 'Retard de 3 jours',              date: '2026-03-04', read: false },
-    { id: 2, loanId: 4, type: 'BREAKDOWN',   equipmentName: 'iPad Pro 12.9"',    borrowerName: 'Sophie Renard', description: 'Dégradation écran signalée',     date: '2026-03-05', read: false },
-    { id: 3, loanId: 5, type: 'RETARD',     equipmentName: 'Dell UltraSharp 27"',borrowerName: 'Tom Vasseur',  description: 'Retard de 1 jour',               date: '2026-03-06', read: false },
-    { id: 4, loanId: 2, type: 'BREAKDOWN',  equipmentName: 'Meta Quest 3',      borrowerName: 'Kevin Leclerc', description: 'Manette droite défectueuse',     date: '2026-03-07', read: true  },
-    { id: 5, loanId: 1, type: 'RETARD',   equipmentName: 'HP EliteBook 840',  borrowerName: 'Julie Fontaine',description: 'Retard de 2 jours',              date: '2026-03-07', read: true  },
-  ]);
+  // Agrégation Events + Retards dans une seule liste d'alertes UI
+  private allAlerts = computed((): Alert[] => {
+    const eventAlerts: Alert[] = this.events().map(e => {
+      const loan = this.loans().find(l => l.id === e.loan.id);
+      return {
+        id:            e.id,
+        loanId:        e.loan.id,
+        type:          e.type,
+        equipmentName: loan?.equipment?.equipmentName ?? '—',
+        borrowerName:  loan ? `${loan.requester.name} ${loan.requester.lastname}` : '—',
+        description:   e.description ?? '',
+        date:          e.createdAt,
+        read:          e.readingDate !== null,
+      };
+    });
+
+    const retardAlerts: Alert[] = this.loans()
+      .filter(l => l.statusType === 'IN_PROGRESS' && new Date(l.endDate) < new Date())
+      .map(l => ({
+        id:            l.id,
+        loanId:        l.id,
+        type:          'RETARD' as AlertType,
+        equipmentName: l.equipment.equipmentName,
+        borrowerName:  `${l.requester.name} ${l.requester.lastname}`,
+        description:   `Retour prévu le ${new Date(l.endDate).toLocaleDateString('fr-FR')}`,
+        date:          l.endDate,
+        read:          false,
+      }));
+
+    return [...retardAlerts, ...eventAlerts];
+  });
 
   filteredAlerts = computed(() => {
     const tab = this.activeTab();
-    if (tab === 'TOUTES') return this.alerts();
-    return this.alerts().filter(a => a.type === tab);
+    if (tab === 'TOUTES') return this.allAlerts();
+    return this.allAlerts().filter(a => a.type === tab);
   });
 
   countByType(type: AlertType | 'TOUTES'): number {
-    if (type === 'TOUTES') return this.alerts().length;
-    return this.alerts().filter(a => a.type === type).length;
+    if (type === 'TOUTES') return this.allAlerts().length;
+    return this.allAlerts().filter(a => a.type === type).length;
   }
 
   unreadCount(): number {
-    return this.alerts().filter(a => !a.read).length;
+    return this.allAlerts().filter(a => !a.read).length;
   }
 
   retardCount(): number {
-    return this.alerts().filter(a => a.type === 'RETARD').length;
+    return this.allAlerts().filter(a => a.type === 'RETARD').length;
   }
 
   panneCount(): number {
-    return this.alerts().filter(a => a.type === 'BREAKDOWN').length;
+    return this.allAlerts().filter(a => a.type === 'BREAKDOWN').length;
   }
 
   setTab(tab: 'TOUTES' | AlertType): void {
@@ -52,13 +98,22 @@ export class AlertListComponent {
   }
 
   markAsRead(alert: Alert): void {
-    this.alerts.update(list =>
-      list.map(a => a.id === alert.id ? { ...a, read: true } : a)
-    );
+    // Les RETARD sont calculés côté front → pas d'entité Event à marquer
+    if (alert.type !== 'RETARD') {
+      this.eventService.markAsRead(alert.id).subscribe(() => this.chargerEvents());
+    }
   }
 
   markAllAsRead(): void {
-    this.alerts.update(list => list.map(a => ({ ...a, read: true })));
+    const unreadEvents = this.allAlerts().filter(a => !a.read && a.type !== 'RETARD');
+    let pending = unreadEvents.length;
+    if (pending === 0) return;
+    unreadEvents.forEach(a => {
+      this.eventService.markAsRead(a.id).subscribe(() => {
+        pending--;
+        if (pending === 0) this.chargerEvents();
+      });
+    });
   }
 
   voirEmprunt(alert: Alert): void {
