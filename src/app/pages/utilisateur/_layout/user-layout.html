@@ -21,10 +21,10 @@
       </a>
     </nav>
     <div class="sidebar-bottom">
-      <div class="user-avatar">JF</div>
+      <div class="user-avatar">{{ initials() }}</div>
       <div class="user-info">
-        <span class="user-name">Julie Fontaine</span>
-        <span class="user-role">Collaboratrice</span>
+        <span class="user-name">{{ fullName() }}</span>
+        <span class="user-role">{{ roleLabel() }}</span>
       </div>
     </div>
   </aside>
@@ -35,7 +35,7 @@
     <!-- TOPBAR mobile uniquement -->
     <header class="header">
       <div class="header-title">LOC <span class="header-accent">MNS</span></div>
-      <div class="user-avatar">JF</div>
+      <div class="user-avatar">{{ initials() }}</div>
     </header>
 
     <main class="content">

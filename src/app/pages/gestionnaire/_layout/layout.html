@@ -29,15 +29,12 @@
       <a class="sidebar-link" routerLink="/utilisateurs" routerLinkActive="active" (click)="closeMenu()">
         👥 Utilisateurs
       </a>
-      <a class="sidebar-link" routerLink="/familles" routerLinkActive="active" (click)="closeMenu()">
-        🗂️ Familles
-      </a>
     </nav>
     <div class="sidebar-bottom">
-      <div class="user-avatar">JD</div>
+      <div class="user-avatar">{{ initials() }}</div>
       <div class="user-info">
-        <span class="user-name">John Doe</span>
-        <span class="user-role">Gestionnaire</span>
+        <span class="user-name">{{ fullName() }}</span>
+        <span class="user-role">{{ roleLabel() }}</span>
       </div>
     </div>
   </aside>
@@ -48,7 +45,7 @@
     <!-- TOPBAR mobile uniquement -->
     <header class="header">
       <div class="header-title">LOC <span class="header-accent">MNS</span></div>
-      <div class="user-avatar">JD</div>
+      <div class="user-avatar">{{ initials() }}</div>
     </header>
 
     <!-- PAGE COURANTE -->

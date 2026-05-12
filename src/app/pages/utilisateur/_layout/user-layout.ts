@@ -1,5 +1,6 @@
-import { Component } from '@angular/core';
+import { Component, inject } from '@angular/core';
 import { RouterOutlet, RouterLink, RouterLinkActive } from '@angular/router';
+import { AuthService } from '../../../core/services/auth.service';
 
 @Component({
   selector: 'app-user-layout',
@@ -8,4 +9,10 @@ import { RouterOutlet, RouterLink, RouterLinkActive } from '@angular/router';
   templateUrl: './user-layout.html',
   styleUrl: './user-layout.scss'
 })
-export class UserLayoutComponent {}
+export class UserLayoutComponent {
+  private authService = inject(AuthService);
+
+  initials  = this.authService.initials;
+  fullName  = this.authService.fullName;
+  roleLabel = this.authService.roleLabel;
+}
