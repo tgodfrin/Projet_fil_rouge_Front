@@ -36,8 +36,10 @@ export class UserLoanRequestComponent {
     this.availableEquipments().some(e => e.id === this.equipmentId)
   );
 
-  currentStep = signal(1);
-  submitting  = signal(false);
+  currentStep     = signal(1);
+  submitting      = signal(false);
+  // Message d'erreur affiché si le back renvoie 403 (profil non autorisé)
+  forbiddenError  = signal(false);
 
   form = this.fb.group({
     startDate: ['', Validators.required],
@@ -97,14 +99,21 @@ export class UserLoanRequestComponent {
   submit(): void {
     if (!this.isAvailable() || this.submitting()) return;
     this.submitting.set(true);
+    this.forbiddenError.set(false);
     this.loanService.create({
       beginDate: `${this.form.value.startDate}T08:00:00`,
       endDate:   `${this.form.value.endDate}T18:00:00`,
       requester: { id: CURRENT_USER_ID },
       equipment: { id: this.equipmentId }
     }).subscribe({
-      next:  () => this.router.navigate(['/utilisateur/confirmation']),
-      error: () => this.submitting.set(false)
+      next: () => this.router.navigate(['/utilisateur/confirmation']),
+      error: (err) => {
+        this.submitting.set(false);
+        if (err.status === 403) {
+          // Le profil utilisateur n'autorise pas la famille de cet équipement
+          this.forbiddenError.set(true);
+        }
+      }
     });
   }
 

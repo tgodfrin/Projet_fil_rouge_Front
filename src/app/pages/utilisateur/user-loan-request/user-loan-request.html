@@ -88,6 +88,12 @@
       </div>
     }
 
+    @if (forbiddenError()) {
+      <div class="error-banner">
+        ⛔ Votre profil ne vous autorise pas à emprunter ce type d'équipement.
+      </div>
+    }
+
     <div class="recap-card">
       <div class="recap-row">
         <span class="recap-key">Matériel</span>
