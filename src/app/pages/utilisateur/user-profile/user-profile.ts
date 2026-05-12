@@ -1,4 +1,4 @@
-import { Component, signal, computed, inject } from '@angular/core';
+import { Component, signal, computed, inject, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { ReactiveFormsModule, FormBuilder, Validators, AbstractControl, ValidationErrors } from '@angular/forms';
 import { UserService } from '../../../core/services/user.service';
@@ -15,7 +15,7 @@ const CURRENT_USER_ID = 1;
   templateUrl: './user-profile.html',
   styleUrl: './user-profile.scss'
 })
-export class UserProfileComponent {
+export class UserProfileComponent implements OnInit {
   private fb          = inject(FormBuilder);
   private userService = inject(UserService);
   private loanService = inject(LoanService);
@@ -25,13 +25,13 @@ export class UserProfileComponent {
   private userSig = signal<AppUser | undefined>(undefined);
   user = this.userSig.asReadonly();
 
-  constructor() {
+  // Emprunts pour les stats
+  private loansSig = signal<Loan[]>([]);
+
+  ngOnInit(): void {
     this.userService.getById(CURRENT_USER_ID).subscribe(u => this.userSig.set(u));
     this.loanService.getByUser(CURRENT_USER_ID).subscribe(l => this.loansSig.set(l));
   }
-
-  // Emprunts pour les stats
-  private loansSig = signal<Loan[]>([]);
 
   // ── Valeurs dérivées ───────────────────────────────────
   initials = computed(() => {
