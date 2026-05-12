@@ -1,0 +1,115 @@
+<div class="equipment">
+
+  <div class="page-header">
+    <div class="page-title">Familles d'équipements</div>
+    <div class="header-actions">
+      <button class="btn btn-primary" (click)="ouvrirModal()">+ Ajouter</button>
+    </div>
+  </div>
+
+  <!-- Feedback -->
+  @if (succes()) {
+    <div class="alert alert-success">{{ succes() }}</div>
+  }
+  @if (erreur() && !modalOuvert()) {
+    <div class="alert alert-danger">{{ erreur() }}</div>
+  }
+
+  <!-- Barre de recherche -->
+  <div class="search-bar">
+    <input
+      class="search-input"
+      type="text"
+      placeholder="Rechercher une famille..."
+      [value]="recherche()"
+      (input)="onRechercheChange($event)"
+    />
+  </div>
+
+  <!-- Tableau -->
+  <div class="table-wrapper">
+    <div class="table">
+
+      <div class="table-head">
+        <div class="th">Nom de la famille</div>
+        <div class="th">ID</div>
+        <div class="th"></div>
+      </div>
+
+      @for (family of famillesFiltrees(); track family.id) {
+        <div class="table-row">
+
+          <!-- Nom : affichage normal ou champ édition inline -->
+          <div>
+            @if (editId() === family.id) {
+              <input
+                class="search-input"
+                type="text"
+                [value]="editNom()"
+                (input)="editNom.set($any($event.target).value)"
+                (keyup.enter)="sauvegarder(family)"
+                (keyup.escape)="annulerEdition()"
+                style="width: 250px"
+              />
+            } @else {
+              <div class="td-main">{{ family.nameEquipmentFamily }}</div>
+            }
+          </div>
+
+          <div class="td-muted">{{ family.id }}</div>
+
+          <!-- Actions -->
+          <div style="display: flex; gap: 8px; justify-content: flex-end">
+            @if (editId() === family.id) {
+              <button class="btn btn-primary btn-sm" (click)="sauvegarder(family)">Sauvegarder</button>
+              <button class="btn btn-ghost btn-sm" (click)="annulerEdition()">Annuler</button>
+            } @else {
+              <button class="btn btn-ghost btn-sm" (click)="commencerEdition(family)">Modifier</button>
+              <button class="btn btn-danger btn-sm" (click)="supprimer(family)">Supprimer</button>
+            }
+          </div>
+
+        </div>
+      }
+
+      @if (famillesFiltrees().length === 0) {
+        <div class="empty-state">Aucune famille trouvée.</div>
+      }
+
+    </div>
+  </div>
+
+</div>
+
+<!-- MODAL CRÉATION -->
+@if (modalOuvert()) {
+  <div class="overlay" (click)="fermerModal()"></div>
+  <div class="modal" (click)="$event.stopPropagation()">
+
+      <div class="modal-header">
+        <h3 class="modal-title">Nouvelle famille</h3>
+        <button class="btn btn-ghost btn-sm" (click)="fermerModal()">✕</button>
+      </div>
+
+      <div class="modal-body">
+        <label class="form-label">Nom de la famille</label>
+        <input
+          class="form-input"
+          type="text"
+          placeholder="Ex : Ordinateur portable"
+          [value]="nouveauNom()"
+          (input)="nouveauNom.set($any($event.target).value)"
+          (keyup.enter)="creer()"
+        />
+        @if (erreur()) {
+          <div class="alert alert-danger" style="margin-top: 8px">{{ erreur() }}</div>
+        }
+      </div>
+
+      <div class="modal-footer">
+        <button class="btn btn-ghost" (click)="fermerModal()">Annuler</button>
+        <button class="btn btn-primary" (click)="creer()">Créer</button>
+      </div>
+
+  </div>
+}

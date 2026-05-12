@@ -11,6 +11,7 @@ import { UserCreateComponent } from './pages/gestionnaire/user-create/user-creat
 import { LoanDetailComponent } from './pages/gestionnaire/loan-detail/loan-detail';
 import { PlanningComponent } from './pages/gestionnaire/planning/planning';
 import { AlertListComponent } from './pages/gestionnaire/alert-list/alert-list';
+import { CategoryListComponent } from './pages/gestionnaire/category-list/category-list';
 import { UserHomeComponent } from './pages/utilisateur/user-home/user-home';
 import { UserCatalogueComponent } from './pages/utilisateur/user-catalogue/user-catalogue';
 import { UserCatalogueDetailComponent } from './pages/utilisateur/user-catalogue-detail/user-catalogue-detail';
@@ -40,6 +41,7 @@ export const routes: Routes = [
       { path: 'utilisateurs/:id', component: UserDetailComponent },
       { path: 'planning', component: PlanningComponent },
       { path: 'alertes', component: AlertListComponent },
+      { path: 'familles', component: CategoryListComponent },
     ]
   },
   {
