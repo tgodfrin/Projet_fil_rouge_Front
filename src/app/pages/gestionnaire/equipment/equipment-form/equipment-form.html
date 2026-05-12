@@ -79,6 +79,56 @@
       />
     </div>
 
+    <!-- Caractéristiques dynamiques -->
+    <div class="composants-section">
+      <div class="composants-header">
+        <label class="form-label">Caractéristiques</label>
+        <button type="button" class="btn-add-composant" (click)="ajouterLigne()">
+          + Ajouter
+        </button>
+      </div>
+
+      @if (lignes().length === 0) {
+        <p class="composants-empty">Aucune caractéristique ajoutée.</p>
+      }
+
+      @for (ligne of lignes(); track $index) {
+        <div class="composant-row">
+
+          <!-- Select : type de caractéristique -->
+          <select
+            class="form-select composant-type"
+            [class.error]="ligne.characteristicId === null"
+            [value]="ligne.characteristicId ?? ''"
+            (change)="setCharacteristicId($index, $any($event.target).value)">
+            <option value="" disabled>Type</option>
+            @for (c of caracteristiquesDisponibles(); track c.id) {
+              <option [value]="c.id">{{ c.name }}</option>
+            }
+          </select>
+
+          <!-- Input : valeur -->
+          <input
+            class="form-input composant-valeur"
+            [class.error]="ligne.value.trim() === ''"
+            type="text"
+            placeholder="Valeur"
+            [value]="ligne.value"
+            (input)="setValue($index, $any($event.target).value)"
+          />
+
+          <!-- Bouton supprimer -->
+          <button type="button" class="btn-remove" (click)="supprimerLigne($index)">✕</button>
+
+        </div>
+      }
+
+      <!-- Message d'erreur si une ligne est incomplète au submit -->
+      @if (!lignesValides && lignes().length > 0) {
+        <span class="form-error">Chaque caractéristique doit avoir un type et une valeur.</span>
+      }
+    </div>
+
     <div class="modal-footer">
       <button type="button" class="btn btn-ghost" (click)="onFermer()">Annuler</button>
       <button type="submit" class="btn btn-primary">Ajouter</button>

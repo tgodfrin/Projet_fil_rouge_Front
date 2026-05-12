@@ -2,10 +2,12 @@ import { Component, inject, signal } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { CommonModule } from '@angular/common';
 import { Router } from '@angular/router';
-import { EquipmentFormComponent } from './equipment-form/equipment-form';
+import { forkJoin, of, switchMap } from 'rxjs';
+import { EquipmentFormComponent, EquipmentFormOutput } from './equipment-form/equipment-form';
 import { ExportComponent } from '../../../shared/export/export';
-import { EquipmentService, EquipmentPayload } from '../../../core/services/equipment.service';
+import { EquipmentService } from '../../../core/services/equipment.service';
 import { EquipmentFamilyService } from '../../../core/services/equipment-family.service';
+import { CharacteristicValueService } from '../../../core/services/characteristic-value.service';
 import { Equipment } from '../../../core/models/equipment.model';
 import { EquipmentFamily } from '../../../core/models/equipment-family.model';
 
@@ -18,9 +20,10 @@ import { EquipmentFamily } from '../../../core/models/equipment-family.model';
 })
 export class EquipmentComponent {
 
-  private router           = inject(Router);
-  private equipmentService = inject(EquipmentService);
-  private familyService    = inject(EquipmentFamilyService);
+  private router                   = inject(Router);
+  private equipmentService         = inject(EquipmentService);
+  private familyService            = inject(EquipmentFamilyService);
+  private characteristicValueService = inject(CharacteristicValueService);
 
   modalOuvert  = false;
   filtreActif  = 'tous';
@@ -98,9 +101,24 @@ export class EquipmentComponent {
   ouvrirModal(): void { this.modalOuvert = true; }
   fermerModal(): void { this.modalOuvert = false; }
 
-  // Reçoit un EquipmentPayload du form, POSTe au back puis recharge
-  onAjouter(payload: EquipmentPayload): void {
-    this.equipmentService.create(payload).subscribe(() => {
+  // 1. POST /equipment → récupère l'équipement créé avec son id
+  // 2. Pour chaque caractéristique : POST /characteristic-value avec l'id de l'équipement
+  // forkJoin attend que tous les POSTs soient terminés avant de recharger
+  onAjouter(output: EquipmentFormOutput): void {
+    this.equipmentService.create(output.payload).pipe(
+      switchMap(createdEquipment => {
+        if (output.caracteristiques.length === 0) return of(null);
+        return forkJoin(
+          output.caracteristiques.map(c =>
+            this.characteristicValueService.create({
+              value:          c.value,
+              characteristic: { id: c.characteristicId! },
+              equipments:     [{ id: createdEquipment.id }],
+            })
+          )
+        );
+      })
+    ).subscribe(() => {
       this.chargerEquipements();
       this.chargerFamilles();
       this.fermerModal();
