@@ -1,7 +1,9 @@
-import { Component, computed, inject, signal } from '@angular/core';
+import { Component, computed, inject, signal, OnInit, OnDestroy } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { Router, RouterLink } from '@angular/router';
 import { toSignal } from '@angular/core/rxjs-interop';
+import { Subject, Subscription } from 'rxjs';
+import { debounceTime, distinctUntilChanged, switchMap } from 'rxjs/operators';
 
 import { EquipmentService } from '../../../core/services/equipment.service';
 import { EquipmentFamilyService } from '../../../core/services/equipment-family.service';
@@ -15,16 +17,17 @@ import { EquipmentFamily } from '../../../core/models/equipment-family.model';
   templateUrl: './user-catalogue.html',
   styleUrl: './user-catalogue.scss'
 })
-export class UserCatalogueComponent {
+export class UserCatalogueComponent implements OnInit, OnDestroy {
   private router           = inject(Router);
   private equipmentService = inject(EquipmentService);
   private familyService    = inject(EquipmentFamilyService);
 
-  private equipments = toSignal(this.equipmentService.getAll(), { initialValue: [] as Equipment[]      });
-  private families   = toSignal(this.familyService.getAll(),    { initialValue: [] as EquipmentFamily[] });
+  private families = toSignal(this.familyService.getAll(), { initialValue: [] as EquipmentFamily[] });
 
+  equipments     = signal<Equipment[]>([]);
   searchTerm     = signal('');
   activeCategory = signal<string>('Tous');
+  activeFamilyId = signal<number | null>(null);
 
   // Mode multi-sélection
   multiMode      = signal(false);
@@ -32,19 +35,57 @@ export class UserCatalogueComponent {
   multiEndDate   = signal('');
   selectedIds    = signal<number[]>([]);
 
+  private searchSubject = new Subject<string>();
+  private sub!: Subscription;
+
   // Catégories dynamiques depuis les vraies familles
   categories = computed(() => ['Tous', ...this.families().map(f => f.nameEquipmentFamily)]);
 
-  filteredItems = computed(() => {
-    const search = this.searchTerm().toLowerCase();
-    const cat    = this.activeCategory();
-    return this.equipments().filter(item => {
-      const matchCat    = cat === 'Tous' || item.equipmentFamily.nameEquipmentFamily === cat;
-      const matchSearch = item.equipmentName.toLowerCase().includes(search) ||
-                          item.reference.toLowerCase().includes(search);
-      return matchCat && matchSearch;
-    });
-  });
+  ngOnInit(): void {
+    // Chargement initial
+    this.equipmentService.getAll().subscribe(data => this.equipments.set(data));
+
+    // Recherche serveur avec debounce 300ms
+    // Si vide → rechargement selon la famille active
+    this.sub = this.searchSubject.pipe(
+      debounceTime(300),
+      distinctUntilChanged(),
+      switchMap(q => {
+        if (q.trim()) return this.equipmentService.searchByName(q);
+        const familyId = this.activeFamilyId();
+        return familyId
+          ? this.equipmentService.getByFamily(familyId)
+          : this.equipmentService.getAll();
+      })
+    ).subscribe(data => this.equipments.set(data));
+  }
+
+  ngOnDestroy(): void {
+    this.sub?.unsubscribe();
+  }
+
+  onSearch(event: Event): void {
+    const q = (event.target as HTMLInputElement).value;
+    this.searchTerm.set(q);
+    this.searchSubject.next(q);
+  }
+
+  // Filtre par famille côté serveur
+  setCategory(cat: string): void {
+    this.activeCategory.set(cat);
+    const family = this.families().find(f => f.nameEquipmentFamily === cat);
+    this.activeFamilyId.set(family?.id ?? null);
+
+    // Si une recherche est active, relancer la recherche (le switchMap gérera la famille)
+    const q = this.searchTerm().trim();
+    if (q) {
+      this.searchSubject.next(q);
+    } else if (cat === 'Tous') {
+      this.equipmentService.getAll().subscribe(data => this.equipments.set(data));
+    } else if (family) {
+      this.equipmentService.getByFamily(family.id).subscribe(data => this.equipments.set(data));
+    }
+  }
 
   duration = computed(() => {
     if (!this.multiStartDate() || !this.multiEndDate()) return 0;
@@ -75,14 +116,6 @@ export class UserCatalogueComponent {
 
   isSelected(id: number): boolean {
     return this.selectedIds().includes(id);
-  }
-
-  onSearch(event: Event): void {
-    this.searchTerm.set((event.target as HTMLInputElement).value);
-  }
-
-  setCategory(cat: string): void {
-    this.activeCategory.set(cat);
   }
 
   onStartDate(event: Event): void {

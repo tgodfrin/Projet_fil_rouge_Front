@@ -34,6 +34,16 @@ export class EquipmentService {
     });
   }
 
+  // GET /equipment/search?q= → recherche serveur par nom
+  searchByName(q: string): Observable<Equipment[]> {
+    return this.http.get<Equipment[]>(`${this.apiUrl}/equipment/search`, { params: { q } });
+  }
+
+  // GET /equipment/family/{familyId} → filtre par famille
+  getByFamily(familyId: number): Observable<Equipment[]> {
+    return this.http.get<Equipment[]>(`${this.apiUrl}/equipment/family/${familyId}`);
+  }
+
   create(data: EquipmentPayload): Observable<Equipment> {
     return this.http.post<Equipment>(`${this.apiUrl}/equipment`, data);
   }

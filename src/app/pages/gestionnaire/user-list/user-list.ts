@@ -1,7 +1,8 @@
-import { Component, inject, signal, computed } from '@angular/core';
-import { toSignal } from '@angular/core/rxjs-interop';
+import { Component, inject, signal, computed, OnInit, OnDestroy } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { Router } from '@angular/router';
+import { Subject, Subscription } from 'rxjs';
+import { debounceTime, distinctUntilChanged, switchMap } from 'rxjs/operators';
 import { ExportComponent } from '../../../shared/export/export';
 import { AppUser } from '../../../core/models/user.model';
 import { ProfilType } from '../../../core/models/profil.model';
@@ -14,29 +15,64 @@ import { UserService } from '../../../core/services/user.service';
   templateUrl: './user-list.html',
   styleUrl: './user-list.scss'
 })
-export class UserListComponent {
+export class UserListComponent implements OnInit, OnDestroy {
 
   private router      = inject(Router);
   private userService = inject(UserService);
 
-  
-  users = toSignal(this.userService.getAll(), { initialValue: [] as AppUser[] });
-
+  users        = signal<AppUser[]>([]);
   searchTerm   = signal('');
   activeFilter = signal<ProfilType | 'TOUS'>('TOUS');
 
-  filteredUsers = computed(() => {
-    const search = this.searchTerm().toLowerCase();
-    const filter = this.activeFilter();
+  private searchSubject = new Subject<string>();
+  private sub!: Subscription;
 
-    return this.users().filter(u => {
-      const matchRole   = filter === 'TOUS' || u.profil.type === filter;
-      const matchSearch =
-        u.name.toLowerCase().includes(search)     ||
-        u.lastname.toLowerCase().includes(search) ||
-        u.email.toLowerCase().includes(search);
-      return matchRole && matchSearch;
-    });
+  ngOnInit(): void {
+    // Chargement initial depuis le serveur
+    this.userService.getAll().subscribe(data => this.users.set(data));
+
+    // Recherche serveur avec debounce 300ms
+    // Si la recherche est vide → rechargement selon le filtre profil actif
+    this.sub = this.searchSubject.pipe(
+      debounceTime(300),
+      distinctUntilChanged(),
+      switchMap(q => {
+        if (q.trim()) return this.userService.search(q);
+        const filter = this.activeFilter();
+        return filter === 'TOUS'
+          ? this.userService.getAll()
+          : this.userService.getByProfil(filter as string);
+      })
+    ).subscribe(data => this.users.set(data));
+  }
+
+  ngOnDestroy(): void {
+    this.sub?.unsubscribe();
+  }
+
+  // Filtre profil côté serveur — recharge la liste depuis l'API
+  setFilter(filter: ProfilType | 'TOUS'): void {
+    this.activeFilter.set(filter);
+    const q = this.searchTerm().trim();
+    if (q) {
+      // Recherche active : garder les résultats de recherche, filtrer côté client par profil
+      this.searchSubject.next(q);
+    } else {
+      const obs = filter === 'TOUS'
+        ? this.userService.getAll()
+        : this.userService.getByProfil(filter as string);
+      obs.subscribe(data => this.users.set(data));
+    }
+  }
+
+  // Si recherche + filtre profil combinés → filtre client-side sur les résultats de recherche
+  filteredUsers = computed(() => {
+    const filter = this.activeFilter();
+    const q      = this.searchTerm().trim();
+    if (q && filter !== 'TOUS') {
+      return this.users().filter(u => u.profil.type === filter);
+    }
+    return this.users();
   });
 
   countByRole(role: ProfilType | 'TOUS'): number {
@@ -55,12 +91,10 @@ export class UserListComponent {
     }))
   );
 
-  setFilter(filter: ProfilType | 'TOUS'): void {
-    this.activeFilter.set(filter);
-  }
-
   onSearch(event: Event): void {
-    this.searchTerm.set((event.target as HTMLInputElement).value);
+    const q = (event.target as HTMLInputElement).value;
+    this.searchTerm.set(q);
+    this.searchSubject.next(q);
   }
 
   getInitials(user: AppUser): string {

@@ -28,6 +28,21 @@ export class LoanService {
     });
   }
 
+  // GET /loan/equipment/{id} → historique des emprunts d'un équipement
+  getByEquipment(equipmentId: number): Observable<Loan[]> {
+    return this.http.get<Loan[]>(`${this.apiUrl}/loan/equipment/${equipmentId}`);
+  }
+
+  // GET /loan/overdue → emprunts en retard (VALID dont endDate est dépassée)
+  getOverdue(): Observable<Loan[]> {
+    return this.http.get<Loan[]>(`${this.apiUrl}/loan/overdue`);
+  }
+
+  // GET /loan/pending → demandes en attente de validation (IN_PROGRESS)
+  getPending(): Observable<Loan[]> {
+    return this.http.get<Loan[]>(`${this.apiUrl}/loan/pending`);
+  }
+
   create(data: LoanCreate): Observable<Loan> {
     return this.http.post<Loan>(`${this.apiUrl}/loan`, data);
   }

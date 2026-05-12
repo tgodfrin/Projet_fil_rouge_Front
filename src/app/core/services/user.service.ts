@@ -21,6 +21,16 @@ export class UserService {
     return this.http.post<AppUser>(`${this.apiUrl}/user`, data);
   }
 
+  // GET /user/search?q= → recherche serveur par nom, prénom ou email
+  search(q: string): Observable<AppUser[]> {
+    return this.http.get<AppUser[]>(`${this.apiUrl}/user/search`, { params: { q } });
+  }
+
+  // GET /user/profil/{type} → tous les utilisateurs d'un profil donné
+  getByProfil(type: string): Observable<AppUser[]> {
+    return this.http.get<AppUser[]>(`${this.apiUrl}/user/profil/${type}`);
+  }
+
   // PUT /user/:id/email?email=...
   updateEmail(id: number, email: string): Observable<AppUser> {
     return this.http.put<AppUser>(`${this.apiUrl}/user/${id}/email`, null, {

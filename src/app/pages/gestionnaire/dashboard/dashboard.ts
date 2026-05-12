@@ -1,4 +1,4 @@
-import { Component, computed, inject } from '@angular/core';
+import { Component, computed, inject, Signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { Router } from '@angular/router';
 import { toSignal } from '@angular/core/rxjs-interop';
@@ -22,17 +22,10 @@ export class DashboardComponent {
   private loanService      = inject(LoanService);
 
   private equipments = toSignal(this.equipmentService.getAll(), { initialValue: [] as Equipment[] });
-  private loans      = toSignal(this.loanService.getAll(),      { initialValue: [] as Loan[]      });
 
-  // Loans en retard (VALID dont endDate est dépassée)
-  private retardLoans = computed(() =>
-    this.loans().filter(l => l.statusType === 'VALID' && new Date(l.endDate) < new Date())
-  );
-
-  // Loans en attente de validation (IN_PROGRESS = demande créée, pas encore validée)
-  private pendingLoans = computed(() =>
-    this.loans().filter(l => l.statusType === 'IN_PROGRESS')
-  );
+  // Chargement ciblé côté serveur — évite de charger tous les loans juste pour filtrer
+  private retardLoans  = toSignal(this.loanService.getOverdue(),  { initialValue: [] as Loan[] });
+  private pendingLoans = toSignal(this.loanService.getPending(),  { initialValue: [] as Loan[] });
 
   // KPIs équipements
   kpis = computed(() => [

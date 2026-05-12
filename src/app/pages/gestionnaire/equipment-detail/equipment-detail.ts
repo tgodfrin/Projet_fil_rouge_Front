@@ -1,4 +1,4 @@
-import { Component, computed, inject, signal } from '@angular/core';
+import { Component, inject, signal } from '@angular/core';
 import { CommonModule, Location } from '@angular/common';
 import { ActivatedRoute } from '@angular/router';
 import { toSignal } from '@angular/core/rxjs-interop';
@@ -36,12 +36,8 @@ export class EquipmentDetailComponent {
   characteristics = toSignal(this.characteristicService.getByEquipment(this.equipmentId), { initialValue: [] as CharacteristicValue[] });
   docs            = toSignal(this.docService.getByEquipment(this.equipmentId),             { initialValue: [] as Doc[] });
 
-  // Historique : tous les emprunts filtrés par equipment.id
-  // (pas d'endpoint GET /loan/equipment/:id côté back)
-  private allLoans = toSignal(this.loanService.getAll(), { initialValue: [] as Loan[] });
-  loanHistory = computed(() =>
-    this.allLoans().filter(l => l.equipment.id === this.equipmentId)
-  );
+  // Historique : emprunts filtrés côté serveur via GET /loan/equipment/:id
+  loanHistory = toSignal(this.loanService.getByEquipment(this.equipmentId), { initialValue: [] as Loan[] });
 
   ongletActif = signal<'infos' | 'historique' | 'documents'>('infos');
 
