@@ -51,8 +51,4 @@ export class EquipmentService {
   update(id: number, data: EquipmentPayload): Observable<Equipment> {
     return this.http.put<Equipment>(`${this.apiUrl}/equipment/${id}`, data);
   }
-
-  delete(id: number): Observable<void> {
-    return this.http.delete<void>(`${this.apiUrl}/equipment/${id}`);
-  }
 }

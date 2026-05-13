@@ -2,6 +2,7 @@ import { Component, EventEmitter, Input, OnInit, Output, inject, signal } from '
 import { ReactiveFormsModule, FormBuilder, Validators } from '@angular/forms';
 import { CommonModule } from '@angular/common';
 import { EquipmentFamily } from '../../../../core/models/equipment-family.model';
+import { Equipment } from '../../../../core/models/equipment.model';
 import { EquipmentPayload } from '../../../../core/services/equipment.service';
 import { CharacteristicService } from '../../../../core/services/characteristic.service';
 import { Characteristic } from '../../../../core/models/characteristic-value.model';
@@ -31,6 +32,15 @@ export class EquipmentFormComponent implements OnInit {
   // Familles passées par le parent (chargées via EquipmentFamilyService)
   @Input() families: EquipmentFamily[] = [];
 
+  // 'create' → formulaire de création  |  'edit' → formulaire pré-rempli sans caractéristiques
+  @Input() mode: 'create' | 'edit' = 'create';
+
+  // En mode edit : équipement à pré-remplir dans ngOnInit via patchValue
+  @Input() initialEquipment: Equipment | null = null;
+
+  // false → l'overlay n'est pas rendu, le formulaire s'affiche inline dans le flux de la page
+  @Input() showOverlay = true;
+
   @Output() fermer  = new EventEmitter<void>();
   @Output() ajouter = new EventEmitter<EquipmentFormOutput>();
 
@@ -52,6 +62,18 @@ export class EquipmentFormComponent implements OnInit {
     this.characteristicService.getAll().subscribe(data => {
       this.caracteristiquesDisponibles.set(data);
     });
+
+    // Pré-remplissage en mode édition
+    if (this.mode === 'edit' && this.initialEquipment) {
+      const eq = this.initialEquipment;
+      this.form.patchValue({
+        equipmentName:   eq.equipmentName,
+        reference:       eq.reference,
+        familyId:        String(eq.equipmentFamily.id),
+        location:        eq.location ?? '',
+        acquisitionDate: eq.acquisitionDate ?? '',
+      });
+    }
   }
 
   ajouterLigne(): void {
@@ -84,8 +106,8 @@ export class EquipmentFormComponent implements OnInit {
       this.form.markAllAsTouched();
       return;
     }
-    // Bloque si une ligne est incomplète (type ou valeur manquant)
-    if (!this.lignesValides) return;
+    // Bloque les lignes incomplètes uniquement en mode create
+    if (this.mode === 'create' && !this.lignesValides) return;
 
     const val = this.form.value;
     const payload: EquipmentPayload = {
@@ -96,9 +118,16 @@ export class EquipmentFormComponent implements OnInit {
       equipmentFamily: { id: Number(val.familyId) },
     };
 
-    this.ajouter.emit({ payload, caracteristiques: this.lignes() });
-    this.form.reset();
-    this.lignes.set([]);
+    // En mode edit, les caractéristiques ne sont pas envoyées (endpoint PUT ne les gère pas)
+    this.ajouter.emit({
+      payload,
+      caracteristiques: this.mode === 'create' ? this.lignes() : [],
+    });
+
+    if (this.mode === 'create') {
+      this.form.reset();
+      this.lignes.set([]);
+    }
   }
 
   onFermer(): void {

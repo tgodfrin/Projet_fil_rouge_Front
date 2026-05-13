@@ -60,6 +60,21 @@
   color: var(--grey-700);
 }
 
+.btn-primary {
+  background: var(--primary);
+  color: white;
+}
+
+.btn-danger {
+  background: var(--danger-bg);
+  color: var(--danger-text);
+}
+
+.btn-success {
+  background: var(--success-bg);
+  color: var(--success-text);
+}
+
 // ── Fiche ─────────────────────────────────────────────
 .fiche {
   background: white;
@@ -313,4 +328,135 @@
 .td-muted {
   font-size: 11px;
   color: var(--grey-400);
+}
+
+// ── Tableau documents (4 colonnes) ───────────────────
+.table-head-doc-4 {
+  display: grid;
+  grid-template-columns: 1fr 120px 60px 90px;
+  padding: 10px 16px;
+  background: var(--grey-50);
+  border-bottom: 1px solid var(--grey-200);
+}
+
+.table-row-doc-4 {
+  display: grid;
+  grid-template-columns: 1fr 120px 60px 90px;
+  padding: 10px 16px;
+  border-bottom: 1px solid var(--grey-100);
+  align-items: center;
+
+  &:last-child { border-bottom: none; }
+  &:hover { background: var(--grey-50); }
+}
+
+// ── Onglets avec actions (documents, statut) ─────────
+// Wrapper flex pour empiler : tableau + formulaire + bouton
+.onglet-section {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+// ── Formulaires inline (ajout doc, signalement statut) ──
+.inline-form {
+  background: white;
+  border: 1px solid var(--grey-200);
+  border-radius: var(--r-md);
+  padding: 14px 16px;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  box-shadow: var(--shadow-sm);
+}
+
+.inline-input {
+  height: 36px;
+  border: 1px solid var(--grey-200);
+  border-radius: var(--r-sm);
+  padding: 0 0.75rem;
+  font-size: 12px;
+  font-family: var(--font);
+  color: var(--grey-900);
+  background: white;
+  width: 100%;
+  box-sizing: border-box;
+  transition: border-color 0.2s;
+
+  &:focus {
+    outline: none;
+    border-color: var(--primary);
+  }
+
+  &::placeholder { color: var(--grey-400); }
+}
+
+.inline-textarea {
+  height: auto;
+  padding: 0.5rem 0.75rem;
+  resize: vertical;
+}
+
+.inline-form-actions {
+  display: flex;
+  gap: 0.5rem;
+  justify-content: flex-end;
+  padding-top: 4px;
+}
+
+// ── Carte statut actif ───────────────────────────────
+.status-card {
+  background: white;
+  border: 1px solid var(--danger-text);
+  border-radius: var(--r-md);
+  padding: 16px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  box-shadow: var(--shadow-sm);
+}
+
+.status-card-header {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  flex-wrap: wrap;
+}
+
+.status-card-date {
+  font-size: 11px;
+  color: var(--grey-400);
+}
+
+.status-card-desc {
+  font-size: 13px;
+  color: var(--grey-700);
+  margin: 0;
+  line-height: 1.5;
+}
+
+// ── Historique des statuts résolus ───────────────────
+.status-history {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.status-history-title {
+  font-size: 10px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.8px;
+  color: var(--grey-400);
+  padding-top: 4px;
+}
+
+.status-history-row {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  flex-wrap: wrap;
+  padding: 8px 12px;
+  background: var(--grey-50);
+  border-radius: var(--r-sm);
 }

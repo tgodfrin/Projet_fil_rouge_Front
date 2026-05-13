@@ -16,134 +16,283 @@
     <div class="page-header">
       <button class="btn btn-retour" (click)="retour()">← Retour</button>
       <div class="header-actions">
-        <button class="btn btn-edit">✎ Éditer</button>
-        <button class="btn btn-delete">🗑 Supprimer</button>
-      </div>
-    </div>
-
-    <!-- FICHE -->
-    <div class="fiche">
-      <div class="fiche-top">
-        <div class="fiche-icon">💻</div>
-        <div class="fiche-info">
-          <div class="fiche-nom">{{ eq.equipmentName }}</div>
-          <div class="fiche-ref">{{ eq.reference }}</div>
-          <span class="badge"
-            [class.b-success]="eq.status === 'DISPONIBLE'"
-            [class.b-warning]="eq.status === 'EN_PRET'"
-            [class.b-danger]="eq.status === 'OUT_OF_SERVICE' || eq.status === 'UNDER_REPAIR'">
-            <span class="badge-dot"></span>
-            {{ getStatutLabel(eq.status ?? '') }}
-          </span>
-        </div>
-      </div>
-
-      <div class="fiche-details">
-        <div class="detail-item">
-          <div class="detail-label">Famille</div>
-          <div class="detail-value">{{ eq.equipmentFamily.nameEquipmentFamily }}</div>
-        </div>
-        <div class="detail-item">
-          <div class="detail-label">Localisation</div>
-          <div class="detail-value">{{ eq.location ?? '—' }}</div>
-        </div>
-        <div class="detail-item">
-          <div class="detail-label">Date d'acquisition</div>
-          <div class="detail-value">{{ eq.acquisitionDate ? formatDate(eq.acquisitionDate) : '—' }}</div>
-        </div>
-      </div>
-    </div>
-
-    <!-- ONGLETS -->
-    <div class="tabs">
-      <div class="tab" [class.active]="ongletActif() === 'infos'"      (click)="changerOnglet('infos')">
-        Infos ({{ characteristics().length }})
-      </div>
-      <div class="tab" [class.active]="ongletActif() === 'historique'" (click)="changerOnglet('historique')">
-        Historique ({{ loanHistory().length }})
-      </div>
-      <div class="tab" [class.active]="ongletActif() === 'documents'"  (click)="changerOnglet('documents')">
-        Documents ({{ docs().length }})
-      </div>
-    </div>
-
-    <!-- ONGLET INFOS : caractéristiques -->
-    @if (ongletActif() === 'infos') {
-      <div class="onglet-content">
-        @if (characteristics().length === 0) {
-          <div class="empty-state">Aucune caractéristique enregistrée.</div>
-        } @else {
-          <div class="carac-grid">
-            @for (c of characteristics(); track c.id) {
-              <div class="carac-row">
-                <span class="carac-label">{{ c.characteristic.name }}</span>
-                <span class="carac-valeur">{{ c.value }}</span>
-              </div>
-            }
-          </div>
+        @if (!editMode()) {
+          <button class="btn btn-edit" (click)="editMode.set(true)">✎ Éditer</button>
         }
       </div>
+    </div>
+
+    <!-- FORMULAIRE D'ÉDITION INLINE (remplace la fiche + onglets pendant l'édition) -->
+    @if (editMode()) {
+      <app-equipment-form
+        [mode]="'edit'"
+        [showOverlay]="false"
+        [initialEquipment]="eq"
+        [families]="families()"
+        (fermer)="editMode.set(false)"
+        (ajouter)="onSauvegarderEquipement($event)"
+      />
     }
 
-    <!-- ONGLET HISTORIQUE -->
-    @if (ongletActif() === 'historique') {
-      @if (loanHistory().length === 0) {
-        <div class="empty-state">Aucun emprunt pour cet équipement.</div>
-      } @else {
-        <div class="table-wrapper">
-          <div class="table">
-            <div class="table-head">
-              <div class="th">Utilisateur</div>
-              <div class="th">Début</div>
-              <div class="th">Fin prévue</div>
-              <div class="th">Statut</div>
-            </div>
-            @for (loan of loanHistory(); track loan.id) {
-              <div class="table-row">
-                <div class="td-main">{{ loan.requester.name }} {{ loan.requester.lastname }}</div>
-                <div class="td-muted">{{ formatDate(loan.beginDate) }}</div>
-                <div class="td-muted">{{ formatDate(loan.endDate) }}</div>
-                <div>
-                  <span class="badge"
-                    [class.b-success]="getLoanDisplayStatus(loan) === 'TERMINE'"
-                    [class.b-info]="getLoanDisplayStatus(loan) === 'IN_PROGRESS'"
-                    [class.b-warning]="getLoanDisplayStatus(loan) === 'VALID'"
-                    [class.b-danger]="getLoanDisplayStatus(loan) === 'RETARD'">
-                    <span class="badge-dot"></span>
-                    {{ getLoanStatusLabel(getLoanDisplayStatus(loan)) }}
-                  </span>
-                </div>
-              </div>
-            }
-          </div>
-        </div>
-      }
-    }
+    @if (!editMode()) {
 
-    <!-- ONGLET DOCUMENTS -->
-    @if (ongletActif() === 'documents') {
-      @if (docs().length === 0) {
-        <div class="empty-state">Aucun document associé.</div>
-      } @else {
-        <div class="table-wrapper">
-          <div class="table">
-            <div class="table-head">
-              <div class="th">Titre</div>
-              <div class="th">Ajouté le</div>
-              <div class="th"></div>
-            </div>
-            @for (doc of docs(); track doc.id) {
-              <div class="table-row table-row-doc">
-                <div class="td-main">{{ doc.title }}</div>
-                <div class="td-muted">{{ formatDate(doc.addedDate) }}</div>
-                <div>
-                  <a class="btn btn-ghost btn-sm" [href]="doc.url" target="_blank">Voir</a>
-                </div>
-              </div>
-            }
+      <!-- FICHE -->
+      <div class="fiche">
+        <div class="fiche-top">
+          <div class="fiche-icon">💻</div>
+          <div class="fiche-info">
+            <div class="fiche-nom">{{ eq.equipmentName }}</div>
+            <div class="fiche-ref">{{ eq.reference }}</div>
+            <span class="badge"
+              [class.b-success]="eq.status === 'DISPONIBLE'"
+              [class.b-warning]="eq.status === 'EN_PRET'"
+              [class.b-danger]="eq.status === 'OUT_OF_SERVICE' || eq.status === 'UNDER_REPAIR'">
+              <span class="badge-dot"></span>
+              {{ getStatutLabel(eq.status ?? '') }}
+            </span>
           </div>
         </div>
+
+        <div class="fiche-details">
+          <div class="detail-item">
+            <div class="detail-label">Famille</div>
+            <div class="detail-value">{{ eq.equipmentFamily.nameEquipmentFamily }}</div>
+          </div>
+          <div class="detail-item">
+            <div class="detail-label">Localisation</div>
+            <div class="detail-value">{{ eq.location ?? '—' }}</div>
+          </div>
+          <div class="detail-item">
+            <div class="detail-label">Date d'acquisition</div>
+            <div class="detail-value">{{ eq.acquisitionDate ? formatDate(eq.acquisitionDate) : '—' }}</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- ONGLETS -->
+      <div class="tabs">
+        <div class="tab" [class.active]="ongletActif() === 'infos'"      (click)="changerOnglet('infos')">
+          Infos ({{ characteristics().length }})
+        </div>
+        <div class="tab" [class.active]="ongletActif() === 'historique'" (click)="changerOnglet('historique')">
+          Historique ({{ loanHistory().length }})
+        </div>
+        <div class="tab" [class.active]="ongletActif() === 'documents'"  (click)="changerOnglet('documents')">
+          Documents ({{ docs().length }})
+        </div>
+        <div class="tab" [class.active]="ongletActif() === 'statut'"     (click)="changerOnglet('statut')">
+          Statut{{ activeStatus() ? ' ⚠' : '' }}
+        </div>
+      </div>
+
+      <!-- ONGLET INFOS : caractéristiques -->
+      @if (ongletActif() === 'infos') {
+        <div class="onglet-content">
+          @if (characteristics().length === 0) {
+            <div class="empty-state">Aucune caractéristique enregistrée.</div>
+          } @else {
+            <div class="carac-grid">
+              @for (c of characteristics(); track c.id) {
+                <div class="carac-row">
+                  <span class="carac-label">{{ c.characteristic.name }}</span>
+                  <span class="carac-valeur">{{ c.value }}</span>
+                </div>
+              }
+            </div>
+          }
+        </div>
       }
+
+      <!-- ONGLET HISTORIQUE -->
+      @if (ongletActif() === 'historique') {
+        @if (loanHistory().length === 0) {
+          <div class="empty-state">Aucun emprunt pour cet équipement.</div>
+        } @else {
+          <div class="table-wrapper">
+            <div class="table">
+              <div class="table-head">
+                <div class="th">Utilisateur</div>
+                <div class="th">Début</div>
+                <div class="th">Fin prévue</div>
+                <div class="th">Statut</div>
+              </div>
+              @for (loan of loanHistory(); track loan.id) {
+                <div class="table-row">
+                  <div class="td-main">{{ loan.requester.name }} {{ loan.requester.lastname }}</div>
+                  <div class="td-muted">{{ formatDate(loan.beginDate) }}</div>
+                  <div class="td-muted">{{ formatDate(loan.endDate) }}</div>
+                  <div>
+                    <span class="badge"
+                      [class.b-success]="getLoanDisplayStatus(loan) === 'TERMINE'"
+                      [class.b-info]="getLoanDisplayStatus(loan) === 'IN_PROGRESS'"
+                      [class.b-warning]="getLoanDisplayStatus(loan) === 'VALID'"
+                      [class.b-danger]="getLoanDisplayStatus(loan) === 'RETARD'">
+                      <span class="badge-dot"></span>
+                      {{ getLoanStatusLabel(getLoanDisplayStatus(loan)) }}
+                    </span>
+                  </div>
+                </div>
+              }
+            </div>
+          </div>
+        }
+      }
+
+      <!-- ONGLET DOCUMENTS -->
+      @if (ongletActif() === 'documents') {
+        <div class="onglet-section">
+
+          <!-- Liste des documents existants -->
+          @if (docs().length === 0 && !docFormVisible()) {
+            <div class="empty-state">Aucun document associé.</div>
+          }
+
+          @if (docs().length > 0) {
+            <div class="table-wrapper">
+              <div class="table">
+                <div class="table-head table-head-doc-4">
+                  <div class="th">Titre</div>
+                  <div class="th">Ajouté le</div>
+                  <div class="th"></div>
+                  <div class="th"></div>
+                </div>
+                @for (doc of docs(); track doc.id) {
+                  <div class="table-row table-row-doc-4">
+                    <div class="td-main">{{ doc.title }}</div>
+                    <div class="td-muted">{{ formatDate(doc.addedDate) }}</div>
+                    <div>
+                      <a class="btn btn-ghost btn-sm" [href]="doc.url" target="_blank">Voir</a>
+                    </div>
+                    <div>
+                      <button class="btn btn-danger btn-sm" (click)="supprimerDoc(doc.id)">Supprimer</button>
+                    </div>
+                  </div>
+                }
+              </div>
+            </div>
+          }
+
+          <!-- Formulaire inline ajout document -->
+          @if (docFormVisible()) {
+            <div class="inline-form">
+              <input
+                class="inline-input"
+                type="text"
+                placeholder="Titre du document"
+                [value]="docTitle()"
+                (input)="docTitle.set($any($event.target).value)"
+              />
+              <input
+                class="inline-input"
+                type="url"
+                placeholder="URL (https://…)"
+                [value]="docUrl()"
+                (input)="docUrl.set($any($event.target).value)"
+              />
+              <div class="inline-form-actions">
+                <button class="btn btn-ghost btn-sm" (click)="docFormVisible.set(false)">Annuler</button>
+                <button class="btn btn-primary btn-sm"
+                  [disabled]="!docTitle().trim() || !docUrl().trim()"
+                  (click)="ajouterDoc()">
+                  Ajouter
+                </button>
+              </div>
+            </div>
+          }
+
+          <!-- Bouton ouvrir formulaire ajout -->
+          @if (!docFormVisible()) {
+            <button class="btn btn-primary btn-sm" (click)="docFormVisible.set(true)">
+              + Ajouter un document
+            </button>
+          }
+
+        </div>
+      }
+
+      <!-- ONGLET STATUT TECHNIQUE -->
+      @if (ongletActif() === 'statut') {
+        <div class="onglet-section">
+
+          <!-- Statut actif (non résolu) -->
+          @if (activeStatus(); as s) {
+            <div class="status-card">
+              <div class="status-card-header">
+                <span class="badge b-danger">
+                  <span class="badge-dot"></span>
+                  {{ getStatusTypeLabel(s.statusEquipmentType) }}
+                </span>
+                <span class="status-card-date">Depuis le {{ formatDate(s.beginStatusDate) }}</span>
+              </div>
+              @if (s.descriptionStatus) {
+                <p class="status-card-desc">{{ s.descriptionStatus }}</p>
+              }
+              <button class="btn btn-success btn-sm" (click)="resoudreStatut(s.id)">
+                ✓ Résoudre
+              </button>
+            </div>
+          } @else {
+            <div class="empty-state">Aucun incident technique en cours.</div>
+          }
+
+          <!-- Historique des statuts résolus -->
+          @if (statusList().length > (activeStatus() ? 1 : 0)) {
+            <div class="status-history">
+              <div class="status-history-title">Historique</div>
+              @for (s of statusList(); track s.id) {
+                @if (s.endStatusDate !== null) {
+                  <div class="status-history-row">
+                    <span class="badge b-success">
+                      <span class="badge-dot"></span>
+                      {{ getStatusTypeLabel(s.statusEquipmentType) }} — résolu
+                    </span>
+                    <span class="td-muted">
+                      {{ formatDate(s.beginStatusDate) }} → {{ formatDate(s.endStatusDate) }}
+                    </span>
+                  </div>
+                }
+              }
+            </div>
+          }
+
+          <!-- Formulaire inline signalement -->
+          @if (statusFormVisible()) {
+            <div class="inline-form">
+              <select
+                class="inline-input"
+                [value]="statusType()"
+                (change)="statusType.set($any($event.target).value)">
+                <option value="OUT_OF_SERVICE">Panne (hors service)</option>
+                <option value="UNDER_REPAIR">En réparation</option>
+              </select>
+              <textarea
+                class="inline-input inline-textarea"
+                placeholder="Description de l'incident…"
+                rows="3"
+                [value]="statusDesc()"
+                (input)="statusDesc.set($any($event.target).value)"
+              ></textarea>
+              <div class="inline-form-actions">
+                <button class="btn btn-ghost btn-sm" (click)="statusFormVisible.set(false)">Annuler</button>
+                <button class="btn btn-danger btn-sm"
+                  [disabled]="!statusDesc().trim()"
+                  (click)="signalerStatut()">
+                  Signaler
+                </button>
+              </div>
+            </div>
+          }
+
+          <!-- Bouton ouvrir formulaire signalement (masqué si statut actif ou formulaire ouvert) -->
+          @if (!statusFormVisible() && !activeStatus()) {
+            <button class="btn btn-danger btn-sm" (click)="statusFormVisible.set(true)">
+              ⚠ Signaler un incident
+            </button>
+          }
+
+        </div>
+      }
+
     }
 
   }
