@@ -29,6 +29,9 @@
       <a class="sidebar-link" routerLink="/utilisateurs" routerLinkActive="active" (click)="closeMenu()">
         👥 Utilisateurs
       </a>
+      <a class="sidebar-link" routerLink="/categories" routerLinkActive="active" (click)="closeMenu()">
+        🏷️ Catégories
+      </a>
     </nav>
     <div class="sidebar-bottom">
       <div class="user-avatar">{{ initials() }}</div>
@@ -78,6 +81,10 @@
   <a class="bnav-item" routerLink="/utilisateurs" routerLinkActive="active">
     <span class="bnav-icon">👥</span>
     <span class="bnav-label">Utilisateurs</span>
+  </a>
+  <a class="bnav-item" routerLink="/categories" routerLinkActive="active">
+    <span class="bnav-icon">🏷️</span>
+    <span class="bnav-label">Catégories</span>
   </a>
 </nav>
 

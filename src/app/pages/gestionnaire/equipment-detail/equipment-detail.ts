@@ -47,9 +47,9 @@ export class EquipmentDetailComponent {
     this.ongletActif.set(onglet);
   }
 
-  // RETARD = IN_PROGRESS dont endDate est dépassée
+  // RETARD = VALID (autorisé) dont endDate est dépassée et non encore retourné
   getLoanDisplayStatus(loan: Loan): LoanDisplayStatus {
-    if (loan.statusType === 'IN_PROGRESS' && new Date(loan.endDate) < new Date()) {
+    if (loan.statusType === 'VALID' && new Date(loan.endDate) < new Date()) {
       return 'RETARD';
     }
     return loan.statusType;
@@ -57,8 +57,8 @@ export class EquipmentDetailComponent {
 
   getLoanStatusLabel(status: LoanDisplayStatus): string {
     const labels: Record<LoanDisplayStatus, string> = {
-      VALID:       'En attente',
-      IN_PROGRESS: 'En cours',
+      IN_PROGRESS: 'En attente',   // en cours d'examen par un gestionnaire
+      VALID:       'En cours',     // autorisé par un gestionnaire
       TERMINE:     'Terminé',
       RETARD:      'En retard',
       INVALID:     'Refusé',

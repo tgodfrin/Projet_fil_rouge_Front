@@ -47,12 +47,17 @@
     }
   </div>
 
+  <!-- Erreur multi-emprunt -->
+  @if (multiError()) {
+    <div class="error-banner">⛔ {{ multiError() }}</div>
+  }
+
   <!-- Liste -->
-  @if (filteredItems().length === 0) {
+  @if (equipments().length === 0) {
     <div class="empty-state">Aucun matériel pour ce filtre.</div>
   } @else {
     <div class="items-list">
-      @for (item of filteredItems(); track item.id) {
+      @for (item of equipments(); track item.id) {
         <div class="item-card"
              [class.selected]="isSelected(item.id)"
              [class.selectable]="multiMode() && item.status === 'DISPONIBLE'"

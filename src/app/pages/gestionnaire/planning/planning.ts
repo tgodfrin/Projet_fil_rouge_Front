@@ -1,6 +1,7 @@
-import { Component, computed, inject, signal } from '@angular/core';
+import { Component, OnDestroy, OnInit, computed, inject, signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { toSignal } from '@angular/core/rxjs-interop';
+import { Subscription, distinctUntilChanged, switchMap, Subject } from 'rxjs';
 
 import { LoanService } from '../../../core/services/loan.service';
 import { EquipmentFamilyService } from '../../../core/services/equipment-family.service';
@@ -15,20 +16,26 @@ import { PlanningEvent, PlanningRow } from '../../../core/models/planning.model'
   templateUrl: './planning.html',
   styleUrl: './planning.scss'
 })
-export class PlanningComponent {
+export class PlanningComponent implements OnInit, OnDestroy {
 
   private loanService   = inject(LoanService);
   private familyService = inject(EquipmentFamilyService);
 
-  private allLoans = toSignal(this.loanService.getAll(),        { initialValue: [] as Loan[]            });
-  private families = toSignal(this.familyService.getAll(),      { initialValue: [] as EquipmentFamily[] });
+  private families = toSignal(this.familyService.getAll(), { initialValue: [] as EquipmentFamily[] });
 
-  viewMode      = signal<'SEMAINE' | 'MOIS'>('SEMAINE');
-  weekOffset    = signal(0);
-  selectedDate  = signal<string>(this.getTodayString());
+  // Loans chargés depuis le back pour la période visible — rerechargés à chaque navigation
+  loans = signal<Loan[]>([]);
+
+  viewMode       = signal<'SEMAINE' | 'MOIS'>('SEMAINE');
+  weekOffset     = signal(0);
+  selectedDate   = signal<string>(this.getTodayString());
   activeCategory = signal<string>('TOUS');
 
   today = new Date().toDateString();
+
+  // Subject qui émet le range {begin, end} à chaque changement de vue
+  private rangeSubject = new Subject<{ begin: string; end: string }>();
+  private sub!: Subscription;
 
   // Catégories dynamiques depuis les vraies familles
   categories = computed(() => ['TOUS', ...this.families().map(f => f.nameEquipmentFamily)]);
@@ -37,14 +44,56 @@ export class PlanningComponent {
     return this.families().find(f => f.id === id)?.nameEquipmentFamily ?? '—';
   }
 
-  // Loans actifs (VALID ou IN_PROGRESS) groupés par équipement → PlanningRow[]
-  rows = computed((): PlanningRow[] => {
-    const activeLoans = this.allLoans().filter(
-      l => l.statusType === 'IN_PROGRESS' || l.statusType === 'VALID'
-    );
+  ngOnInit(): void {
+    // switchMap annule le précédent appel si la vue change avant la réponse
+    this.sub = this.rangeSubject.pipe(
+      distinctUntilChanged((a, b) => a.begin === b.begin && a.end === b.end),
+      switchMap(({ begin, end }) => this.loanService.getPlanning(begin, end))
+    ).subscribe(data => this.loans.set(data));
 
+    // Chargement initial
+    this.loadCurrentRange();
+  }
+
+  ngOnDestroy(): void {
+    this.sub?.unsubscribe();
+  }
+
+  // Calcule le range de la vue courante et l'émet vers le Subject
+  private loadCurrentRange(): void {
+    const range = this.getVisibleRange();
+    this.rangeSubject.next(range);
+  }
+
+  // Retourne begin/end au format LocalDateTime (ISO sans zone) selon la vue active
+  private getVisibleRange(): { begin: string; end: string } {
+    if (this.viewMode() === 'SEMAINE') {
+      const days = this.weekDays();
+      return {
+        begin: `${this.toDateStr(days[0].date)}T00:00:00`,
+        end:   `${this.toDateStr(days[6].date)}T23:59:59`,
+      };
+    } else {
+      // Vue MOIS : on prend le 1er et le dernier jour du mois affiché
+      const base = new Date(this.selectedDate());
+      base.setDate(base.getDate() + this.weekOffset() * 7);
+      const year  = base.getFullYear();
+      const month = base.getMonth();
+      const first = new Date(year, month, 1);
+      const last  = new Date(year, month + 1, 0);
+      return {
+        begin: `${this.toDateStr(first)}T00:00:00`,
+        end:   `${this.toDateStr(last)}T23:59:59`,
+      };
+    }
+  }
+
+  // Loans groupés par équipement → PlanningRow[]
+  // Le back renvoie déjà uniquement les loans de la période — pas besoin de filtrer par statut
+  rows = computed((): PlanningRow[] => {
     const byEquipment = new Map<string, PlanningRow>();
-    activeLoans.forEach(loan => {
+
+    this.loans().forEach(loan => {
       const key      = loan.equipment.equipmentName;
       const category = this.familyName(loan.equipment.equipmentFamily.id);
 
@@ -57,7 +106,7 @@ export class PlanningComponent {
         borrowerName:  `${loan.requester.name} ${loan.requester.lastname[0]}.`,
         equipmentName: key,
         category,
-        startDate:     loan.beginDate.substring(0, 10),   // LocalDateTime → YYYY-MM-DD
+        startDate:     loan.beginDate.substring(0, 10),
         endDate:       loan.endDate.substring(0, 10),
       };
       byEquipment.get(key)!.events.push(event);
@@ -69,7 +118,7 @@ export class PlanningComponent {
   // ── Semaine ───────────────────────────────────────────
 
   weekDays = computed(() => {
-    const base = new Date(this.selectedDate());
+    const base   = new Date(this.selectedDate());
     const monday = new Date(base);
     monday.setDate(base.getDate() - ((base.getDay() + 6) % 7) + this.weekOffset() * 7);
 
@@ -77,9 +126,9 @@ export class PlanningComponent {
       const d = new Date(monday);
       d.setDate(monday.getDate() + i);
       return {
-        index: i,
-        label: d.toLocaleDateString('fr-FR', { weekday: 'short', day: 'numeric' }),
-        date: d,
+        index:   i,
+        label:   d.toLocaleDateString('fr-FR', { weekday: 'short', day: 'numeric' }),
+        date:    d,
         isToday: d.toDateString() === new Date().toDateString()
       };
     });
@@ -87,8 +136,7 @@ export class PlanningComponent {
 
   weekLabel = computed(() => {
     const days = this.weekDays();
-    const weekNum = this.getWeekNumber(days[0].date);
-    return `Semaine ${weekNum}`;
+    return `Semaine ${this.getWeekNumber(days[0].date)}`;
   });
 
   // ── Mois ──────────────────────────────────────────────
@@ -96,15 +144,14 @@ export class PlanningComponent {
   monthDays = computed(() => {
     const base = new Date(this.selectedDate());
     base.setDate(base.getDate() + this.weekOffset() * 7);
-    const year = base.getFullYear();
+    const year  = base.getFullYear();
     const month = base.getMonth();
 
     const firstDay = new Date(year, month, 1);
-    const lastDay = new Date(year, month + 1, 0);
-
+    const lastDay  = new Date(year, month + 1, 0);
     const startPad = (firstDay.getDay() + 6) % 7;
-    const days: { date: Date | null; dayNum: number | null }[] = [];
 
+    const days: { date: Date | null; dayNum: number | null }[] = [];
     for (let i = 0; i < startPad; i++) days.push({ date: null, dayNum: null });
     for (let d = 1; d <= lastDay.getDate(); d++) {
       days.push({ date: new Date(year, month, d), dayNum: d });
@@ -137,52 +184,56 @@ export class PlanningComponent {
     this.activeCategory.set(cat);
   }
 
-  // ── Navigation ────────────────────────────────────────
+  // ── Navigation — chaque action recharge les données du back ───────────────
 
-  prevWeek(): void { this.weekOffset.update(v => v - 1); }
-  nextWeek(): void { this.weekOffset.update(v => v + 1); }
+  prevWeek(): void {
+    this.weekOffset.update(v => v - 1);
+    this.loadCurrentRange();
+  }
+
+  nextWeek(): void {
+    this.weekOffset.update(v => v + 1);
+    this.loadCurrentRange();
+  }
 
   onDateChange(event: Event): void {
     const value = (event.target as HTMLInputElement).value;
     this.selectedDate.set(value);
     this.weekOffset.set(0);
+    this.loadCurrentRange();
   }
 
   setViewMode(mode: 'SEMAINE' | 'MOIS'): void {
     this.viewMode.set(mode);
     this.weekOffset.set(0);
+    this.loadCurrentRange();
   }
 
   // ── Utilitaires ───────────────────────────────────────
 
-  // Retourne l'event qui COMMENCE sur cette date
   getEventAt(row: PlanningRow, date: Date): PlanningEvent | null {
     const dateStr = this.toDateStr(date);
     return row.events.find(e => e.startDate === dateStr) ?? null;
   }
 
-  // Retourne true si la date est au MILIEU ou à la FIN d'un event (pas le début)
   isCovered(row: PlanningRow, date: Date): boolean {
     const dateStr = this.toDateStr(date);
     return row.events.some(e => dateStr > e.startDate && dateStr <= e.endDate);
   }
 
-  // Calcule le nombre de colonnes à occuper, en s'arrêtant à la fin de la semaine
   getSpan(event: PlanningEvent, fromDate: Date): number {
     const [ey, em, ed] = event.endDate.split('-').map(Number);
     const endDate = new Date(ey, em - 1, ed);
 
-    const dayIndex = (fromDate.getDay() + 6) % 7; // 0=Lun, 6=Dim
+    const dayIndex   = (fromDate.getDay() + 6) % 7;
     const weekEndDate = new Date(fromDate);
     weekEndDate.setDate(fromDate.getDate() + (6 - dayIndex));
 
     const effectiveEnd = endDate <= weekEndDate ? endDate : weekEndDate;
-    const diffMs = effectiveEnd.getTime() - fromDate.getTime();
-    const diffDays = Math.round(diffMs / (1000 * 60 * 60 * 24));
+    const diffDays = Math.round((effectiveEnd.getTime() - fromDate.getTime()) / (1000 * 60 * 60 * 24));
     return Math.max(1, diffDays + 1);
   }
 
-  // Formate une date en 'YYYY-MM-DD' en heure locale (évite les décalages UTC)
   private toDateStr(date: Date): string {
     const y = date.getFullYear();
     const m = String(date.getMonth() + 1).padStart(2, '0');
