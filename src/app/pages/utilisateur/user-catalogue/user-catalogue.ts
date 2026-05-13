@@ -2,13 +2,17 @@ import { Component, computed, inject, signal, OnInit, OnDestroy } from '@angular
 import { CommonModule } from '@angular/common';
 import { Router, RouterLink } from '@angular/router';
 import { toSignal } from '@angular/core/rxjs-interop';
-import { Subject, Subscription } from 'rxjs';
+import { Subject, Subscription, forkJoin } from 'rxjs';
 import { debounceTime, distinctUntilChanged, switchMap } from 'rxjs/operators';
 
 import { EquipmentService } from '../../../core/services/equipment.service';
 import { EquipmentFamilyService } from '../../../core/services/equipment-family.service';
+import { LoanService } from '../../../core/services/loan.service';
 import { Equipment, EquipmentStatus } from '../../../core/models/equipment.model';
 import { EquipmentFamily } from '../../../core/models/equipment-family.model';
+
+// userId de l'utilisateur connecté — à remplacer par le vrai user JWT
+const CURRENT_USER_ID = 1;
 
 @Component({
   selector: 'app-user-catalogue',
@@ -21,6 +25,7 @@ export class UserCatalogueComponent implements OnInit, OnDestroy {
   private router           = inject(Router);
   private equipmentService = inject(EquipmentService);
   private familyService    = inject(EquipmentFamilyService);
+  private loanService      = inject(LoanService);
 
   private families = toSignal(this.familyService.getAll(), { initialValue: [] as EquipmentFamily[] });
 
@@ -30,10 +35,12 @@ export class UserCatalogueComponent implements OnInit, OnDestroy {
   activeFamilyId = signal<number | null>(null);
 
   // Mode multi-sélection
-  multiMode      = signal(false);
-  multiStartDate = signal('');
-  multiEndDate   = signal('');
-  selectedIds    = signal<number[]>([]);
+  multiMode        = signal(false);
+  multiStartDate   = signal('');
+  multiEndDate     = signal('');
+  selectedIds      = signal<number[]>([]);
+  submittingMulti  = signal(false);
+  multiError       = signal<string | null>(null);
 
   private searchSubject = new Subject<string>();
   private sub!: Subscription;
@@ -127,7 +134,38 @@ export class UserCatalogueComponent implements OnInit, OnDestroy {
   }
 
   submitMulti(): void {
-    this.router.navigate(['/utilisateur/confirmation']);
+    if (!this.canMultiSubmit() || this.submittingMulti()) return;
+    this.submittingMulti.set(true);
+    this.multiError.set(null);
+
+    const begin = `${this.multiStartDate()}T08:00:00`;
+    const end   = `${this.multiEndDate()}T18:00:00`;
+
+    // Un POST /loan par équipement sélectionné — forkJoin attend que tous réussissent
+    const requests = this.selectedIds().map(id =>
+      this.loanService.create({
+        beginDate: begin,
+        endDate:   end,
+        requester: { id: CURRENT_USER_ID },
+        equipment: { id }
+      })
+    );
+
+    forkJoin(requests).subscribe({
+      next: () => {
+        this.submittingMulti.set(false);
+        this.toggleMultiMode();
+        this.router.navigate(['/utilisateur/confirmation']);
+      },
+      error: (err) => {
+        this.submittingMulti.set(false);
+        if (err.status === 403) {
+          this.multiError.set('Votre profil ne vous autorise pas à emprunter un ou plusieurs équipements sélectionnés.');
+        } else {
+          this.multiError.set('Une erreur est survenue. Veuillez réessayer.');
+        }
+      }
+    });
   }
 
   getTodayString(): string {

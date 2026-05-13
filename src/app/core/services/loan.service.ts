@@ -48,19 +48,22 @@ export class LoanService {
   }
 
   // PUT /loan/:id/validate?validatorId=X  →  IN_PROGRESS → VALID
-  validate(id: number, validatorId: number): Observable<Loan> {
-    return this.http.put<Loan>(`${this.apiUrl}/loan/${id}/validate`, null, {
+  // Le back retourne 204 NO_CONTENT → Observable<void>
+  validate(id: number, validatorId: number): Observable<void> {
+    return this.http.put<void>(`${this.apiUrl}/loan/${id}/validate`, null, {
       params: { validatorId: String(validatorId) }
     });
   }
 
   // PUT /loan/:id/invalidate  →  IN_PROGRESS → INVALID
-  invalidate(id: number): Observable<Loan> {
-    return this.http.put<Loan>(`${this.apiUrl}/loan/${id}/invalidate`, null);
+  // Le back retourne 204 NO_CONTENT → Observable<void>
+  invalidate(id: number): Observable<void> {
+    return this.http.put<void>(`${this.apiUrl}/loan/${id}/invalidate`, null);
   }
 
   // PUT /loan/:id/return  →  VALID → TERMINE
-  return(id: number): Observable<Loan> {
-    return this.http.put<Loan>(`${this.apiUrl}/loan/${id}/return`, null);
+  // Le back retourne 204 NO_CONTENT → Observable<void>
+  return(id: number): Observable<void> {
+    return this.http.put<void>(`${this.apiUrl}/loan/${id}/return`, null);
   }
 }

@@ -3,9 +3,10 @@ import { CommonModule } from '@angular/common';
 import { RouterLink } from '@angular/router';
 import { toSignal } from '@angular/core/rxjs-interop';
 import { LoanService } from '../../../core/services/loan.service';
+import { UserService } from '../../../core/services/user.service';
 import { Loan } from '../../../core/models/loan.model';
 
-// userId de l'utilisateur connecté — à remplacer par un vrai service d'auth
+// userId de l'utilisateur connecté — à remplacer par le vrai user JWT
 const CURRENT_USER_ID = 1;
 
 @Component({
@@ -17,6 +18,10 @@ const CURRENT_USER_ID = 1;
 })
 export class UserHomeComponent {
   private loanService = inject(LoanService);
+  private userService = inject(UserService);
+
+  // Données utilisateur chargées directement — indépendant des emprunts
+  private userSig = toSignal(this.userService.getById(CURRENT_USER_ID));
 
   // Tous les emprunts de l'utilisateur courant
   private allLoans = toSignal(
@@ -24,17 +29,15 @@ export class UserHomeComponent {
     { initialValue: [] as Loan[] }
   );
 
-  // Nom de l'utilisateur déduit du requester du premier emprunt
+  // Données affichées dans le header — toujours disponibles même sans emprunt
   user = computed(() => {
-    const requester = this.allLoans()[0]?.requester;
-    if (requester) {
-      return {
-        firstName: requester.name,
-        lastName:  requester.lastname,
-        initials:  `${requester.name[0]}${requester.lastname[0]}`
-      };
-    }
-    return { firstName: '—', lastName: '', initials: '?' };
+    const u = this.userSig();
+    if (!u) return { firstName: '—', lastName: '', initials: '?' };
+    return {
+      firstName: u.name,
+      lastName:  u.lastname,
+      initials:  `${u.name[0]}${u.lastname[0]}`.toUpperCase()
+    };
   });
 
   // Emprunts actifs : VALID = validé par le gestionnaire (RETARD inclus, calculé côté front)

@@ -21,6 +21,9 @@ export class UserListComponent implements OnInit, OnDestroy {
   private userService = inject(UserService);
 
   users        = signal<AppUser[]>([]);
+  // Signal séparé chargé une seule fois — utilisé exclusivement pour les comptages par rôle
+  // Ne doit jamais être modifié par les filtres ou la recherche
+  allUsersForCount = signal<AppUser[]>([]);
   searchTerm   = signal('');
   activeFilter = signal<ProfilType | 'TOUS'>('TOUS');
 
@@ -29,7 +32,11 @@ export class UserListComponent implements OnInit, OnDestroy {
 
   ngOnInit(): void {
     // Chargement initial depuis le serveur
-    this.userService.getAll().subscribe(data => this.users.set(data));
+    this.userService.getAll().subscribe(data => {
+      this.users.set(data);
+      // Chargement des totaux globaux — ne change pas avec les filtres
+      this.allUsersForCount.set(data);
+    });
 
     // Recherche serveur avec debounce 300ms
     // Si la recherche est vide → rechargement selon le filtre profil actif
@@ -75,9 +82,10 @@ export class UserListComponent implements OnInit, OnDestroy {
     return this.users();
   });
 
+  // Comptages basés sur allUsersForCount — jamais affecté par les filtres serveur
   countByRole(role: ProfilType | 'TOUS'): number {
-    if (role === 'TOUS') return this.users().length;
-    return this.users().filter(u => u.profil.type === role).length;
+    if (role === 'TOUS') return this.allUsersForCount().length;
+    return this.allUsersForCount().filter(u => u.profil.type === role).length;
   }
 
   usersExport = computed(() =>
