@@ -104,8 +104,12 @@ export class UserCatalogueComponent {
 
   getCategoryIcon(familyName: string): string {
     const icons: Record<string, string> = {
-      'PC': '💻', 'VR': '🥽', 'Tablette': '📱', 'Écran': '🖥️', 'Périphérique': '🖱️',
-      'Informatique': '💻', 'Audio': '🎧', 'Réseau': '🌐',
+      'PC':              '💻',
+      'Écran':           '🖥️',
+      'Casque VR':       '🥽',
+      'Vidéoprojecteur': '📽️',
+      'Périphérique':    '🖱️',
+      'Autre':           '📦',
     };
     return icons[familyName] ?? '📦';
   }
