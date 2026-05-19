@@ -60,6 +60,21 @@
   color: var(--grey-700);
 }
 
+.btn-status {
+  background: var(--warning-bg);
+  color: var(--warning-text);
+}
+
+.btn-add {
+  background: var(--primary);
+  color: white;
+}
+
+.btn-primary {
+  background: var(--primary);
+  color: white;
+}
+
 // ── Fiche ─────────────────────────────────────────────
 .fiche {
   background: white;
@@ -313,4 +328,97 @@
 .td-muted {
   font-size: 11px;
   color: var(--grey-400);
+}
+
+// ── Header onglet documents ───────────────────────────
+.onglet-header {
+  display: flex;
+  justify-content: flex-end;
+  margin-bottom: 8px;
+}
+
+// ── Modals ────────────────────────────────────────────
+.modal-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.4);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1000;
+  padding: 1rem;
+}
+
+.modal-card {
+  background: white;
+  border-radius: var(--r-lg);
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.18);
+  width: 100%;
+  max-width: 440px;
+  display: flex;
+  flex-direction: column;
+  gap: 0;
+  overflow: hidden;
+}
+
+.modal-title {
+  font-size: 15px;
+  font-weight: 700;
+  color: var(--grey-900);
+  padding: 20px 24px 16px;
+  border-bottom: 1px solid var(--grey-100);
+}
+
+.modal-body {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  padding: 20px 24px;
+}
+
+.modal-footer {
+  display: flex;
+  justify-content: flex-end;
+  gap: 8px;
+  padding: 16px 24px;
+  border-top: 1px solid var(--grey-100);
+  background: var(--grey-50);
+}
+
+// ── Formulaire modal ──────────────────────────────────
+.form-group {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.form-label {
+  font-size: 11px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.6px;
+  color: var(--grey-400);
+}
+
+.form-control {
+  width: 100%;
+  padding: 8px 12px;
+  border: 1px solid var(--grey-200);
+  border-radius: var(--r-sm);
+  font-size: 13px;
+  font-family: var(--font);
+  color: var(--grey-900);
+  background: white;
+  box-sizing: border-box;
+  transition: border-color 0.2s;
+
+  &:focus {
+    outline: none;
+    border-color: var(--primary);
+  }
+
+  &[rows] {
+    resize: vertical;
+    min-height: 80px;
+  }
 }

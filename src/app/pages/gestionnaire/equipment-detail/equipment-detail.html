@@ -35,6 +35,7 @@
             <span class="badge-dot"></span>
             {{ getStatutLabel(eq.status ?? '') }}
           </span>
+          <button class="btn btn-sm btn-status" (click)="openStatusModal()">⚙ Changer le statut</button>
         </div>
       </div>
 
@@ -122,6 +123,9 @@
 
     <!-- ONGLET DOCUMENTS -->
     @if (ongletActif() === 'documents') {
+      <div class="onglet-header">
+        <button class="btn btn-sm btn-add" (click)="modalDocOpen.set(true)">+ Ajouter un document</button>
+      </div>
       @if (docs().length === 0) {
         <div class="empty-state">Aucun document associé.</div>
       } @else {
@@ -157,4 +161,67 @@
     (fermer)="modalEditOpen.set(false)"
     (edit)="onEdit($event)">
   </app-equipment-form>
+}
+
+<!-- MODAL : Changer le statut -->
+@if (modalStatusOpen()) {
+  <div class="modal-overlay" (click)="modalStatusOpen.set(false)">
+    <div class="modal-card" (click)="$event.stopPropagation()">
+      <div class="modal-title">Changer le statut</div>
+      <div class="modal-body">
+        <div class="form-group">
+          <label class="form-label">Nouveau statut</label>
+          <select class="form-control"
+            [value]="newStatusType()"
+            (change)="newStatusType.set($any($event.target).value)">
+            <option value="DISPONIBLE">Disponible</option>
+            <option value="OUT_OF_SERVICE">Hors service</option>
+            <option value="UNDER_REPAIR">En réparation</option>
+          </select>
+        </div>
+        @if (newStatusType() !== 'DISPONIBLE') {
+          <div class="form-group">
+            <label class="form-label">Description</label>
+            <textarea class="form-control" rows="3"
+              [value]="newStatusDesc()"
+              (input)="newStatusDesc.set($any($event.target).value)"
+              placeholder="Décrivez le problème..."></textarea>
+          </div>
+        }
+      </div>
+      <div class="modal-footer">
+        <button class="btn btn-ghost" (click)="modalStatusOpen.set(false)">Annuler</button>
+        <button class="btn btn-primary" (click)="onChangeStatus()">Confirmer</button>
+      </div>
+    </div>
+  </div>
+}
+
+<!-- MODAL : Ajouter un document -->
+@if (modalDocOpen()) {
+  <div class="modal-overlay" (click)="modalDocOpen.set(false)">
+    <div class="modal-card" (click)="$event.stopPropagation()">
+      <div class="modal-title">Ajouter un document</div>
+      <div class="modal-body">
+        <div class="form-group">
+          <label class="form-label">Titre</label>
+          <input class="form-control" type="text"
+            [value]="newDocTitle()"
+            (input)="newDocTitle.set($any($event.target).value)"
+            placeholder="Nom du document" />
+        </div>
+        <div class="form-group">
+          <label class="form-label">URL</label>
+          <input class="form-control" type="url"
+            [value]="newDocUrl()"
+            (input)="newDocUrl.set($any($event.target).value)"
+            placeholder="https://..." />
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button class="btn btn-ghost" (click)="modalDocOpen.set(false)">Annuler</button>
+        <button class="btn btn-primary" (click)="onAddDoc()">Ajouter</button>
+      </div>
+    </div>
+  </div>
 }
