@@ -4,19 +4,23 @@ import { ActivatedRoute } from '@angular/router';
 import { toSignal } from '@angular/core/rxjs-interop';
 
 import { EquipmentService } from '../../../core/services/equipment.service';
+import { EquipmentFamilyService } from '../../../core/services/equipment-family.service';
 import { CharacteristicValueService } from '../../../core/services/characteristic-value.service';
 import { DocService } from '../../../core/services/doc.service';
 import { LoanService } from '../../../core/services/loan.service';
+import { Equipment } from '../../../core/models/equipment.model';
+import { EquipmentFamily } from '../../../core/models/equipment-family.model';
 import { CharacteristicValue } from '../../../core/models/characteristic-value.model';
 import { Doc } from '../../../core/models/doc.model';
 import { Loan, StatusLoanType } from '../../../core/models/loan.model';
+import { EquipmentFormComponent, EquipmentFormOutput } from '../equipment/equipment-form/equipment-form';
 
 type LoanDisplayStatus = StatusLoanType | 'RETARD';
 
 @Component({
   selector: 'app-equipment-detail',
   standalone: true,
-  imports: [CommonModule],
+  imports: [CommonModule, EquipmentFormComponent],
   templateUrl: './equipment-detail.html',
   styleUrl: './equipment-detail.scss'
 })
@@ -25,23 +29,42 @@ export class EquipmentDetailComponent {
   private route                    = inject(ActivatedRoute);
   private location                 = inject(Location);
   private equipmentService         = inject(EquipmentService);
+  private familyService            = inject(EquipmentFamilyService);
   private characteristicService    = inject(CharacteristicValueService);
   private docService               = inject(DocService);
   private loanService              = inject(LoanService);
 
   private equipmentId = Number(this.route.snapshot.paramMap.get('id'));
 
-  // Données principales
-  equipment       = toSignal(this.equipmentService.getById(this.equipmentId));
+  // Données principales — signal mutable pour pouvoir recharger après édition
+  equipment       = signal<Equipment | undefined>(undefined);
+  families        = signal<EquipmentFamily[]>([]);
   characteristics = toSignal(this.characteristicService.getByEquipment(this.equipmentId), { initialValue: [] as CharacteristicValue[] });
   docs            = toSignal(this.docService.getByEquipment(this.equipmentId),             { initialValue: [] as Doc[] });
 
   // Historique : emprunts filtrés côté serveur via GET /loan/equipment/:id
   loanHistory = toSignal(this.loanService.getByEquipment(this.equipmentId), { initialValue: [] as Loan[] });
 
-  ongletActif = signal<'infos' | 'historique' | 'documents'>('infos');
+  ongletActif        = signal<'infos' | 'historique' | 'documents'>('infos');
+  modalEditOpen = signal(false);
+
+  constructor() {
+    this.loadEquipment();
+    this.familyService.getAll().subscribe(data => this.families.set(data));
+  }
+
+  private loadEquipment(): void {
+    this.equipmentService.getById(this.equipmentId).subscribe(data => this.equipment.set(data));
+  }
 
   retour(): void { this.location.back(); }
+
+  onEdit(output: EquipmentFormOutput): void {
+    this.equipmentService.update(this.equipmentId, output.payload).subscribe(() => {
+      this.loadEquipment();
+      this.modalEditOpen.set(false);
+    });
+  }
 
   changerOnglet(onglet: 'infos' | 'historique' | 'documents'): void {
     this.ongletActif.set(onglet);

@@ -5,6 +5,7 @@ import { EquipmentFamily } from '../../../../core/models/equipment-family.model'
 import { EquipmentPayload } from '../../../../core/services/equipment.service';
 import { CharacteristicService } from '../../../../core/services/characteristic.service';
 import { Characteristic } from '../../../../core/models/characteristic-value.model';
+import { Equipment } from '../../../../core/models/equipment.model';
 
 export interface CaracteristiqueRow {
   characteristicId: number | null;
@@ -31,8 +32,14 @@ export class EquipmentFormComponent implements OnInit {
   // Familles passées par le parent (chargées via EquipmentFamilyService)
   @Input() families: EquipmentFamily[] = [];
 
-  @Output() fermer  = new EventEmitter<void>();
-  @Output() ajouter = new EventEmitter<EquipmentFormOutput>();
+  // Si fourni, le formulaire est en mode édition (pré-rempli + PUT)
+  @Input() equipmentToEdit: Equipment | null = null;
+
+  @Output() fermer   = new EventEmitter<void>();
+  @Output() ajouter  = new EventEmitter<EquipmentFormOutput>();
+  @Output() edit = new EventEmitter<EquipmentFormOutput>();
+
+  get editMode(): boolean { return this.equipmentToEdit !== null; }
 
   // Liste des types de caractéristiques disponibles (chargée depuis le back)
   caracteristiquesDisponibles = signal<Characteristic[]>([]);
@@ -52,6 +59,15 @@ export class EquipmentFormComponent implements OnInit {
     this.characteristicService.getAll().subscribe(data => {
       this.caracteristiquesDisponibles.set(data);
     });
+    if (this.equipmentToEdit) {
+      this.form.patchValue({
+        equipmentName:   this.equipmentToEdit.equipmentName,
+        reference:       this.equipmentToEdit.reference,
+        familyId:        String(this.equipmentToEdit.equipmentFamily.id),
+        location:        this.equipmentToEdit.location ?? '',
+        acquisitionDate: this.equipmentToEdit.acquisitionDate ?? '',
+      });
+    }
   }
 
   ajouterLigne(): void {
@@ -96,7 +112,11 @@ export class EquipmentFormComponent implements OnInit {
       equipmentFamily: { id: Number(val.familyId) },
     };
 
-    this.ajouter.emit({ payload, caracteristiques: this.lignes() });
+    if (this.editMode) {
+      this.edit.emit({ payload, caracteristiques: this.lignes() });
+    } else {
+      this.ajouter.emit({ payload, caracteristiques: this.lignes() });
+    }
     this.form.reset();
     this.lignes.set([]);
   }

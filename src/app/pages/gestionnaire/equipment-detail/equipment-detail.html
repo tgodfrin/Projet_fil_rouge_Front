@@ -16,7 +16,7 @@
     <div class="page-header">
       <button class="btn btn-retour" (click)="retour()">← Retour</button>
       <div class="header-actions">
-        <button class="btn btn-edit">✎ Éditer</button>
+        <button class="btn btn-edit" (click)="modalEditOpen.set(true)">✎ Éditer</button>
         <button class="btn btn-delete">🗑 Supprimer</button>
       </div>
     </div>
@@ -149,3 +149,12 @@
   }
 
 </div>
+
+@if (modalEditOpen() && equipment()) {
+  <app-equipment-form
+    [families]="families()"
+    [equipmentToEdit]="equipment()!"
+    (fermer)="modalEditOpen.set(false)"
+    (edit)="onEdit($event)">
+  </app-equipment-form>
+}
