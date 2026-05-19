@@ -29,7 +29,7 @@ export class PlanningComponent implements OnInit, OnDestroy {
   viewMode       = signal<'SEMAINE' | 'MOIS'>('SEMAINE');
   weekOffset     = signal(0);
   selectedDate   = signal<string>(this.getTodayString());
-  activeCategory = signal<string>('TOUS');
+  activeCategory = signal<string>('Tous');
 
   today = new Date().toDateString();
 
@@ -38,7 +38,7 @@ export class PlanningComponent implements OnInit, OnDestroy {
   private sub!: Subscription;
 
   // Catégories dynamiques depuis les vraies familles
-  categories = computed(() => ['TOUS', ...this.families().map(f => f.nameEquipmentFamily)]);
+  categories = computed(() => ['Tous', ...this.families().map(f => f.nameEquipmentFamily)]);
 
   private familyName(id: number): string {
     return this.families().find(f => f.id === id)?.nameEquipmentFamily ?? '—';
@@ -176,7 +176,7 @@ export class PlanningComponent implements OnInit, OnDestroy {
 
   filteredRows = computed(() => {
     const cat = this.activeCategory();
-    if (cat === 'TOUS') return this.rows();
+    if (cat === 'Tous') return this.rows();
     return this.rows().filter(r => r.category === cat);
   });
 

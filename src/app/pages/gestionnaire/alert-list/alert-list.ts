@@ -100,18 +100,24 @@ export class AlertListComponent {
   markAsRead(alert: Alert): void {
     // Les RETARD sont calculés côté front → pas d'entité Event à marquer
     if (alert.type !== 'RETARD') {
-      this.eventService.markAsRead(alert.id).subscribe(() => this.chargerEvents());
+      this.eventService.markAsRead(alert.id).subscribe(() => {
+        // Mise à jour locale : la carte reste visible mais passe en état "lu" (opacité réduite)
+        this.events.update(events =>
+          events.map(e => e.id === alert.id ? { ...e, readingDate: new Date().toISOString() } : e)
+        );
+      });
     }
   }
 
   markAllAsRead(): void {
     const unreadEvents = this.allAlerts().filter(a => !a.read && a.type !== 'RETARD');
-    let pending = unreadEvents.length;
-    if (pending === 0) return;
+    if (unreadEvents.length === 0) return;
     unreadEvents.forEach(a => {
       this.eventService.markAsRead(a.id).subscribe(() => {
-        pending--;
-        if (pending === 0) this.chargerEvents();
+        // Mise à jour locale par événement — la carte reste visible
+        this.events.update(events =>
+          events.map(e => e.id === a.id ? { ...e, readingDate: new Date().toISOString() } : e)
+        );
       });
     });
   }
