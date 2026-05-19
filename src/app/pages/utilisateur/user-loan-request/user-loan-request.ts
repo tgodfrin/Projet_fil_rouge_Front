@@ -5,10 +5,8 @@ import { Router, ActivatedRoute } from '@angular/router';
 import { toSignal } from '@angular/core/rxjs-interop';
 import { EquipmentService } from '../../../core/services/equipment.service';
 import { LoanService } from '../../../core/services/loan.service';
+import { AuthService } from '../../../core/services/auth.service';
 import { Equipment } from '../../../core/models/equipment.model';
-
-// userId de l'utilisateur connecté — à remplacer par un vrai service d'auth
-const CURRENT_USER_ID = 1;
 
 @Component({
   selector: 'app-user-loan-request',
@@ -23,6 +21,7 @@ export class UserLoanRequestComponent {
   private fb               = inject(FormBuilder);
   private equipmentService = inject(EquipmentService);
   private loanService      = inject(LoanService);
+  private authService      = inject(AuthService);
 
   private equipmentId = Number(this.route.snapshot.paramMap.get('id'));
 
@@ -103,7 +102,7 @@ export class UserLoanRequestComponent {
     this.loanService.create({
       beginDate: `${this.form.value.startDate}T08:00:00`,
       endDate:   `${this.form.value.endDate}T18:00:00`,
-      requester: { id: CURRENT_USER_ID },
+      requester: { id: this.authService.currentUser()!.id },
       equipment: { id: this.equipmentId }
     }).subscribe({
       next: () => this.router.navigate(['/utilisateur/confirmation']),

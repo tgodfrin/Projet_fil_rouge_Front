@@ -26,19 +26,20 @@ export class LoginComponent {
   });
 
   // Credentials qui correspondent exactement aux utilisateurs insérés dans data.sql
+  // IDs correspondant à l'ordre d'insertion dans data.sql (ddl-auto=create → séquence stable)
   private mockUsers = [
-    { email: 'jean.martin@mns.fr',   password: 'admin123', role: 'GESTIONNAIRE'  as const, name: 'Jean',   lastname: 'Martin'  },
-    { email: 'sophie.leblanc@mns.fr',password: 'admin123', role: 'GESTIONNAIRE'  as const, name: 'Sophie', lastname: 'Leblanc' },
-    { email: 'thomas.dupont@mns.fr', password: 'user123',  role: 'COLLABORATEUR' as const, name: 'Thomas', lastname: 'Dupont'  },
-    { email: 'marie.leroy@mns.fr',   password: 'user123',  role: 'COLLABORATEUR' as const, name: 'Marie',  lastname: 'Leroy'   },
-    { email: 'lucas.bernard@mns.fr', password: 'user123',  role: 'COLLABORATEUR' as const, name: 'Lucas',  lastname: 'Bernard' },
-    { email: 'emma.petit@mns.fr',    password: 'user123',  role: 'COLLABORATEUR' as const, name: 'Emma',   lastname: 'Petit'   },
-    { email: 'nathan.durand@mns.fr', password: 'user123',  role: 'COLLABORATEUR' as const, name: 'Nathan', lastname: 'Durand'  },
-    { email: 'pierre.moreau@mns.fr', password: 'user123',  role: 'COLLABORATEUR' as const, name: 'Pierre', lastname: 'Moreau'  },
-    { email: 'laura.simon@mns.fr',   password: 'user123',  role: 'COLLABORATEUR' as const, name: 'Laura',  lastname: 'Simon'   },
-    { email: 'hugo.michel@mns.fr',   password: 'user123',  role: 'COLLABORATEUR' as const, name: 'Hugo',   lastname: 'Michel'  },
-    { email: 'camille.robert@mns.fr',password: 'user123',  role: 'COLLABORATEUR' as const, name: 'Camille',lastname: 'Robert'  },
-    { email: 'alexis.laurent@mns.fr',password: 'user123',  role: 'COLLABORATEUR' as const, name: 'Alexis', lastname: 'Laurent' },
+    { id: 1,  email: 'jean.martin@mns.fr',   password: 'admin123', role: 'GESTIONNAIRE'  as const, name: 'Jean',    lastname: 'Martin'  },
+    { id: 2,  email: 'sophie.leblanc@mns.fr', password: 'admin123', role: 'GESTIONNAIRE'  as const, name: 'Sophie',  lastname: 'Leblanc' },
+    { id: 3,  email: 'thomas.dupont@mns.fr',  password: 'user123',  role: 'COLLABORATEUR' as const, name: 'Thomas',  lastname: 'Dupont'  },
+    { id: 4,  email: 'marie.leroy@mns.fr',    password: 'user123',  role: 'COLLABORATEUR' as const, name: 'Marie',   lastname: 'Leroy'   },
+    { id: 5,  email: 'lucas.bernard@mns.fr',  password: 'user123',  role: 'COLLABORATEUR' as const, name: 'Lucas',   lastname: 'Bernard' },
+    { id: 6,  email: 'emma.petit@mns.fr',     password: 'user123',  role: 'COLLABORATEUR' as const, name: 'Emma',    lastname: 'Petit'   },
+    { id: 7,  email: 'nathan.durand@mns.fr',  password: 'user123',  role: 'COLLABORATEUR' as const, name: 'Nathan',  lastname: 'Durand'  },
+    { id: 8,  email: 'pierre.moreau@mns.fr',  password: 'user123',  role: 'COLLABORATEUR' as const, name: 'Pierre',  lastname: 'Moreau'  },
+    { id: 9,  email: 'laura.simon@mns.fr',    password: 'user123',  role: 'COLLABORATEUR' as const, name: 'Laura',   lastname: 'Simon'   },
+    { id: 10, email: 'hugo.michel@mns.fr',    password: 'user123',  role: 'COLLABORATEUR' as const, name: 'Hugo',    lastname: 'Michel'  },
+    { id: 11, email: 'camille.robert@mns.fr', password: 'user123',  role: 'COLLABORATEUR' as const, name: 'Camille', lastname: 'Robert'  },
+    { id: 12, email: 'alexis.laurent@mns.fr', password: 'user123',  role: 'COLLABORATEUR' as const, name: 'Alexis',  lastname: 'Laurent' },
   ];
 
   get email()    { return this.form.get('email')!;    }
@@ -70,7 +71,7 @@ export class LoginComponent {
         return;
       }
 
-      this.authService.setUser({ name: user.name, lastname: user.lastname, role: user.role });
+      this.authService.setUser({ id: user.id, name: user.name, lastname: user.lastname, role: user.role });
       this.loading.set(false);
 
       if (user.role === 'GESTIONNAIRE') {

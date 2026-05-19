@@ -8,11 +8,9 @@ import { debounceTime, distinctUntilChanged, switchMap } from 'rxjs/operators';
 import { EquipmentService } from '../../../core/services/equipment.service';
 import { EquipmentFamilyService } from '../../../core/services/equipment-family.service';
 import { LoanService } from '../../../core/services/loan.service';
+import { AuthService } from '../../../core/services/auth.service';
 import { Equipment, EquipmentStatus } from '../../../core/models/equipment.model';
 import { EquipmentFamily } from '../../../core/models/equipment-family.model';
-
-// userId de l'utilisateur connecté — à remplacer par le vrai user JWT
-const CURRENT_USER_ID = 1;
 
 @Component({
   selector: 'app-user-catalogue',
@@ -26,6 +24,7 @@ export class UserCatalogueComponent implements OnInit, OnDestroy {
   private equipmentService = inject(EquipmentService);
   private familyService    = inject(EquipmentFamilyService);
   private loanService      = inject(LoanService);
+  private authService      = inject(AuthService);
 
   private families = toSignal(this.familyService.getAll(), { initialValue: [] as EquipmentFamily[] });
 
@@ -146,7 +145,7 @@ export class UserCatalogueComponent implements OnInit, OnDestroy {
       this.loanService.create({
         beginDate: begin,
         endDate:   end,
-        requester: { id: CURRENT_USER_ID },
+        requester: { id: this.authService.currentUser()!.id },
         equipment: { id }
       })
     );

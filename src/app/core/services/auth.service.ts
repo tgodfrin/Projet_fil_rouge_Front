@@ -1,6 +1,7 @@
 import { Injectable, signal, computed } from '@angular/core';
 
 export interface AuthUser {
+  id: number;
   name: string;
   lastname: string;
   role: 'GESTIONNAIRE' | 'COLLABORATEUR';

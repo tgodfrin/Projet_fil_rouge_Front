@@ -1,12 +1,12 @@
 import { Component, signal, computed, inject, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { ReactiveFormsModule, FormBuilder, Validators, AbstractControl, ValidationErrors } from '@angular/forms';
+import { Router } from '@angular/router';
 import { UserService } from '../../../core/services/user.service';
 import { LoanService } from '../../../core/services/loan.service';
+import { AuthService } from '../../../core/services/auth.service';
 import { AppUser } from '../../../core/models/user.model';
 import { Loan } from '../../../core/models/loan.model';
-
-const CURRENT_USER_ID = 1;
 
 @Component({
   selector: 'app-user-profile',
@@ -17,8 +17,10 @@ const CURRENT_USER_ID = 1;
 })
 export class UserProfileComponent implements OnInit {
   private fb          = inject(FormBuilder);
+  private router      = inject(Router);
   private userService = inject(UserService);
   private loanService = inject(LoanService);
+  private authService = inject(AuthService);
 
   // Chargement de l'utilisateur courant via subscribe → signal mutable
   // (permet mise à jour optimiste après PUT email)
@@ -29,8 +31,9 @@ export class UserProfileComponent implements OnInit {
   private loansSig = signal<Loan[]>([]);
 
   ngOnInit(): void {
-    this.userService.getById(CURRENT_USER_ID).subscribe(u => this.userSig.set(u));
-    this.loanService.getByUser(CURRENT_USER_ID).subscribe(l => this.loansSig.set(l));
+    const userId = this.authService.currentUser()!.id;
+    this.userService.getById(userId).subscribe(u => this.userSig.set(u));
+    this.loanService.getByUser(userId).subscribe(l => this.loansSig.set(l));
   }
 
   // ── Valeurs dérivées ───────────────────────────────────
@@ -126,7 +129,7 @@ export class UserProfileComponent implements OnInit {
     }
     const newEmail = this.emailForm.value.newEmail!;
     this.submitting.set(true);
-    this.userService.updateEmail(CURRENT_USER_ID, newEmail).subscribe({
+    this.userService.updateEmail(this.authService.currentUser()!.id, newEmail).subscribe({
       next: () => {
         // Mise à jour optimiste du signal local
         this.userSig.update(u => u ? { ...u, email: newEmail } : u);
@@ -147,7 +150,7 @@ export class UserProfileComponent implements OnInit {
     }
     const newPassword = this.passwordForm.value.newPassword!;
     this.submitting.set(true);
-    this.userService.updatePassword(CURRENT_USER_ID, newPassword).subscribe({
+    this.userService.updatePassword(this.authService.currentUser()!.id, newPassword).subscribe({
       next: () => {
         this.successMessage.set('Mot de passe mis à jour.');
         setTimeout(() => this.closeEdit(), 1500);
@@ -157,6 +160,11 @@ export class UserProfileComponent implements OnInit {
         this.submitting.set(false);
       }
     });
+  }
+
+  logout(): void {
+    this.authService.clear();
+    this.router.navigate(['/login']);
   }
 
   formatDate(dateStr: string): string {
