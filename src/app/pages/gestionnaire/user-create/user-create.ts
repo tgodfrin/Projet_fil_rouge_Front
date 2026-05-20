@@ -81,7 +81,7 @@ export class UserCreateComponent {
       lastname: val.lastname!,
       email:    val.email!,
       password: val.password!,
-      profil:   { id: Number(val.profilId) },
+      profilId: Number(val.profilId),
     };
     this.userService.create(payload).subscribe(() => {
       this.router.navigate(['/utilisateurs']);

@@ -24,5 +24,5 @@ export interface AppUserCreate {
   name: string;
   lastname: string;
   password: string;
-  profil: { id: number };
+  profilId: number;
 }
