@@ -148,15 +148,20 @@ export class UserProfileComponent implements OnInit {
       this.passwordForm.markAllAsTouched();
       return;
     }
-    const newPassword = this.passwordForm.value.newPassword!;
+    const currentPassword = this.passwordForm.value.currentPassword!;
+    const newPassword     = this.passwordForm.value.newPassword!;
     this.submitting.set(true);
-    this.userService.updatePassword(this.authService.currentUser()!.id, newPassword).subscribe({
+    this.userService.updatePassword(this.authService.currentUser()!.id, currentPassword, newPassword).subscribe({
       next: () => {
         this.successMessage.set('Mot de passe mis à jour.');
         setTimeout(() => this.closeEdit(), 1500);
       },
-      error: () => {
-        this.errorMessage.set('Une erreur est survenue.');
+      error: (err) => {
+        if (err.status === 401) {
+          this.errorMessage.set('Mot de passe actuel incorrect.');
+        } else {
+          this.errorMessage.set('Une erreur est survenue.');
+        }
         this.submitting.set(false);
       }
     });

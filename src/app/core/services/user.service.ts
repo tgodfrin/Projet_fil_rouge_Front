@@ -38,10 +38,10 @@ export class UserService {
     });
   }
 
-  // PUT /user/:id/password?password=...
-  updatePassword(id: number, password: string): Observable<AppUser> {
+  // PUT /user/:id/password?oldPassword=...&password=...
+  updatePassword(id: number, oldPassword: string, password: string): Observable<AppUser> {
     return this.http.put<AppUser>(`${this.apiUrl}/user/${id}/password`, null, {
-      params: { password }
+      params: { oldPassword, password }
     });
   }
 }
