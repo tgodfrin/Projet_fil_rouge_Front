@@ -17,7 +17,7 @@
       <button class="btn btn-retour" (click)="retour()">← Retour</button>
       <div class="header-actions">
         <button class="btn btn-edit" (click)="modalEditOpen.set(true)">✎ Éditer</button>
-        <button class="btn btn-delete" (click)="onDelete()">🗑 Supprimer</button>
+        <button class="btn btn-delete" (click)="modalDeleteOpen.set(true)">🗑 Supprimer</button>
       </div>
     </div>
 
@@ -153,6 +153,23 @@
   }
 
 </div>
+
+<!-- MODAL : Confirmer suppression -->
+@if (modalDeleteOpen() && equipment()) {
+  <div class="modal-overlay" (click)="modalDeleteOpen.set(false)">
+    <div class="modal-card" (click)="$event.stopPropagation()">
+      <div class="modal-title">Supprimer l'équipement</div>
+      <div class="modal-body">
+        <p>Supprimer <strong>{{ equipment()!.equipmentName }}</strong> ({{ equipment()!.reference }}) ?</p>
+        <p style="color: var(--color-danger); font-size: 0.85rem;">Cette action est irréversible.</p>
+      </div>
+      <div class="modal-footer">
+        <button class="btn btn-ghost" (click)="modalDeleteOpen.set(false)">Annuler</button>
+        <button class="btn btn-delete" (click)="onDelete()">Confirmer la suppression</button>
+      </div>
+    </div>
+  </div>
+}
 
 @if (modalEditOpen() && equipment()) {
   <app-equipment-form

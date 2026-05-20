@@ -50,10 +50,11 @@ export class EquipmentDetailComponent {
   loanHistory     = toSignal(this.loanService.getByEquipment(this.equipmentId),           { initialValue: [] as Loan[] });
 
   // UI state
-  ongletActif     = signal<'infos' | 'historique' | 'documents'>('infos');
-  modalEditOpen   = signal(false);
-  modalStatusOpen = signal(false);
-  modalDocOpen    = signal(false);
+  ongletActif       = signal<'infos' | 'historique' | 'documents'>('infos');
+  modalEditOpen     = signal(false);
+  modalStatusOpen   = signal(false);
+  modalDocOpen      = signal(false);
+  modalDeleteOpen   = signal(false);
 
   // Status form values
   newStatusType = signal<StatusEquipmentType | 'DISPONIBLE'>('OUT_OF_SERVICE');
@@ -94,9 +95,9 @@ export class EquipmentDetailComponent {
   retour(): void { this.location.back(); }
 
   onDelete(): void {
-    if (!confirm(`Supprimer "${this.equipment()?.equipmentName}" ? Cette action est irréversible.`)) return;
     this.equipmentService.delete(this.equipmentId).subscribe(() => {
-      this.router.navigate(['/gestionnaire/equipements']);
+      this.modalDeleteOpen.set(false);
+      this.router.navigate(['/equipements']);
     });
   }
 
