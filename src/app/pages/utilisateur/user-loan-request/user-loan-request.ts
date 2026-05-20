@@ -96,14 +96,15 @@ export class UserLoanRequestComponent {
   }
 
   submit(): void {
-    if (!this.isAvailable() || this.submitting()) return;
+    const user = this.authService.currentUser();
+    if (!this.isAvailable() || this.submitting() || !user) return;
     this.submitting.set(true);
     this.forbiddenError.set(false);
     this.loanService.create({
-      beginDate: `${this.form.value.startDate}T08:00:00`,
-      endDate:   `${this.form.value.endDate}T18:00:00`,
-      requester: { id: this.authService.currentUser()!.id },
-      equipment: { id: this.equipmentId }
+      beginDate:   `${this.form.value.startDate}T08:00:00`,
+      endDate:     `${this.form.value.endDate}T18:00:00`,
+      requesterId: user.id,
+      equipmentId: this.equipmentId
     }).subscribe({
       next: () => this.router.navigate(['/utilisateur/confirmation']),
       error: (err) => {

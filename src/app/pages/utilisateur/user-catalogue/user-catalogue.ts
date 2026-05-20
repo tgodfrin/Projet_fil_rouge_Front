@@ -133,7 +133,8 @@ export class UserCatalogueComponent implements OnInit, OnDestroy {
   }
 
   submitMulti(): void {
-    if (!this.canMultiSubmit() || this.submittingMulti()) return;
+    const user = this.authService.currentUser();
+    if (!this.canMultiSubmit() || this.submittingMulti() || !user) return;
     this.submittingMulti.set(true);
     this.multiError.set(null);
 
@@ -143,10 +144,10 @@ export class UserCatalogueComponent implements OnInit, OnDestroy {
     // Un POST /loan par équipement sélectionné — forkJoin attend que tous réussissent
     const requests = this.selectedIds().map(id =>
       this.loanService.create({
-        beginDate: begin,
-        endDate:   end,
-        requester: { id: this.authService.currentUser()!.id },
-        equipment: { id }
+        beginDate:   begin,
+        endDate:     end,
+        requesterId: user.id,
+        equipmentId: id
       })
     );
 

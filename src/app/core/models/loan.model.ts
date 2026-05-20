@@ -50,6 +50,6 @@ export interface Loan {
 export interface LoanCreate {
   beginDate: string;
   endDate: string;
-  requester: { id: number };
-  equipment: { id: number };
+  requesterId: number;
+  equipmentId: number;
 }
