@@ -1,9 +1,9 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 
-import { EquipmentDetailComponent  } from './equipment-detail';
+import { EquipmentDetailComponent } from './equipment-detail';
 
 describe('EquipmentDetail', () => {
-  let component: EquipmentDetailComponent ;
+  let component: EquipmentDetailComponent;
   let fixture: ComponentFixture<EquipmentDetailComponent>;
 
   beforeEach(async () => {
