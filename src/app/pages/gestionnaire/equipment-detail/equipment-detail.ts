@@ -1,6 +1,6 @@
 import { Component, inject, signal } from '@angular/core';
 import { CommonModule, Location } from '@angular/common';
-import { ActivatedRoute } from '@angular/router';
+import { ActivatedRoute, Router } from '@angular/router';
 import { toSignal } from '@angular/core/rxjs-interop';
 
 import { EquipmentService } from '../../../core/services/equipment.service';
@@ -29,6 +29,7 @@ type LoanDisplayStatus = StatusLoanType | 'RETARD';
 export class EquipmentDetailComponent {
 
   private route                    = inject(ActivatedRoute);
+  private router                   = inject(Router);
   private location                 = inject(Location);
   private equipmentService         = inject(EquipmentService);
   private familyService            = inject(EquipmentFamilyService);
@@ -92,6 +93,13 @@ export class EquipmentDetailComponent {
 
   retour(): void { this.location.back(); }
 
+  onDelete(): void {
+    if (!confirm(`Supprimer "${this.equipment()?.equipmentName}" ? Cette action est irréversible.`)) return;
+    this.equipmentService.delete(this.equipmentId).subscribe(() => {
+      this.router.navigate(['/gestionnaire/equipements']);
+    });
+  }
+
   changerOnglet(onglet: 'infos' | 'historique' | 'documents'): void {
     this.ongletActif.set(onglet);
   }
@@ -142,7 +150,7 @@ export class EquipmentDetailComponent {
     this.docService.create({
       title:      this.newDocTitle(),
       url:        this.newDocUrl(),
-      equipments: [{ id: this.equipmentId }]
+      equipmentIds: [this.equipmentId]
     }).subscribe(() => {
       this.loadDocs();
       this.modalDocOpen.set(false);

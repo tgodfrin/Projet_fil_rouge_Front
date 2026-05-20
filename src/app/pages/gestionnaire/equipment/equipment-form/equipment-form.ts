@@ -109,7 +109,7 @@ export class EquipmentFormComponent implements OnInit {
       reference:       val.reference!,
       location:        val.location || null,
       acquisitionDate: val.acquisitionDate || null,
-      equipmentFamily: { id: Number(val.familyId) },
+      equipmentFamilyId: Number(val.familyId),
     };
 
     if (this.editMode) {

@@ -10,7 +10,7 @@ export interface EquipmentPayload {
   equipmentName: string;
   location: string | null;
   acquisitionDate: string | null;
-  equipmentFamily: { id: number };
+  equipmentFamilyId: number;
 }
 
 @Injectable({ providedIn: 'root' })

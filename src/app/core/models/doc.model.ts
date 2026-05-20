@@ -16,5 +16,5 @@ export interface Doc {
 export interface DocCreate {
   title: string;
   url: string;
-  equipments: { id: number }[];
+  equipmentIds: number[];
 }
