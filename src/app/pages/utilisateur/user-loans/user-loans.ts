@@ -5,10 +5,8 @@ import { RouterLink } from '@angular/router';
 import { toSignal } from '@angular/core/rxjs-interop';
 import { LoanService } from '../../../core/services/loan.service';
 import { EventService } from '../../../core/services/event.service';
+import { AuthService } from '../../../core/services/auth.service';
 import { Loan } from '../../../core/models/loan.model';
-
-// userId de l'utilisateur connecté — à remplacer par un vrai service d'auth
-const CURRENT_USER_ID = 1;
 
 @Component({
   selector: 'app-user-loans',
@@ -20,11 +18,14 @@ const CURRENT_USER_ID = 1;
 export class UserLoansComponent {
   private loanService  = inject(LoanService);
   private eventService = inject(EventService);
+  private authService  = inject(AuthService);
   private fb           = inject(FormBuilder);
+
+  private currentUserId = this.authService.currentUser()!.id;
 
   // Tous les emprunts de l'utilisateur courant
   private allLoans = toSignal(
-    this.loanService.getByUser(CURRENT_USER_ID),
+    this.loanService.getByUser(this.currentUserId),
     { initialValue: [] as Loan[] }
   );
 
