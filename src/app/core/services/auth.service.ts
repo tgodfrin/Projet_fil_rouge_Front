@@ -1,15 +1,27 @@
 import { Injectable, signal, computed } from '@angular/core';
 
+export type UserRole = 'GESTIONNAIRE' | 'COLLABORATEUR' | 'INTERVENANT' | 'STAGIAIRE';
+
 export interface AuthUser {
   id: number;
   name: string;
   lastname: string;
-  role: 'GESTIONNAIRE' | 'COLLABORATEUR';
+  email: string;
+  role: UserRole;
 }
+
+const TOKEN_KEY = 'loc_mns_token';
+const USER_KEY  = 'loc_mns_user';
 
 @Injectable({ providedIn: 'root' })
 export class AuthService {
-  private _currentUser = signal<AuthUser | null>(null);
+
+  private _currentUser = signal<AuthUser | null>(
+    JSON.parse(localStorage.getItem(USER_KEY) ?? 'null')
+  );
+  private _token = signal<string | null>(
+    localStorage.getItem(TOKEN_KEY)
+  );
 
   readonly currentUser = this._currentUser.asReadonly();
 
@@ -28,14 +40,34 @@ export class AuthService {
   readonly roleLabel = computed(() => {
     const u = this._currentUser();
     if (!u) return '';
-    return u.role === 'GESTIONNAIRE' ? 'Gestionnaire' : 'Collaborateur';
+    const labels: Record<UserRole, string> = {
+      GESTIONNAIRE:  'Gestionnaire',
+      COLLABORATEUR: 'Collaborateur',
+      INTERVENANT:   'Intervenant',
+      STAGIAIRE:     'Stagiaire'
+    };
+    return labels[u.role];
   });
 
-  setUser(user: AuthUser): void {
+  setSession(token: string, user: AuthUser): void {
+    localStorage.setItem(TOKEN_KEY, token);
+    localStorage.setItem(USER_KEY, JSON.stringify(user));
+    this._token.set(token);
     this._currentUser.set(user);
   }
 
-  clear(): void {
+  getToken(): string | null {
+    return this._token();
+  }
+
+  isLoggedIn(): boolean {
+    return this._token() !== null && this._currentUser() !== null;
+  }
+
+  logout(): void {
+    localStorage.removeItem(TOKEN_KEY);
+    localStorage.removeItem(USER_KEY);
+    this._token.set(null);
     this._currentUser.set(null);
   }
 }
