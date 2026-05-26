@@ -32,7 +32,7 @@ export class UserProfileComponent implements OnInit {
 
   ngOnInit(): void {
     const userId = this.authService.currentUser()!.id;
-    this.userService.getById(userId).subscribe(u => this.userSig.set(u));
+    this.userService.getMe().subscribe(u => this.userSig.set(u));
     this.loanService.getByUser(userId).subscribe(l => this.loansSig.set(l));
   }
 
@@ -168,7 +168,7 @@ export class UserProfileComponent implements OnInit {
   }
 
   logout(): void {
-    this.authService.clear();
+    this.authService.logout();
     this.router.navigate(['/login']);
   }
 

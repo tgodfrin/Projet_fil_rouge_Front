@@ -17,6 +17,11 @@ export class UserService {
     return this.http.get<AppUser>(`${this.apiUrl}/user/${id}`);
   }
 
+  // GET /user/me → retourne l'utilisateur courant depuis le SecurityContext
+  getMe(): Observable<AppUser> {
+    return this.http.get<AppUser>(`${this.apiUrl}/user/me`);
+  }
+
   create(data: AppUserCreate): Observable<AppUser> {
     return this.http.post<AppUser>(`${this.apiUrl}/user`, data);
   }
