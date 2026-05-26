@@ -22,6 +22,9 @@ import { UserLoanRequestComponent } from './pages/utilisateur/user-loan-request/
 import { UserConfirmationComponent } from './pages/utilisateur/user-confirmation/user-confirmation';
 import { LoginComponent } from './pages/login/login';
 import { NotFoundComponent } from './pages/not-found/not-found';
+import { authGuard }         from './core/guards/auth.guard';
+import { gestionnaireGuard } from './core/guards/gestionnaire.guard';
+import { userGuard }         from './core/guards/user.guard';
 
 export const routes: Routes = [
   { path: '', redirectTo: 'login', pathMatch: 'full' },
@@ -29,6 +32,7 @@ export const routes: Routes = [
   {
     path: '',
     component: LayoutComponent,
+    canActivate: [authGuard, gestionnaireGuard],
     children: [
       { path: '', redirectTo: 'dashboard', pathMatch: 'full' },
       { path: 'dashboard', component: DashboardComponent },
@@ -47,6 +51,7 @@ export const routes: Routes = [
   {
     path: 'utilisateur',
     component: UserLayoutComponent,
+    canActivate: [authGuard, userGuard],
     children: [
       { path: '', redirectTo: 'accueil', pathMatch: 'full' },
       { path: 'accueil', component: UserHomeComponent },
