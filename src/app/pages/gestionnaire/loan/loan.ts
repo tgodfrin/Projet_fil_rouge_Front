@@ -3,7 +3,6 @@ import { CommonModule } from '@angular/common';
 import { Router } from '@angular/router';
 import { ExportComponent } from '../../../shared/export/export';
 import { LoanService } from '../../../core/services/loan.service';
-import { AuthService } from '../../../core/services/auth.service';
 import { Loan, StatusLoanType } from '../../../core/models/loan.model';
 
 // RETARD n'est pas un statut en base — calculé côté front : VALID + endDate < now
@@ -20,7 +19,6 @@ export class LoanComponent {
 
   private router       = inject(Router);
   private loanService  = inject(LoanService);
-  private authService  = inject(AuthService);
 
   filtreStatut = signal<string>('tous');
   filtreTemps  = signal<string>('tout');
@@ -84,10 +82,9 @@ export class LoanComponent {
   }
 
   // Valider : IN_PROGRESS → VALID
-  // validatorId = id du gestionnaire actuellement connecté
+  // Le back lit le validatorId depuis le token JWT
   validateLoan(loan: Loan): void {
-    const validatorId = this.authService.currentUser()!.id;
-    this.loanService.validate(loan.id, validatorId).subscribe(() => this.chargerEmprunts());
+    this.loanService.validate(loan.id).subscribe(() => this.chargerEmprunts());
   }
 
   // Refuser : IN_PROGRESS → INVALID

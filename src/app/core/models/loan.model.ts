@@ -6,7 +6,7 @@
 //   GET  /loan/user/:userId
 //   GET  /loan/planning?begin=...&end=...
 //   POST /loan
-//   PUT  /loan/:id/validate?validatorId=X
+//   PUT  /loan/:id/validate  (validatorId lu depuis le token JWT côté back)
 //   PUT  /loan/:id/invalidate
 //   PUT  /loan/:id/return
 

@@ -47,12 +47,10 @@ export class LoanService {
     return this.http.post<Loan>(`${this.apiUrl}/loan`, data);
   }
 
-  // PUT /loan/:id/validate?validatorId=X  →  IN_PROGRESS → VALID
-  // Le back retourne 204 NO_CONTENT → Observable<void>
-  validate(id: number, validatorId: number): Observable<void> {
-    return this.http.put<void>(`${this.apiUrl}/loan/${id}/validate`, null, {
-      params: { validatorId: String(validatorId) }
-    });
+  // PUT /loan/:id/validate  →  IN_PROGRESS → VALID
+  // Le validatorId est lu depuis le token JWT côté back — aucun paramètre à envoyer
+  validate(id: number): Observable<void> {
+    return this.http.put<void>(`${this.apiUrl}/loan/${id}/validate`, null);
   }
 
   // PUT /loan/:id/invalidate  →  IN_PROGRESS → INVALID
