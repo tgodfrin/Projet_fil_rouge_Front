@@ -43,9 +43,16 @@ export class UserService {
     });
   }
 
-  // PUT /user/:id/password?oldPassword=...&password=...
+  // PUT /user/:id/password?oldPassword=...&password=...  (gestionnaire only)
   updatePassword(id: number, oldPassword: string, password: string): Observable<AppUser> {
     return this.http.put<AppUser>(`${this.apiUrl}/user/${id}/password`, null, {
+      params: { oldPassword, password }
+    });
+  }
+
+  // PUT /user/me/password — allows collaborateurs to change their own password
+  updateMyPassword(oldPassword: string, password: string): Observable<void> {
+    return this.http.put<void>(`${this.apiUrl}/user/me/password`, null, {
       params: { oldPassword, password }
     });
   }
