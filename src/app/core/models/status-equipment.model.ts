@@ -19,9 +19,9 @@ export interface StatusEquipment {
   equipment: { id: number; reference: string; equipmentName: string };
 }
 
-// Body attendu par POST /status-equipment
+// Body attendu par POST /status-equipment — aligné avec StatusEquipmentRequest.java
 export interface StatusEquipmentCreate {
   statusEquipmentType: StatusEquipmentType;
   descriptionStatus: string;
-  equipment: { id: number };
+  equipmentId: number;
 }

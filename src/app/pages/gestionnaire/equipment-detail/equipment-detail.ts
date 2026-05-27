@@ -136,7 +136,7 @@ export class EquipmentDetailComponent {
       this.statusEquipmentService.create({
         statusEquipmentType: type,
         descriptionStatus:   this.newStatusDesc(),
-        equipment:           { id: this.equipmentId }
+        equipmentId:         this.equipmentId
       }).subscribe(() => {
         this.loadEquipment();
         this.loadStatusHistory();
