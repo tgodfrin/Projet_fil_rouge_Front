@@ -1,4 +1,4 @@
-import { Component, inject } from '@angular/core';
+import { Component, inject, signal } from '@angular/core';
 import { CommonModule, Location } from '@angular/common';
 import { ActivatedRoute, Router } from '@angular/router';
 import { toSignal } from '@angular/core/rxjs-interop';
@@ -37,6 +37,39 @@ export class LoanDetailComponent {
   requester = toSignal(
     this.loan$.pipe(switchMap(l => this.userService.getById(l.requester.id)))
   );
+
+  // Mutable loan signal for reloading after actions
+  loanData = signal<Loan | undefined>(undefined);
+
+  constructor() {
+    this.loanService.getById(this.loanId).subscribe(l => this.loanData.set(l));
+  }
+
+  private reload(): void {
+    this.loanService.getById(this.loanId).subscribe(l => this.loanData.set(l));
+  }
+
+  // ─── Actions gestionnaire ────────────────────────────────────────────────
+
+  onValidate(): void {
+    this.loanService.validate(this.loanId).subscribe(() => this.reload());
+  }
+
+  onInvalidate(): void {
+    this.loanService.invalidate(this.loanId).subscribe(() => this.reload());
+  }
+
+  onValidateGroup(): void {
+    const groupId = this.loanData()?.groupId;
+    if (!groupId) return;
+    this.loanService.validateGroup(groupId).subscribe(() => this.reload());
+  }
+
+  onRefuseGroup(): void {
+    const groupId = this.loanData()?.groupId;
+    if (!groupId) return;
+    this.loanService.refuseGroup(groupId).subscribe(() => this.reload());
+  }
 
   // ─── Navigation ───────────────────────────────────────────────────────────
 

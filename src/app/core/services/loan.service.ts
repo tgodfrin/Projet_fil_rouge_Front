@@ -64,4 +64,14 @@ export class LoanService {
   return(id: number): Observable<void> {
     return this.http.put<void>(`${this.apiUrl}/loan/${id}/return`, null);
   }
+
+  // PUT /loan/group/:groupId/validate  →  validates all loans in the group at once
+  validateGroup(groupId: string): Observable<void> {
+    return this.http.put<void>(`${this.apiUrl}/loan/group/${groupId}/validate`, null);
+  }
+
+  // PUT /loan/group/:groupId/refuse  →  refuses all loans in the group at once
+  refuseGroup(groupId: string): Observable<void> {
+    return this.http.put<void>(`${this.apiUrl}/loan/group/${groupId}/refuse`, null);
+  }
 }

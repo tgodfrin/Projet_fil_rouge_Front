@@ -16,6 +16,23 @@
     </div>
   }
 
+  <!-- ACTIONS GESTIONNAIRE : validation individuelle -->
+  @if (loanData()?.statusType === 'IN_PROGRESS') {
+    <div class="actions-bar">
+      @if (!loanData()?.groupId) {
+        <button class="btn btn-validate" (click)="onValidate()">✔ Valider</button>
+        <button class="btn btn-refuse" (click)="onInvalidate()">✖ Refuser</button>
+      }
+      @if (loanData()?.groupId) {
+        <div class="group-banner">
+          Cet emprunt fait partie d'une demande groupée
+        </div>
+        <button class="btn btn-validate" (click)="onValidateGroup()">✔ Valider le groupe</button>
+        <button class="btn btn-refuse" (click)="onRefuseGroup()">✖ Refuser le groupe</button>
+      }
+    </div>
+  }
+
   <!-- FICHE PRINCIPALE -->
   <div class="fiche">
     <div class="fiche-top">

@@ -245,6 +245,52 @@
   color: var(--grey-400);
 }
 
+// ── Actions gestionnaire ──────────────────────────────
+.actions-bar {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  flex-wrap: wrap;
+}
+
+.btn-validate {
+  height: 36px;
+  padding: 0 1.25rem;
+  background: var(--success, #16a34a);
+  color: white;
+  border: none;
+  border-radius: var(--r-sm);
+  font-size: 0.85rem;
+  font-weight: 600;
+  cursor: pointer;
+
+  &:hover { opacity: 0.9; }
+}
+
+.btn-refuse {
+  height: 36px;
+  padding: 0 1.25rem;
+  background: white;
+  color: var(--danger);
+  border: 1px solid var(--danger);
+  border-radius: var(--r-sm);
+  font-size: 0.85rem;
+  font-weight: 600;
+  cursor: pointer;
+
+  &:hover { background: var(--danger-bg); }
+}
+
+.group-banner {
+  padding: 0.4rem 0.75rem;
+  background: var(--primary-bg, #eff6ff);
+  color: var(--primary);
+  border-radius: var(--r-sm);
+  font-size: 0.8rem;
+  font-weight: 500;
+  flex: 1;
+}
+
 // ── Empty state ───────────────────────────────────────
 .empty-state {
   text-align: center;

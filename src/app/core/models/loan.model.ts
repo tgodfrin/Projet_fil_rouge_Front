@@ -44,6 +44,7 @@ export interface Loan {
   requester: LoanUser;
   validator: LoanUser | null;   // null jusqu'à validation/refus
   equipment: LoanEquipment;
+  groupId: string | null;       // UUID shared by grouped loans, null for individual loans
 }
 
 // Body attendu par POST /loan
@@ -52,4 +53,5 @@ export interface LoanCreate {
   endDate: string;
   requesterId: number;
   equipmentId: number;
+  groupId?: string;             // optional — set when submitting grouped requests
 }

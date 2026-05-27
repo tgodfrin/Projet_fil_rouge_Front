@@ -25,6 +25,10 @@ export class UserLoanRequestComponent {
 
   private equipmentId = Number(this.route.snapshot.paramMap.get('id'));
 
+  // Optional groupId passed via navigation state for grouped loan requests
+  // Generated as UUID by the catalogue when the user selects multiple equipments
+  private groupId: string | undefined = (this.router.getCurrentNavigation()?.extras?.state as any)?.['groupId'];
+
   // Détails de l'équipement chargés par ID (EquipmentView complet)
   equipment = toSignal(this.equipmentService.getById(this.equipmentId));
 
@@ -104,7 +108,8 @@ export class UserLoanRequestComponent {
       beginDate:   `${this.form.value.startDate}T08:00:00`,
       endDate:     `${this.form.value.endDate}T18:00:00`,
       requesterId: user.id,
-      equipmentId: this.equipmentId
+      equipmentId: this.equipmentId,
+      groupId:     this.groupId  // undefined for individual loans → omitted from JSON
     }).subscribe({
       next: () => this.router.navigate(['/utilisateur/confirmation']),
       error: (err) => {
