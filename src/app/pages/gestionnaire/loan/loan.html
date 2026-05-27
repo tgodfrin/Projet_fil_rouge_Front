@@ -18,11 +18,53 @@
     </div>
   </div>
 
-  <!-- Section : À valider (statusType IN_PROGRESS = demandes créées, en attente du gestionnaire) -->
-  @if (pendingLoans().length > 0) {
-    <div class="section-label">À valider ({{ pendingLoans().length }})</div>
+  <!-- Section : À valider -->
+  @if (groupedPendingLoans().length > 0 || individualPendingLoans().length > 0) {
+    <div class="section-label">
+      À valider ({{ individualPendingLoans().length + groupedPendingLoans().length }})
+    </div>
     <div class="cards-list">
-      @for (loan of pendingLoans(); track loan.id) {
+
+      <!-- Emprunts groupés -->
+      @for (group of groupedPendingLoans(); track group.groupId) {
+        <div class="emprunt-card emprunt-groupe">
+          <div class="card-top">
+            <div class="avatar groupe-avatar">📦</div>
+            <div class="card-info">
+              <div class="card-title">
+                Emprunt groupé — {{ group.loans.length }} équipements
+              </div>
+              <div class="card-dates">{{ group.borrowerName }}</div>
+              <div class="card-dates">
+                {{ formatDate(group.beginDate) }} au {{ formatDate(group.endDate) }}
+              </div>
+            </div>
+            <span class="badge badge-warning">En attente (groupe)</span>
+          </div>
+          <div class="card-actions">
+            <button class="btn-validate" (click)="validateGroup(group.groupId)">Valider tout</button>
+            <button class="btn-refuse" (click)="refuseGroup(group.groupId)">Refuser tout</button>
+            <button class="btn-ghost" (click)="toggleGroupDetail(group.groupId)">
+              {{ openGroupId() === group.groupId ? 'Masquer' : 'Détails' }}
+            </button>
+          </div>
+          <!-- Détail dépliable : liste des équipements du groupe -->
+          @if (openGroupId() === group.groupId) {
+            <div class="group-detail">
+              <div class="group-detail-header">Équipements compris dans cet emprunt :</div>
+              @for (loan of group.loans; track loan.id) {
+                <div class="group-detail-row">
+                  <span class="group-eq-name">{{ loan.equipment.equipmentName }}</span>
+                  <span class="group-eq-ref">{{ loan.equipment.reference }}</span>
+                </div>
+              }
+            </div>
+          }
+        </div>
+      }
+
+      <!-- Emprunts individuels -->
+      @for (loan of individualPendingLoans(); track loan.id) {
         <div class="emprunt-card">
           <div class="card-top">
             <div class="avatar">{{ getBorrowerInitials(loan) }}</div>
@@ -39,6 +81,7 @@
           </div>
         </div>
       }
+
     </div>
   }
 

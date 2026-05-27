@@ -8,6 +8,16 @@ import { Loan, StatusLoanType } from '../../../core/models/loan.model';
 // RETARD n'est pas un statut en base — calculé côté front : VALID + endDate < now
 type LoanDisplayStatus = StatusLoanType | 'RETARD';
 
+// Représente un groupe d'emprunts partageant le même groupId
+interface LoanGroup {
+  groupId: string;
+  loans: Loan[];
+  borrowerName: string;
+  equipmentNames: string[];
+  beginDate: string;
+  endDate: string;
+}
+
 @Component({
   selector: 'app-loan',
   standalone: true,
@@ -26,31 +36,49 @@ export class LoanComponent {
   // Signal mutable — peuplé via HTTP et mis à jour après chaque action
   loans = signal<Loan[]>([]);
 
+  // Tracks which group detail panel is open (null = aucun)
+  openGroupId = signal<string | null>(null);
+
   constructor() {
     this.chargerEmprunts();
   }
 
-  // Rechargement de la liste depuis le back
   private chargerEmprunts(): void {
     this.loanService.getAll().subscribe(data => this.loans.set(data));
   }
 
-  // "À valider" = demandes en attente de validation (statusType IN_PROGRESS = créé, pas encore validé)
-  pendingLoans = computed(() =>
-    this.loans().filter(l => l.statusType === 'IN_PROGRESS')
+  // Emprunts individuels en attente (groupId null ou absent)
+  individualPendingLoans = computed(() =>
+    this.loans().filter(l => l.statusType === 'IN_PROGRESS' && !l.groupId)
   );
 
-  // "En cours" = emprunts actifs (VALID = validés par gestionnaire), filtrés par statut et période
+  // Emprunts groupés en attente — regroupés par groupId
+  groupedPendingLoans = computed((): LoanGroup[] => {
+    const grouped = this.loans().filter(l => l.statusType === 'IN_PROGRESS' && !!l.groupId);
+    const map = new Map<string, Loan[]>();
+    grouped.forEach(l => {
+      const existing = map.get(l.groupId!) ?? [];
+      map.set(l.groupId!, [...existing, l]);
+    });
+    return Array.from(map.entries()).map(([groupId, loans]) => ({
+      groupId,
+      loans,
+      borrowerName:   `${loans[0].requester.name} ${loans[0].requester.lastname}`,
+      equipmentNames: loans.map(l => l.equipment.equipmentName),
+      beginDate:      loans[0].beginDate,
+      endDate:        loans[0].endDate,
+    }));
+  });
+
+  // "En cours" = emprunts actifs (VALID), filtrés par statut et période
   activeLoans = computed(() => {
     const now = new Date();
     let list = this.loans().filter(l => l.statusType === 'VALID');
 
-    // Filtre statut : "En cours" = non retard / "Retard" = endDate dépassée
     const statut = this.filtreStatut();
     if (statut === 'IN_PROGRESS') list = list.filter(l => new Date(l.endDate) >= now);
     if (statut === 'RETARD')      list = list.filter(l => new Date(l.endDate) < now);
 
-    // Filtre temporalité
     const temps = this.filtreTemps();
     if (temps === 'semaine') {
       const debutSemaine = new Date(now);
@@ -72,7 +100,6 @@ export class LoanComponent {
     return list;
   });
 
-  // RETARD = VALID dont endDate est dépassée
   isRetard(loan: Loan): boolean {
     return loan.statusType === 'VALID' && new Date(loan.endDate) < new Date();
   }
@@ -81,21 +108,35 @@ export class LoanComponent {
     return this.isRetard(loan) ? 'RETARD' : loan.statusType;
   }
 
-  // Valider : IN_PROGRESS → VALID
-  // Le back lit le validatorId depuis le token JWT
+  // ── Actions emprunts individuels ─────────────────────
+
   validateLoan(loan: Loan): void {
     this.loanService.validate(loan.id).subscribe(() => this.chargerEmprunts());
   }
 
-  // Refuser : IN_PROGRESS → INVALID
   refuseLoan(loan: Loan): void {
     this.loanService.invalidate(loan.id).subscribe(() => this.chargerEmprunts());
   }
 
-  // Retour matériel : VALID → TERMINE
   returnLoan(loan: Loan): void {
     this.loanService.return(loan.id).subscribe(() => this.chargerEmprunts());
   }
+
+  // ── Actions emprunts groupés ──────────────────────────
+
+  validateGroup(groupId: string): void {
+    this.loanService.validateGroup(groupId).subscribe(() => this.chargerEmprunts());
+  }
+
+  refuseGroup(groupId: string): void {
+    this.loanService.refuseGroup(groupId).subscribe(() => this.chargerEmprunts());
+  }
+
+  toggleGroupDetail(groupId: string): void {
+    this.openGroupId.update(v => v === groupId ? null : groupId);
+  }
+
+  // ── Export ────────────────────────────────────────────
 
   loansExport = computed(() =>
     this.loans().map(l => ({
@@ -105,7 +146,7 @@ export class LoanComponent {
       debut:       l.beginDate,
       fin:         l.endDate,
       statut:      this.getStatusLabel(this.getDisplayStatus(l)),
-      commentaire: ''
+      groupe:      l.groupId ?? '—',
     }))
   );
 

@@ -291,3 +291,52 @@
   border-radius: var(--r-lg);
   box-shadow: var(--shadow-sm);
 }
+
+// ── Emprunts groupés ──────────────────────────────────
+.emprunt-groupe {
+  border-left: 3px solid var(--primary);
+}
+
+.groupe-avatar {
+  font-size: 1.2rem;
+  background: var(--primary-light, #e8f0fe);
+  color: var(--primary);
+}
+
+.group-detail {
+  margin-top: 0.75rem;
+  padding: 0.75rem;
+  background: var(--grey-50, #f9fafb);
+  border-radius: var(--r-sm);
+  border: 1px solid var(--border);
+}
+
+.group-detail-header {
+  font-size: 0.75rem;
+  font-weight: 600;
+  color: var(--text-muted);
+  margin-bottom: 0.5rem;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+}
+
+.group-detail-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 0.3rem 0;
+  font-size: 0.85rem;
+  border-bottom: 1px solid var(--border);
+
+  &:last-child { border-bottom: none; }
+}
+
+.group-eq-name {
+  font-weight: 500;
+  color: var(--text-primary);
+}
+
+.group-eq-ref {
+  color: var(--text-muted);
+  font-size: 0.8rem;
+}
