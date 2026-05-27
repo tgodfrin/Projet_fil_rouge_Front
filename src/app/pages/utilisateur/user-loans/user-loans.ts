@@ -8,6 +8,26 @@ import { EventService } from '../../../core/services/event.service';
 import { AuthService } from '../../../core/services/auth.service';
 import { Loan } from '../../../core/models/loan.model';
 
+// ── Types d'affichage ─────────────────────────────────────────────────────────
+// Emprunt individuel (groupId null)
+interface SingleLoanItem {
+  kind: 'single';
+  loan: Loan;
+}
+
+// Groupe d'emprunts partageant le même groupId
+interface GroupLoanItem {
+  kind: 'group';
+  groupId: string;
+  loans: Loan[];
+  equipmentNames: string[];
+  beginDate: string;
+  endDate: string;
+  statusType: string;   // statut représentatif du groupe (pire statut)
+}
+
+type LoanItem = SingleLoanItem | GroupLoanItem;
+
 @Component({
   selector: 'app-user-loans',
   standalone: true,
@@ -29,25 +49,25 @@ export class UserLoansComponent {
     { initialValue: [] as Loan[] }
   );
 
-  // ── Tabs ───────────────────────────────────────────────
+  // ── Tabs ─────────────────────────────────────────────────────────────────────
   activeTab = signal<'EN_COURS' | 'EN_ATTENTE' | 'HISTORIQUE'>('EN_COURS');
 
   setTab(tab: 'EN_COURS' | 'EN_ATTENTE' | 'HISTORIQUE') {
     this.activeTab.set(tab);
     this.closeForm();
+    this.openGroupId.set(null);
   }
 
+  // Compte les emprunts bruts (pas les groupes) pour l'affichage des chips
   countByTab(tab: string): number {
     const loans = this.allLoans();
-    // VALID       = emprunt validé et actif (y compris RETARD côté front)
-    // IN_PROGRESS = demande en attente de traitement gestionnaire
-    // TERMINE/INVALID = historique
     if (tab === 'EN_COURS')   return loans.filter(l => l.statusType === 'VALID').length;
     if (tab === 'EN_ATTENTE') return loans.filter(l => l.statusType === 'IN_PROGRESS').length;
     return loans.filter(l => l.statusType === 'TERMINE' || l.statusType === 'INVALID').length;
   }
 
-  filteredLoans = computed(() => {
+  // ── Emprunts filtrés par onglet ───────────────────────────────────────────────
+  private filteredLoans = computed(() => {
     const tab   = this.activeTab();
     const loans = this.allLoans();
     if (tab === 'EN_COURS')   return loans.filter(l => l.statusType === 'VALID');
@@ -55,7 +75,46 @@ export class UserLoansComponent {
     return loans.filter(l => l.statusType === 'TERMINE' || l.statusType === 'INVALID');
   });
 
-  // ── Statut affiché (RETARD calculé côté front) ─────────
+  // ── Items d'affichage : individuels + groupes ─────────────────────────────────
+  // Les emprunts avec un groupId sont fusionnés en une seule carte de groupe.
+  // Les emprunts sans groupId restent des cartes individuelles.
+  displayItems = computed((): LoanItem[] => {
+    const loans = this.filteredLoans();
+    const items: LoanItem[] = [];
+    const groupMap = new Map<string, Loan[]>();
+
+    loans.forEach(loan => {
+      if (!loan.groupId) {
+        items.push({ kind: 'single', loan });
+      } else {
+        const existing = groupMap.get(loan.groupId) ?? [];
+        groupMap.set(loan.groupId, [...existing, loan]);
+      }
+    });
+
+    groupMap.forEach((groupLoans, groupId) => {
+      items.push({
+        kind:           'group',
+        groupId,
+        loans:          groupLoans,
+        equipmentNames: groupLoans.map(l => l.equipment.equipmentName),
+        beginDate:      groupLoans[0].beginDate,
+        endDate:        groupLoans[0].endDate,
+        statusType:     groupLoans[0].statusType,
+      });
+    });
+
+    return items;
+  });
+
+  // ── Groupe dépliable ──────────────────────────────────────────────────────────
+  openGroupId = signal<string | null>(null);
+
+  toggleGroupDetail(groupId: string): void {
+    this.openGroupId.update(v => v === groupId ? null : groupId);
+  }
+
+  // ── Statut affiché (RETARD calculé côté front) ────────────────────────────────
   getDisplayStatus(loan: Loan): string {
     if (loan.statusType === 'VALID' && new Date(loan.endDate) < new Date()) {
       return 'RETARD';
@@ -63,7 +122,7 @@ export class UserLoansComponent {
     return loan.statusType;
   }
 
-  // ── Badges ─────────────────────────────────────────────
+  // ── Badges ────────────────────────────────────────────────────────────────────
   getStatusClass(status: string): string {
     const map: Record<string, string> = {
       VALID:       'badge-success',
@@ -86,12 +145,11 @@ export class UserLoansComponent {
     return map[status] ?? status;
   }
 
-  // ── Icône équipement (family id → emoji) ───────────────
   getCategoryIcon(_loan: Loan): string {
     return '📦';
   }
 
-  // ── Dates & progress ───────────────────────────────────
+  // ── Dates & progress ──────────────────────────────────────────────────────────
   formatDateRange(start: string, end: string): string {
     const fmt = (d: string) =>
       new Date(d).toLocaleDateString('fr-FR', { day: 'numeric', month: 'short' });
@@ -113,7 +171,7 @@ export class UserLoansComponent {
     return Math.ceil(diff / (1000 * 60 * 60 * 24));
   }
 
-  // ── Formulaires inline ─────────────────────────────────
+  // ── Formulaires inline ────────────────────────────────────────────────────────
   selectedLoanId = signal<number | null>(null);
   activeForm     = signal<'prolong' | 'return' | null>(null);
 
@@ -154,7 +212,6 @@ export class UserLoansComponent {
     const description = motif
       ? `Retour prévu le ${date} — ${motif}`
       : `Retour prévu le ${date}`;
-    // Crée un event EARLY_RETURN → visible dans les alertes gestionnaire
     this.eventService.create({
       type:        'EARLY_RETURN',
       description,
@@ -169,7 +226,6 @@ export class UserLoansComponent {
     }
     const { date, motif } = this.prolongForm.value;
     const description = `Nouvelle date souhaitée : ${date} — ${motif}`;
-    // Crée un event EXTENSION → visible dans les alertes gestionnaire
     this.eventService.create({
       type:        'EXTENSION',
       description,
