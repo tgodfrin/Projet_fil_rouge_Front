@@ -175,6 +175,7 @@
   <app-equipment-form
     [families]="families()"
     [equipmentToEdit]="equipment()!"
+    [existingCharacteristics]="characteristics()"
     (fermer)="modalEditOpen.set(false)"
     (edit)="onEdit($event)">
   </app-equipment-form>

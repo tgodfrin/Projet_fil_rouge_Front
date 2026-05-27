@@ -4,10 +4,11 @@ import { CommonModule } from '@angular/common';
 import { EquipmentFamily } from '../../../../core/models/equipment-family.model';
 import { EquipmentPayload } from '../../../../core/services/equipment.service';
 import { CharacteristicService } from '../../../../core/services/characteristic.service';
-import { Characteristic } from '../../../../core/models/characteristic-value.model';
+import { Characteristic, CharacteristicValue } from '../../../../core/models/characteristic-value.model';
 import { Equipment } from '../../../../core/models/equipment.model';
 
 export interface CaracteristiqueRow {
+  id?: number;              // set for existing characteristics, undefined for new ones
   characteristicId: number | null;
   value: string;
 }
@@ -34,6 +35,9 @@ export class EquipmentFormComponent implements OnInit {
 
   // Si fourni, le formulaire est en mode édition (pré-rempli + PUT)
   @Input() equipmentToEdit: Equipment | null = null;
+
+  // Existing characteristics passed by parent in edit mode to pre-fill lignes
+  @Input() existingCharacteristics: CharacteristicValue[] = [];
 
   @Output() fermer   = new EventEmitter<void>();
   @Output() ajouter  = new EventEmitter<EquipmentFormOutput>();
@@ -67,6 +71,14 @@ export class EquipmentFormComponent implements OnInit {
         location:        this.equipmentToEdit.location ?? '',
         acquisitionDate: this.equipmentToEdit.acquisitionDate ?? '',
       });
+      // Pre-fill lignes with existing characteristics so they appear in edit mode
+      if (this.existingCharacteristics.length > 0) {
+        this.lignes.set(this.existingCharacteristics.map(cv => ({
+          id:               cv.id,
+          characteristicId: cv.characteristic.id,
+          value:            cv.value,
+        })));
+      }
     }
   }
 
