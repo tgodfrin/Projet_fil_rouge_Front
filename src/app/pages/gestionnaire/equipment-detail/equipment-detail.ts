@@ -6,7 +6,7 @@ import { toSignal } from '@angular/core/rxjs-interop';
 import { EquipmentService } from '../../../core/services/equipment.service';
 import { EquipmentFamilyService } from '../../../core/services/equipment-family.service';
 import { CharacteristicValueService } from '../../../core/services/characteristic-value.service';
-import { forkJoin, of } from 'rxjs';
+import { forkJoin } from 'rxjs';
 import { DocService } from '../../../core/services/doc.service';
 import { LoanService } from '../../../core/services/loan.service';
 import { StatusEquipmentService } from '../../../core/services/status-equipment.service';
@@ -120,15 +120,18 @@ export class EquipmentDetailComponent {
     this.equipmentService.update(this.equipmentId, output.payload).subscribe(() => {
       // Save only new characteristic rows (those without an id)
       const newRows = output.caracteristiques.filter(row => !row.id && row.characteristicId !== null);
-      const requests = newRows.map(row =>
+      if (newRows.length === 0) {
+        this.loadEquipment();
+        this.modalEditOpen.set(false);
+        return;
+      }
+      forkJoin(newRows.map(row =>
         this.characteristicService.create({
           value: row.value,
           characteristic: { id: row.characteristicId! },
           equipments: [{ id: this.equipmentId }],
         })
-      );
-      const save$ = requests.length > 0 ? forkJoin(requests) : of(null);
-      save$.subscribe(() => {
+      )).subscribe(() => {
         this.loadEquipment();
         this.modalEditOpen.set(false);
       });
