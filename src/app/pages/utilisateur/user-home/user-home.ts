@@ -21,8 +21,8 @@ export class UserHomeComponent {
 
   private currentUserId = this.authService.currentUser()!.id;
 
-  // Données utilisateur chargées directement — indépendant des emprunts
-  private userSig = toSignal(this.userService.getById(this.currentUserId));
+  // Load current user via /user/me — getById is @IsGestionnaire only and returns 403 for collaborateurs
+  private userSig = toSignal(this.userService.getMe());
 
   // Tous les emprunts de l'utilisateur courant
   private allLoans = toSignal(
