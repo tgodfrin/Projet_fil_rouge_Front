@@ -12,6 +12,19 @@
     }
   </div>
 
+  <!-- Informations -->
+  <div class="section-label">Informations</div>
+  <div class="info-card">
+    <div class="info-row">
+      <span class="info-key">Email</span>
+      <span class="info-val">{{ user()?.email }}</span>
+    </div>
+    <div class="info-row">
+      <span class="info-key">Rôle</span>
+      <span class="info-val">Gestionnaire</span>
+    </div>
+  </div>
+
   <!-- Modifier email -->
   <div class="edit-section">
     <div class="edit-header" (click)="toggleEdit('email')">
