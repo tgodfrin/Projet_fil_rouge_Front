@@ -20,6 +20,11 @@ export class EventService {
     return this.http.get<Event[]>(`${this.apiUrl}/event/loan/${loanId}`);
   }
 
+  // GET /event/list  →  tous les events (lus + non lus)
+  getAll(): Observable<Event[]> {
+    return this.http.get<Event[]>(`${this.apiUrl}/event/list`);
+  }
+
   // GET /event/unread  →  notifications non lues (readingDate IS NULL)
   getUnread(): Observable<Event[]> {
     return this.http.get<Event[]>(`${this.apiUrl}/event/unread`);

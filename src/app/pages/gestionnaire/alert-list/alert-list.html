@@ -53,13 +53,12 @@
         <div
           class="alert-card"
           [class.retard]="alert.type === 'RETARD'"
-          [class.incident]="alert.type === 'BREAKDOWN'"
+          [class.incident]="alert.type === 'BREAKDOWN' || alert.type === 'EARLY_RETURN' || alert.type === 'EXTENSION'"
           [class.read]="alert.read">
 
           <div class="alert-body">
             <div class="alert-title">
-              {{ alert.type === 'RETARD' ? 'Retard' : 'Incident' }}
-              — {{ alert.equipmentName }}
+              {{ getAlertLabel(alert.type) }} — {{ alert.equipmentName }}
             </div>
             <div class="alert-sub">
               {{ alert.borrowerName }} — {{ alert.description }}
@@ -68,8 +67,10 @@
           </div>
 
           <div class="alert-right">
-            <span class="badge" [class.badge-warning]="alert.type === 'RETARD'" [class.badge-danger]="alert.type === 'BREAKDOWN'">
-              {{ alert.type === 'RETARD' ? 'Retard' : 'Incident' }}
+            <span class="badge"
+              [class.badge-warning]="alert.type === 'RETARD'"
+              [class.badge-danger]="alert.type !== 'RETARD'">
+              {{ getAlertLabel(alert.type) }}
             </span>
             @if (!alert.read) {
               <div class="unread-dot"></div>

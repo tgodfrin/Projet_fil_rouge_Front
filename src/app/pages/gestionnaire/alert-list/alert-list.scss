@@ -170,18 +170,25 @@
   border-left: 4px solid transparent;
   transition: opacity 0.2s;
 
-  &.retard {
+  // Unread — flashy style with shadow
+  &.retard:not(.read) {
     background: var(--warning-bg);
-    border-left-color: var(--warning);
+    border-left: 4px solid var(--warning);
+    box-shadow: 0 2px 8px rgba(255, 160, 0, 0.2);
   }
 
-  &.incident {
+  &.incident:not(.read) {
     background: var(--danger-bg);
-    border-left-color: var(--danger);
+    border-left: 4px solid var(--danger);
+    box-shadow: 0 2px 8px rgba(220, 38, 38, 0.2);
   }
 
+  // Read — neutral background, reduced opacity
   &.read {
-    opacity: 0.6;
+    background: var(--grey-50, #f9fafb);
+    opacity: 0.65;
+    border-left: 4px solid var(--grey-200, #e5e7eb);
+    box-shadow: none;
   }
 
   @media (max-width: 600px) {

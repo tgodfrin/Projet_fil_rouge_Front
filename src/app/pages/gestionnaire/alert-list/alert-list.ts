@@ -25,15 +25,19 @@ export class AlertListComponent {
   // Loans via toSignal (pas de mutation dessus)
   private loans = toSignal(this.loanService.getAll(), { initialValue: [] as Loan[] });
 
-  // Events non lus : writable signal pour recharger après markAsRead
+  // All events (read + unread) — avoids incidents disappearing after markAsRead + navigation
   private events = signal<Event[]>([]);
+
+  // Local tracking for retard alerts seen in this session (no back entity for retards)
+  private readRetardIds = signal<Set<number>>(new Set());
 
   constructor() {
     this.chargerEvents();
   }
 
   private chargerEvents(): void {
-    this.eventService.getUnread().subscribe(data => this.events.set(data));
+    // Load all events so read incidents stay visible when user navigates back
+    this.eventService.getAll().subscribe(data => this.events.set(data));
   }
 
   activeTab = signal<'TOUTES' | AlertType>('TOUTES');
@@ -64,7 +68,7 @@ export class AlertListComponent {
         borrowerName:  `${l.requester.name} ${l.requester.lastname}`,
         description:   `Retour prévu le ${new Date(l.endDate).toLocaleDateString('fr-FR')}`,
         date:          l.endDate,
-        read:          false,
+        read:          this.readRetardIds().has(l.id),
       }));
 
     return [...retardAlerts, ...eventAlerts];
@@ -98,15 +102,28 @@ export class AlertListComponent {
   }
 
   markAsRead(alert: Alert): void {
-    // Les RETARD sont calculés côté front → pas d'entité Event à marquer
-    if (alert.type !== 'RETARD') {
-      this.eventService.markAsRead(alert.id).subscribe(() => {
-        // Mise à jour locale : la carte reste visible mais passe en état "lu" (opacité réduite)
-        this.events.update(events =>
-          events.map(e => e.id === alert.id ? { ...e, readingDate: new Date().toISOString() } : e)
-        );
-      });
+    if (alert.type === 'RETARD') {
+      // RETARD is front-only — track seen retard loan ids locally
+      this.readRetardIds.update(s => new Set([...s, alert.loanId]));
+      return;
     }
+    this.eventService.markAsRead(alert.id).subscribe(() => {
+      // Update locally so the card stays visible but switches to "read" state
+      this.events.update(events =>
+        events.map(e => e.id === alert.id ? { ...e, readingDate: new Date().toISOString() } : e)
+      );
+    });
+  }
+
+  // Returns the display label for an alert type
+  getAlertLabel(type: AlertType): string {
+    const labels: Record<AlertType, string> = {
+      RETARD:       'Retard',
+      BREAKDOWN:    'Incident',
+      EARLY_RETURN: 'Retour anticipé',
+      EXTENSION:    'Extension',
+    };
+    return labels[type] ?? type;
   }
 
   markAllAsRead(): void {
