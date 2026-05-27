@@ -154,6 +154,11 @@
       </div>
     </div>
 
+    <!-- Erreur serveur -->
+    @if (errorMessage()) {
+      <div class="form-error-global">{{ errorMessage() }}</div>
+    }
+
     <!-- Actions -->
     <div class="form-actions">
       <button type="button" class="btn btn-cancel" (click)="retour()">Annuler</button>

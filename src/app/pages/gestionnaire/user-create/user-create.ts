@@ -25,9 +25,10 @@ export class UserCreateComponent {
 
   profils = toSignal(this.profilService.getAll(), { initialValue: [] as Profil[] });
 
-  submitted  = signal(false);
-  showPwd    = signal(false);
-  showPwdCfm = signal(false);
+  submitted     = signal(false);
+  showPwd       = signal(false);
+  showPwdCfm    = signal(false);
+  errorMessage  = signal<string | null>(null);
 
   private matchPasswords(group: AbstractControl): ValidationErrors | null {
     const pwd     = group.get('password')?.value;
@@ -83,8 +84,18 @@ export class UserCreateComponent {
       password: val.password!,
       profilId: Number(val.profilId),
     };
-    this.userService.create(payload).subscribe(() => {
-      this.router.navigate(['/utilisateurs']);
+    this.errorMessage.set(null);
+    this.userService.create(payload).subscribe({
+      next: () => this.router.navigate(['/utilisateurs']),
+      error: (err) => {
+        if (err.status === 409) {
+          this.errorMessage.set('Cette adresse email est déjà utilisée.');
+        } else if (err.status === 400) {
+          this.errorMessage.set('Données invalides. Vérifiez les champs.');
+        } else {
+          this.errorMessage.set('Une erreur est survenue. Réessayez.');
+        }
+      }
     });
   }
 
