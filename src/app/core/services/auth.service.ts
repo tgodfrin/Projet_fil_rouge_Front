@@ -50,10 +50,11 @@ export class AuthService {
   });
 
   setSession(token: string, user: AuthUser): void {
-    localStorage.setItem(TOKEN_KEY, token);
-    localStorage.setItem(USER_KEY, JSON.stringify(user));
+    // Update signals first so computed values (fullName, initials) are ready before navigation
     this._token.set(token);
     this._currentUser.set(user);
+    localStorage.setItem(TOKEN_KEY, token);
+    localStorage.setItem(USER_KEY, JSON.stringify(user));
   }
 
   getToken(): string | null {
