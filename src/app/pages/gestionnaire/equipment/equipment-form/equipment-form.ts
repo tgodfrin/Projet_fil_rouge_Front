@@ -1,5 +1,5 @@
 import { Component, EventEmitter, Input, OnInit, Output, inject, signal } from '@angular/core';
-import { ReactiveFormsModule, FormBuilder, Validators } from '@angular/forms';
+import { ReactiveFormsModule, FormsModule, FormBuilder, Validators } from '@angular/forms';
 import { CommonModule } from '@angular/common';
 import { EquipmentFamily } from '../../../../core/models/equipment-family.model';
 import { EquipmentPayload } from '../../../../core/services/equipment.service';
@@ -21,7 +21,7 @@ export interface EquipmentFormOutput {
 @Component({
   selector: 'app-equipment-form',
   standalone: true,
-  imports: [ReactiveFormsModule, CommonModule],
+  imports: [ReactiveFormsModule, FormsModule, CommonModule],
   templateUrl: './equipment-form.html',
   styleUrl: './equipment-form.scss'
 })
@@ -90,9 +90,10 @@ export class EquipmentFormComponent implements OnInit {
     this.lignes.update(rows => rows.filter((_, i) => i !== index));
   }
 
-  setCharacteristicId(index: number, id: string): void {
+  // id est un number grâce à [ngValue] — pas besoin de conversion
+  setCharacteristicId(index: number, id: number | null): void {
     this.lignes.update(rows =>
-      rows.map((row, i) => i === index ? { ...row, characteristicId: Number(id) } : row)
+      rows.map((row, i) => i === index ? { ...row, characteristicId: id } : row)
     );
   }
 

@@ -96,14 +96,16 @@
         <div class="composant-row">
 
           <!-- Select : type de caractéristique -->
+          <!-- [ngModel] + [ngValue] préservent le type number — évite le mismatch string/number -->
           <select
             class="form-select composant-type"
             [class.error]="ligne.characteristicId === null"
-            [value]="ligne.characteristicId ?? ''"
-            (change)="setCharacteristicId($index, $any($event.target).value)">
-            <option value="" disabled>Type</option>
+            [ngModel]="ligne.characteristicId"
+            (ngModelChange)="setCharacteristicId($index, $event)"
+            [ngModelOptions]="{standalone: true}">
+            <option [ngValue]="null" disabled>Type</option>
             @for (c of caracteristiquesDisponibles(); track c.id) {
-              <option [value]="c.id">{{ c.name }}</option>
+              <option [ngValue]="c.id">{{ c.name }}</option>
             }
           </select>
 
