@@ -1,12 +1,11 @@
 import { Component, inject, signal } from '@angular/core';
 import { CommonModule, Location } from '@angular/common';
 import { ActivatedRoute, Router } from '@angular/router';
-import { toSignal } from '@angular/core/rxjs-interop';
+import { forkJoin, of } from 'rxjs';
 
 import { EquipmentService } from '../../../core/services/equipment.service';
 import { EquipmentFamilyService } from '../../../core/services/equipment-family.service';
 import { CharacteristicValueService } from '../../../core/services/characteristic-value.service';
-import { forkJoin } from 'rxjs';
 import { DocService } from '../../../core/services/doc.service';
 import { LoanService } from '../../../core/services/loan.service';
 import { StatusEquipmentService } from '../../../core/services/status-equipment.service';
@@ -41,21 +40,20 @@ export class EquipmentDetailComponent {
 
   private equipmentId = Number(this.route.snapshot.paramMap.get('id'));
 
-  // Mutable signals — reloadable after updates
-  equipment  = signal<Equipment | undefined>(undefined);
-  families   = signal<EquipmentFamily[]>([]);
-  docs       = signal<Doc[]>([]);
-  statusList = signal<StatusEquipment[]>([]);
-
-  characteristics = toSignal(this.characteristicService.getByEquipment(this.equipmentId), { initialValue: [] as CharacteristicValue[] });
-  loanHistory     = toSignal(this.loanService.getByEquipment(this.equipmentId),           { initialValue: [] as Loan[] });
+  // Mutable signals — tous rechargeables après modification
+  equipment       = signal<Equipment | undefined>(undefined);
+  families        = signal<EquipmentFamily[]>([]);
+  docs            = signal<Doc[]>([]);
+  statusList      = signal<StatusEquipment[]>([]);
+  characteristics = signal<CharacteristicValue[]>([]);
+  loanHistory     = signal<Loan[]>([]);
 
   // UI state
-  ongletActif       = signal<'infos' | 'historique' | 'documents'>('infos');
-  modalEditOpen     = signal(false);
-  modalStatusOpen   = signal(false);
-  modalDocOpen      = signal(false);
-  modalDeleteOpen   = signal(false);
+  ongletActif     = signal<'infos' | 'historique' | 'documents'>('infos');
+  modalEditOpen   = signal(false);
+  modalStatusOpen = signal(false);
+  modalDocOpen    = signal(false);
+  modalDeleteOpen = signal(false);
 
   // Status form values
   newStatusType = signal<StatusEquipmentType | 'DISPONIBLE'>('OUT_OF_SERVICE');
@@ -69,6 +67,8 @@ export class EquipmentDetailComponent {
     this.loadEquipment();
     this.loadDocs();
     this.loadStatusHistory();
+    this.loadCharacteristics();
+    this.loadLoanHistory();
     this.familyService.getAll().subscribe(data => this.families.set(data));
   }
 
@@ -84,6 +84,14 @@ export class EquipmentDetailComponent {
 
   private loadStatusHistory(): void {
     this.statusEquipmentService.getByEquipment(this.equipmentId).subscribe(data => this.statusList.set(data));
+  }
+
+  private loadCharacteristics(): void {
+    this.characteristicService.getByEquipment(this.equipmentId).subscribe(data => this.characteristics.set(data));
+  }
+
+  private loadLoanHistory(): void {
+    this.loanService.getByEquipment(this.equipmentId).subscribe(data => this.loanHistory.set(data));
   }
 
   // ── Helpers ──────────────────────────────────────────
@@ -118,21 +126,34 @@ export class EquipmentDetailComponent {
 
   onEdit(output: EquipmentFormOutput): void {
     this.equipmentService.update(this.equipmentId, output.payload).subscribe(() => {
-      // Save only new characteristic rows (those without an id)
-      const newRows = output.caracteristiques.filter(row => !row.id && row.characteristicId !== null);
-      if (newRows.length === 0) {
+      const existingIds = this.characteristics().map(c => c.id);
+      const submittedWithId = output.caracteristiques.filter(r => r.id);
+      const submittedIds = submittedWithId.map(r => r.id!);
+
+      // Caractéristiques supprimées (étaient en base, absentes de la soumission)
+      const toDelete = existingIds.filter(id => !submittedIds.includes(id));
+      // Caractéristiques modifiées (id présent dans la soumission)
+      const toUpdate = submittedWithId.filter(r => r.characteristicId !== null);
+      // Nouvelles caractéristiques (sans id)
+      const toCreate = output.caracteristiques.filter(r => !r.id && r.characteristicId !== null);
+
+      const ops = [
+        ...toDelete.map(id => this.characteristicService.delete(id)),
+        ...toUpdate.map(r => this.characteristicService.update(r.id!, {
+          value:            r.value,
+          characteristicId: r.characteristicId!,
+          equipmentId:      this.equipmentId,
+        })),
+        ...toCreate.map(r => this.characteristicService.create({
+          value:            r.value,
+          characteristicId: r.characteristicId!,
+          equipmentId:      this.equipmentId,
+        })),
+      ];
+
+      (ops.length > 0 ? forkJoin(ops) : of(null)).subscribe(() => {
         this.loadEquipment();
-        this.modalEditOpen.set(false);
-        return;
-      }
-      forkJoin(newRows.map(row =>
-        this.characteristicService.create({
-          value: row.value,
-          characteristic: { id: row.characteristicId! },
-          equipments: [{ id: this.equipmentId }],
-        })
-      )).subscribe(() => {
-        this.loadEquipment();
+        this.loadCharacteristics();
         this.modalEditOpen.set(false);
       });
     });
@@ -165,8 +186,8 @@ export class EquipmentDetailComponent {
   onAddDoc(): void {
     if (!this.newDocTitle() || !this.newDocUrl()) return;
     this.docService.create({
-      title:      this.newDocTitle(),
-      url:        this.newDocUrl(),
+      title:        this.newDocTitle(),
+      url:          this.newDocUrl(),
       equipmentIds: [this.equipmentId]
     }).subscribe(() => {
       this.loadDocs();
@@ -174,6 +195,10 @@ export class EquipmentDetailComponent {
       this.newDocTitle.set('');
       this.newDocUrl.set('');
     });
+  }
+
+  onDeleteDoc(docId: number): void {
+    this.docService.delete(docId).subscribe(() => this.loadDocs());
   }
 
   // ── Label helpers ────────────────────────────────────

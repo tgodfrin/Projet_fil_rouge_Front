@@ -140,8 +140,9 @@
               <div class="table-row table-row-doc">
                 <div class="td-main">{{ doc.title }}</div>
                 <div class="td-muted">{{ formatDate(doc.addedDate) }}</div>
-                <div>
+                <div class="doc-actions">
                   <a class="btn btn-ghost btn-sm" [href]="doc.url" target="_blank">Voir</a>
+                  <button class="btn btn-sm btn-delete" (click)="onDeleteDoc(doc.id)">Supprimer</button>
                 </div>
               </div>
             }
