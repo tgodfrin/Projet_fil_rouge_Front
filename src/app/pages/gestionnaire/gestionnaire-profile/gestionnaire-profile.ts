@@ -1,0 +1,142 @@
+import { Component, signal, computed, inject, OnInit } from '@angular/core';
+import { CommonModule } from '@angular/common';
+import { ReactiveFormsModule, FormBuilder, Validators, AbstractControl, ValidationErrors } from '@angular/forms';
+import { Router } from '@angular/router';
+import { UserService } from '../../../core/services/user.service';
+import { AuthService } from '../../../core/services/auth.service';
+import { AppUser } from '../../../core/models/user.model';
+
+@Component({
+  selector: 'app-gestionnaire-profile',
+  standalone: true,
+  imports: [CommonModule, ReactiveFormsModule],
+  templateUrl: './gestionnaire-profile.html',
+  styleUrl: './gestionnaire-profile.scss'
+})
+export class GestionnaireProfileComponent implements OnInit {
+  private fb          = inject(FormBuilder);
+  private router      = inject(Router);
+  private userService = inject(UserService);
+  private authService = inject(AuthService);
+
+  private userSig = signal<AppUser | undefined>(undefined);
+  user = this.userSig.asReadonly();
+
+  ngOnInit(): void {
+    this.userService.getMe().subscribe(u => this.userSig.set(u));
+  }
+
+  initials = computed(() => {
+    const u = this.user();
+    if (!u) return '';
+    return `${u.name[0]}${u.lastname[0]}`.toUpperCase();
+  });
+
+  // ── Formulaires inline ─────────────────────────────────
+  activeEdit     = signal<'email' | 'password' | null>(null);
+  successMessage = signal<string | null>(null);
+  errorMessage   = signal<string | null>(null);
+  submitting     = signal(false);
+
+  private matchValidator(field1: string, field2: string) {
+    return (group: AbstractControl): ValidationErrors | null => {
+      const val1 = group.get(field1)?.value;
+      const val2 = group.get(field2)?.value;
+      if (val1 && val2 && val1 !== val2) {
+        group.get(field2)?.setErrors({ mismatch: true });
+      } else {
+        const errs = group.get(field2)?.errors;
+        if (errs?.['mismatch']) {
+          const { mismatch, ...rest } = errs;
+          group.get(field2)?.setErrors(Object.keys(rest).length ? rest : null);
+        }
+      }
+      return null;
+    };
+  }
+
+  emailForm = this.fb.group({
+    newEmail:     ['', [Validators.required, Validators.email]],
+    confirmEmail: ['', [Validators.required, Validators.email]]
+  }, { validators: this.matchValidator('newEmail', 'confirmEmail') });
+
+  passwordForm = this.fb.group({
+    currentPassword: ['', Validators.required],
+    newPassword:     ['', [Validators.required, Validators.minLength(8)]],
+    confirmPassword: ['', Validators.required]
+  }, { validators: this.matchValidator('newPassword', 'confirmPassword') });
+
+  toggleEdit(field: 'email' | 'password') {
+    if (this.activeEdit() === field) {
+      this.closeEdit();
+    } else {
+      this.activeEdit.set(field);
+      this.emailForm.reset();
+      this.passwordForm.reset();
+      this.clearMessages();
+    }
+  }
+
+  closeEdit() {
+    this.activeEdit.set(null);
+    this.emailForm.reset();
+    this.passwordForm.reset();
+    this.clearMessages();
+    this.submitting.set(false);
+  }
+
+  clearMessages() {
+    this.successMessage.set(null);
+    this.errorMessage.set(null);
+  }
+
+  submitEmail() {
+    if (this.emailForm.invalid) {
+      this.emailForm.markAllAsTouched();
+      return;
+    }
+    const newEmail = this.emailForm.value.newEmail!;
+    this.submitting.set(true);
+    this.userService.updateEmail(this.authService.currentUser()!.id, newEmail).subscribe({
+      next: () => {
+        this.userSig.update(u => u ? { ...u, email: newEmail } : u);
+        this.successMessage.set('Email mis à jour.');
+        setTimeout(() => this.closeEdit(), 1500);
+      },
+      error: () => {
+        this.errorMessage.set('Une erreur est survenue.');
+        this.submitting.set(false);
+      }
+    });
+  }
+
+  submitPassword() {
+    if (this.passwordForm.invalid) {
+      this.passwordForm.markAllAsTouched();
+      return;
+    }
+    const currentPassword = this.passwordForm.value.currentPassword!;
+    const newPassword     = this.passwordForm.value.newPassword!;
+    this.submitting.set(true);
+    // Gestionnaire uses /user/:id/password (has gestionnaire role)
+    this.userService.updatePassword(this.authService.currentUser()!.id, currentPassword, newPassword).subscribe({
+      next: () => {
+        this.successMessage.set('Mot de passe mis à jour.');
+        setTimeout(() => this.closeEdit(), 1500);
+      },
+      error: (err) => {
+        if (err.status === 401) {
+          this.errorMessage.set('Mot de passe actuel incorrect.');
+        } else {
+          this.errorMessage.set('Une erreur est survenue.');
+        }
+        this.submitting.set(false);
+      }
+    });
+  }
+
+  logout(): void {
+    this.authService.logout();
+    this.router.navigate(['/login']);
+  }
+}

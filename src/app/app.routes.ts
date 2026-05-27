@@ -12,6 +12,7 @@ import { LoanDetailComponent } from './pages/gestionnaire/loan-detail/loan-detai
 import { PlanningComponent } from './pages/gestionnaire/planning/planning';
 import { AlertListComponent } from './pages/gestionnaire/alert-list/alert-list';
 import { CategoryListComponent } from './pages/gestionnaire/category-list/category-list';
+import { GestionnaireProfileComponent } from './pages/gestionnaire/gestionnaire-profile/gestionnaire-profile';
 import { UserHomeComponent } from './pages/utilisateur/user-home/user-home';
 import { UserCatalogueComponent } from './pages/utilisateur/user-catalogue/user-catalogue';
 import { UserCatalogueDetailComponent } from './pages/utilisateur/user-catalogue-detail/user-catalogue-detail';
@@ -46,6 +47,7 @@ export const routes: Routes = [
       { path: 'planning', component: PlanningComponent },
       { path: 'alertes', component: AlertListComponent },
       { path: 'categories', component: CategoryListComponent },
+      { path: 'profil', component: GestionnaireProfileComponent },
     ]
   },
   {

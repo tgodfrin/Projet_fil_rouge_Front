@@ -1,0 +1,163 @@
+.profile-page {
+  padding: 2rem;
+  max-width: 560px;
+  display: flex;
+  flex-direction: column;
+  gap: 1.25rem;
+
+  @media (max-width: 768px) {
+    padding: 1rem;
+  }
+}
+
+// ── Header profil ─────────────────────────────────────
+.profile-header {
+  display: flex;
+  align-items: center;
+  gap: 1.25rem;
+  background: white;
+  border-radius: var(--r-md);
+  padding: 1.25rem;
+  box-shadow: var(--shadow-sm);
+}
+
+.avatar {
+  width: 56px;
+  height: 56px;
+  border-radius: 50%;
+  background: var(--primary);
+  color: white;
+  font-size: 1.25rem;
+  font-weight: 700;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+.profile-name  { font-size: 1rem; font-weight: 700; color: var(--grey-900); }
+.profile-role  { font-size: 0.8rem; color: var(--primary); font-weight: 600; margin-top: 2px; }
+.profile-email { font-size: 0.8rem; color: var(--grey-400); margin-top: 2px; }
+
+// ── Sections éditables ────────────────────────────────
+.edit-section {
+  background: white;
+  border-radius: var(--r-md);
+  box-shadow: var(--shadow-sm);
+  overflow: hidden;
+}
+
+.edit-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 1rem 1.25rem;
+  cursor: pointer;
+  font-size: 0.875rem;
+  font-weight: 600;
+  color: var(--grey-800);
+  user-select: none;
+
+  &:hover { background: var(--grey-50); }
+}
+
+.chevron { font-size: 0.7rem; color: var(--grey-400); }
+
+.edit-form {
+  padding: 0 1.25rem 1.25rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.875rem;
+  border-top: 1px solid var(--grey-100);
+}
+
+.form-group {
+  display: flex;
+  flex-direction: column;
+  gap: 0.3rem;
+
+  label {
+    font-size: 0.78rem;
+    font-weight: 600;
+    color: var(--grey-600);
+  }
+
+  input {
+    height: 36px;
+    padding: 0 0.75rem;
+    border: 1px solid var(--grey-200);
+    border-radius: var(--r-sm);
+    font-size: 0.875rem;
+    outline: none;
+    transition: border-color 0.2s;
+
+    &:focus { border-color: var(--primary); }
+  }
+}
+
+.form-actions {
+  display: flex;
+  gap: 0.75rem;
+  justify-content: flex-end;
+  margin-top: 0.25rem;
+}
+
+.btn-cancel {
+  height: 34px;
+  padding: 0 1rem;
+  background: white;
+  border: 1px solid var(--grey-200);
+  border-radius: var(--r-sm);
+  font-size: 0.82rem;
+  color: var(--grey-600);
+  cursor: pointer;
+
+  &:hover { background: var(--grey-50); }
+}
+
+.btn-save {
+  height: 34px;
+  padding: 0 1rem;
+  background: var(--primary);
+  border: none;
+  border-radius: var(--r-sm);
+  font-size: 0.82rem;
+  color: white;
+  cursor: pointer;
+
+  &:hover { opacity: 0.9; }
+  &:disabled { opacity: 0.5; cursor: not-allowed; }
+}
+
+// ── Messages ──────────────────────────────────────────
+.msg-success {
+  padding: 0.5rem 0.75rem;
+  background: var(--success-bg, #f0fdf4);
+  color: var(--success-text, #166534);
+  border-radius: var(--r-sm);
+  font-size: 0.82rem;
+}
+
+.msg-error {
+  padding: 0.5rem 0.75rem;
+  background: var(--danger-bg);
+  color: var(--danger-text);
+  border-radius: var(--r-sm);
+  font-size: 0.82rem;
+}
+
+// ── Déconnexion ───────────────────────────────────────
+.btn-logout {
+  align-self: flex-start;
+  height: 36px;
+  padding: 0 1.25rem;
+  background: white;
+  border: 1px solid var(--danger);
+  border-radius: var(--r-sm);
+  font-size: 0.82rem;
+  color: var(--danger);
+  cursor: pointer;
+  font-weight: 600;
+
+  &:hover { background: var(--danger-bg); }
+}
