@@ -111,9 +111,9 @@ export class EquipmentComponent {
         return forkJoin(
           output.caracteristiques.map(c =>
             this.characteristicValueService.create({
-              value:          c.value,
-              characteristic: { id: c.characteristicId! },
-              equipments:     [{ id: createdEquipment.id }],
+              value:            c.value,
+              characteristicId: c.characteristicId!,
+              equipmentId:      createdEquipment.id,
             })
           )
         );

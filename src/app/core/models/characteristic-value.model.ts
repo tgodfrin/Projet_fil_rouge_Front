@@ -17,9 +17,10 @@ export interface CharacteristicValue {
   characteristic: Characteristic;
 }
 
-// Body attendu par POST /characteristic-value
+// Body attendu par POST /characteristic-value et PUT /characteristic-value/:id
+// Le DTO back CharacteristicValueRequest attend characteristicId + equipmentId (Integers)
 export interface CharacteristicValueCreate {
   value: string;
-  characteristic: { id: number };
-  equipments: { id: number }[];
+  characteristicId: number;
+  equipmentId: number;
 }

@@ -18,4 +18,12 @@ export class CharacteristicValueService {
   create(data: CharacteristicValueCreate): Observable<CharacteristicValue> {
     return this.http.post<CharacteristicValue>(`${this.apiUrl}/characteristic-value`, data);
   }
+
+  update(id: number, data: CharacteristicValueCreate): Observable<CharacteristicValue> {
+    return this.http.put<CharacteristicValue>(`${this.apiUrl}/characteristic-value/${id}`, data);
+  }
+
+  delete(id: number): Observable<void> {
+    return this.http.delete<void>(`${this.apiUrl}/characteristic-value/${id}`);
+  }
 }
