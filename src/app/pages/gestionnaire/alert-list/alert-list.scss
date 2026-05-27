@@ -191,6 +191,14 @@
     box-shadow: none;
   }
 
+  // Retard vu — jaune clair pour distinguer du "retard non vu" et du "lu neutre"
+  &.retard-read {
+    background: #fffde7;
+    border-left: 4px solid #f9a825;
+    opacity: 0.8;
+    box-shadow: none;
+  }
+
   @media (max-width: 600px) {
     flex-wrap: wrap;
     gap: 0.75rem;

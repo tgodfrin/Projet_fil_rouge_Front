@@ -42,6 +42,12 @@
     <button class="tab" [class.active]="activeTab() === 'BREAKDOWN'" (click)="setTab('BREAKDOWN')">
       Incidents <span class="tab-count danger">{{ panneCount() }}</span>
     </button>
+    <button class="tab" [class.active]="activeTab() === 'EARLY_RETURN'" (click)="setTab('EARLY_RETURN')">
+      Retours anticipés <span class="tab-count">{{ earlyReturnCount() }}</span>
+    </button>
+    <button class="tab" [class.active]="activeTab() === 'EXTENSION'" (click)="setTab('EXTENSION')">
+      Prolongations <span class="tab-count">{{ extensionCount() }}</span>
+    </button>
   </div>
 
   <!-- Liste des alertes -->
@@ -53,6 +59,7 @@
         <div
           class="alert-card"
           [class.retard]="alert.type === 'RETARD'"
+          [class.retard-read]="alert.type === 'RETARD' && alert.read"
           [class.incident]="alert.type === 'BREAKDOWN' || alert.type === 'EARLY_RETURN' || alert.type === 'EXTENSION'"
           [class.read]="alert.read">
 

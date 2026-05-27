@@ -97,6 +97,14 @@ export class AlertListComponent {
     return this.allAlerts().filter(a => a.type === 'BREAKDOWN').length;
   }
 
+  earlyReturnCount(): number {
+    return this.allAlerts().filter(a => a.type === 'EARLY_RETURN').length;
+  }
+
+  extensionCount(): number {
+    return this.allAlerts().filter(a => a.type === 'EXTENSION').length;
+  }
+
   setTab(tab: 'TOUTES' | AlertType): void {
     this.activeTab.set(tab);
   }
@@ -121,7 +129,7 @@ export class AlertListComponent {
       RETARD:       'Retard',
       BREAKDOWN:    'Incident',
       EARLY_RETURN: 'Retour anticipé',
-      EXTENSION:    'Extension',
+      EXTENSION:    'Prolongation',
     };
     return labels[type] ?? type;
   }
