@@ -172,7 +172,7 @@
   transition: opacity 0.2s;
 
   // Retard non vu — orange foncé
-  &.retard:not(.read) {
+  &.retard:not(.retard-read) {
     background: #fff3e0;
     border-left: 4px solid #e65100;
     box-shadow: 0 2px 8px rgba(230, 81, 0, 0.2);
@@ -192,11 +192,16 @@
     box-shadow: none;
   }
 
-  // Retard vu — orange très clair
+  // Incident vu — bordure rouge pâle
+  &.incident.read {
+    border-left: 4px solid #ef9a9a;
+  }
+
+  // Retard vu — orange très pâle (même logique que bleu lu)
   &.retard-read {
-    background: #fff8f0;
-    border-left: 4px solid #ffb74d;
-    opacity: 0.9;
+    background: #fffef9;
+    border-left: 4px solid #ffe0c8;
+    opacity: 0.8;
     box-shadow: none;
   }
 
