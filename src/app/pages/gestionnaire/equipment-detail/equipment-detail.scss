@@ -307,8 +307,14 @@
   &:hover { background: var(--grey-50); }
 
   &.table-row-doc {
-    grid-template-columns: 1fr 1fr 80px;
+    grid-template-columns: 1fr 1fr auto;
   }
+}
+
+.doc-actions {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
 }
 
 .th {
