@@ -2,7 +2,19 @@
 
   <!-- En-tête -->
   <div class="page-header">
-    <div class="page-title">Gestion des emprunts</div>
+    <div class="page-title-block">
+      <div class="page-title">Gestion des emprunts</div>
+      @if (earlyReturnCount() > 0 || extensionCount() > 0) {
+        <div class="notification-badges">
+          @if (earlyReturnCount() > 0) {
+            <span class="notif-badge">{{ earlyReturnCount() }} retour{{ earlyReturnCount() > 1 ? 's' : '' }} anticipé{{ earlyReturnCount() > 1 ? 's' : '' }}</span>
+          }
+          @if (extensionCount() > 0) {
+            <span class="notif-badge">{{ extensionCount() }} prolongation{{ extensionCount() > 1 ? 's' : '' }}</span>
+          }
+        </div>
+      }
+    </div>
     <div class="header-actions">
       <select class="filter-select" (change)="onFiltreStatutChange($event)">
         <option value="tous">Tous les statuts</option>
@@ -29,12 +41,11 @@
       @for (group of groupedPendingLoans(); track group.groupId) {
         <div class="emprunt-card emprunt-groupe">
           <div class="card-top">
-            <div class="avatar groupe-avatar">📦</div>
+            <div class="avatar">{{ getGroupInitials(group) }}</div>
             <div class="card-info">
               <div class="card-title">
-                Emprunt groupé — {{ group.loans.length }} équipements
+                {{ group.borrowerName }} | Emprunt groupé | {{ group.loans.length }} équipements
               </div>
-              <div class="card-dates">{{ group.borrowerName }}</div>
               <div class="card-dates">
                 {{ formatDate(group.beginDate) }} au {{ formatDate(group.endDate) }}
               </div>
@@ -69,7 +80,7 @@
           <div class="card-top">
             <div class="avatar">{{ getBorrowerInitials(loan) }}</div>
             <div class="card-info">
-              <div class="card-title">{{ getBorrowerName(loan) }} — {{ loan.equipment.equipmentName }}</div>
+              <div class="card-title">{{ getBorrowerName(loan) }} | {{ loan.equipment.equipmentName }}</div>
               <div class="card-dates">{{ formatDate(loan.beginDate) }} au {{ formatDate(loan.endDate) }}</div>
             </div>
             <span class="badge badge-warning">En attente</span>
@@ -108,7 +119,7 @@
           @for (loan of activeLoans(); track loan.id) {
             <tr>
               <td>
-                <div class="cell-main">{{ getBorrowerName(loan) }} — {{ loan.equipment.equipmentName }}</div>
+                <div class="cell-main">{{ getBorrowerName(loan) }} | {{ loan.equipment.equipmentName }}</div>
               </td>
               <td>
                 <span [class.retard]="isRetard(loan)">
