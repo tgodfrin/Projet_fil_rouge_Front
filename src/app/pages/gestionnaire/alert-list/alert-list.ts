@@ -28,8 +28,26 @@ export class AlertListComponent {
   // All events (read + unread) — avoids incidents disappearing after markAsRead + navigation
   private events = signal<Event[]>([]);
 
-  // Local tracking for retard alerts seen in this session (no back entity for retards)
-  private readRetardIds = signal<Set<number>>(new Set());
+  // Retards vus — persistés dans sessionStorage pour survivre aux navigations
+  // (les retards n'ont pas d'entité back, leur état "lu" est géré uniquement côté front)
+  private readonly SESSION_KEY = 'readRetardIds';
+
+  private loadReadRetardIds(): Set<number> {
+    try {
+      const raw = sessionStorage.getItem(this.SESSION_KEY);
+      return raw ? new Set<number>(JSON.parse(raw)) : new Set<number>();
+    } catch {
+      return new Set<number>();
+    }
+  }
+
+  private saveReadRetardIds(ids: Set<number>): void {
+    try {
+      sessionStorage.setItem(this.SESSION_KEY, JSON.stringify([...ids]));
+    } catch { /* sessionStorage indisponible — on ignore */ }
+  }
+
+  private readRetardIds = signal<Set<number>>(this.loadReadRetardIds());
 
   constructor() {
     this.chargerEvents();
@@ -111,8 +129,12 @@ export class AlertListComponent {
 
   markAsRead(alert: Alert): void {
     if (alert.type === 'RETARD') {
-      // RETARD is front-only — track seen retard loan ids locally
-      this.readRetardIds.update(s => new Set([...s, alert.loanId]));
+      // RETARD is front-only — track seen retard loan ids in sessionStorage (survives navigation)
+      this.readRetardIds.update(s => {
+        const next = new Set([...s, alert.loanId]);
+        this.saveReadRetardIds(next);
+        return next;
+      });
       return;
     }
     this.eventService.markAsRead(alert.id).subscribe(() => {
