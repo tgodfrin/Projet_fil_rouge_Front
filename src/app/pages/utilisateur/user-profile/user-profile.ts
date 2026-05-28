@@ -129,7 +129,8 @@ export class UserProfileComponent implements OnInit {
     }
     const newEmail = this.emailForm.value.newEmail!;
     this.submitting.set(true);
-    this.userService.updateEmail(this.authService.currentUser()!.id, newEmail).subscribe({
+    // PUT /user/me/email — endpoint dédié aux utilisateurs non-gestionnaires
+    this.userService.updateMyEmail(newEmail).subscribe({
       next: () => {
         // Mise à jour optimiste du signal local
         this.userSig.update(u => u ? { ...u, email: newEmail } : u);
@@ -151,8 +152,8 @@ export class UserProfileComponent implements OnInit {
     const currentPassword = this.passwordForm.value.currentPassword!;
     const newPassword     = this.passwordForm.value.newPassword!;
     this.submitting.set(true);
-    // Use /user/:id/password — back vérifie que l'utilisateur ne modifie que son propre mot de passe
-    this.userService.updatePassword(this.authService.currentUser()!.id, currentPassword, newPassword).subscribe({
+    // PUT /user/me/password — endpoint dédié aux utilisateurs non-gestionnaires
+    this.userService.updateMyPassword(currentPassword, newPassword).subscribe({
       next: () => {
         this.successMessage.set('Mot de passe mis à jour.');
         setTimeout(() => this.closeEdit(), 1500);

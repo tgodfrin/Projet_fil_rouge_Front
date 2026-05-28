@@ -56,4 +56,11 @@ export class UserService {
       params: { oldPassword, password }
     });
   }
+
+  // PUT /user/me/email — allows collaborateurs to change their own email
+  updateMyEmail(email: string): Observable<void> {
+    return this.http.put<void>(`${this.apiUrl}/user/me/email`, null, {
+      params: { email }
+    });
+  }
 }
