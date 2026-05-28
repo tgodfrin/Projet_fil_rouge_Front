@@ -138,8 +138,10 @@ export class UserCatalogueComponent implements OnInit, OnDestroy {
     this.submittingMulti.set(true);
     this.multiError.set(null);
 
-    const begin = `${this.multiStartDate()}T08:00:00`;
-    const end   = `${this.multiEndDate()}T18:00:00`;
+    const begin   = `${this.multiStartDate()}T08:00:00`;
+    const end     = `${this.multiEndDate()}T18:00:00`;
+    // UUID partagé par tous les emprunts du groupe — permet leur regroupement côté back et front
+    const groupId = crypto.randomUUID();
 
     // Un POST /loan par équipement sélectionné — forkJoin attend que tous réussissent
     const requests = this.selectedIds().map(id =>
@@ -147,7 +149,8 @@ export class UserCatalogueComponent implements OnInit, OnDestroy {
         beginDate:   begin,
         endDate:     end,
         requesterId: user.id,
-        equipmentId: id
+        equipmentId: id,
+        groupId:     groupId
       })
     );
 
