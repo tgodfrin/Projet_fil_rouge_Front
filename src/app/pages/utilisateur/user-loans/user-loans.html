@@ -32,7 +32,6 @@
               <div class="loan-info">
                 <div class="loan-name">Emprunt groupé — {{ item.loans.length }} équipements</div>
                 <div class="loan-dates">{{ formatDateRange(item.beginDate, item.endDate) }}</div>
-                <div class="group-equipment-list">{{ item.equipmentNames.join(' · ') }}</div>
               </div>
               <span class="badge" [ngClass]="getStatusClass(item.statusType)">
                 <span class="badge-dot"></span>{{ getStatusLabel(item.statusType) }}

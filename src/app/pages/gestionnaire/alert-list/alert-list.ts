@@ -157,11 +157,23 @@ export class AlertListComponent {
   }
 
   markAllAsRead(): void {
-    const unreadEvents = this.allAlerts().filter(a => !a.read && a.type !== 'RETARD');
-    if (unreadEvents.length === 0) return;
+    const unread = this.allAlerts().filter(a => !a.read);
+    if (unread.length === 0) return;
+
+    // Marquer les retards (front-only) dans le sessionStorage
+    const retardIds = unread.filter(a => a.type === 'RETARD').map(a => a.loanId);
+    if (retardIds.length > 0) {
+      this.readRetardIds.update(s => {
+        const next = new Set([...s, ...retardIds]);
+        this.saveReadRetardIds(next);
+        return next;
+      });
+    }
+
+    // Marquer les events (back) via API
+    const unreadEvents = unread.filter(a => a.type !== 'RETARD');
     unreadEvents.forEach(a => {
       this.eventService.markAsRead(a.id).subscribe(() => {
-        // Mise à jour locale par événement — la carte reste visible
         this.events.update(events =>
           events.map(e => e.id === a.id ? { ...e, readingDate: new Date().toISOString() } : e)
         );

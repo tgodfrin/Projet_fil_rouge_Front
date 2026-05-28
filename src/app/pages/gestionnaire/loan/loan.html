@@ -2,19 +2,7 @@
 
   <!-- En-tête -->
   <div class="page-header">
-    <div class="page-title-block">
-      <div class="page-title">Gestion des emprunts</div>
-      @if (earlyReturnCount() > 0 || extensionCount() > 0) {
-        <div class="notification-badges">
-          @if (earlyReturnCount() > 0) {
-            <span class="notif-badge">{{ earlyReturnCount() }} retour{{ earlyReturnCount() > 1 ? 's' : '' }} anticipé{{ earlyReturnCount() > 1 ? 's' : '' }}</span>
-          }
-          @if (extensionCount() > 0) {
-            <span class="notif-badge">{{ extensionCount() }} prolongation{{ extensionCount() > 1 ? 's' : '' }}</span>
-          }
-        </div>
-      }
-    </div>
+    <div class="page-title">Gestion des emprunts</div>
     <div class="header-actions">
       <select class="filter-select" (change)="onFiltreStatutChange($event)">
         <option value="tous">Tous les statuts</option>

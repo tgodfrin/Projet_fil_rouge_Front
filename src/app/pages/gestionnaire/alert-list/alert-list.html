@@ -43,10 +43,10 @@
       Incidents <span class="tab-count danger">{{ panneCount() }}</span>
     </button>
     <button class="tab" [class.active]="activeTab() === 'EARLY_RETURN'" (click)="setTab('EARLY_RETURN')">
-      Retours anticipés <span class="tab-count">{{ earlyReturnCount() }}</span>
+      Retours anticipés <span class="tab-count blue">{{ earlyReturnCount() }}</span>
     </button>
     <button class="tab" [class.active]="activeTab() === 'EXTENSION'" (click)="setTab('EXTENSION')">
-      Prolongations <span class="tab-count">{{ extensionCount() }}</span>
+      Prolongations <span class="tab-count blue">{{ extensionCount() }}</span>
     </button>
   </div>
 

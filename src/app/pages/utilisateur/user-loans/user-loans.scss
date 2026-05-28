@@ -60,11 +60,8 @@
   flex-direction: column;
   gap: 0.75rem;
 
-  @media (min-width: 900px) {
-    display: grid;
-    grid-template-columns: 1fr 1fr;
+  @media (min-width: 769px) {
     gap: 1rem;
-    align-items: start;
   }
 }
 

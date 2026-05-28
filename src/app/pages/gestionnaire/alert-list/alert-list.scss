@@ -152,6 +152,7 @@
 
   &.warning { background: var(--warning-bg); color: var(--warning-text); }
   &.danger  { background: var(--danger-bg);  color: var(--danger-text);  }
+  &.blue    { background: #1565c0;           color: white;               }
 }
 
 // ── Liste alertes ─────────────────────────────────────
@@ -191,11 +192,11 @@
     box-shadow: none;
   }
 
-  // Retard vu — orange clair
+  // Retard vu — orange très clair
   &.retard-read {
-    background: #fce9d8;
-    border-left: 4px solid #fb8c00;
-    opacity: 0.85;
+    background: #fff8f0;
+    border-left: 4px solid #ffb74d;
+    opacity: 0.9;
     box-shadow: none;
   }
 

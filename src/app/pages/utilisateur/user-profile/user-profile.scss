@@ -182,6 +182,12 @@
   }
 }
 
+.form-error {
+  font-size: 0.68rem;
+  color: var(--danger-text);
+  font-weight: 500;
+}
+
 .form-input {
   border: 1px solid var(--grey-200);
   border-radius: var(--r-sm);

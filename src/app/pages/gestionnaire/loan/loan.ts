@@ -3,7 +3,6 @@ import { CommonModule } from '@angular/common';
 import { Router } from '@angular/router';
 import { ExportComponent } from '../../../shared/export/export';
 import { LoanService } from '../../../core/services/loan.service';
-import { EventService } from '../../../core/services/event.service';
 import { Loan, StatusLoanType } from '../../../core/models/loan.model';
 
 // RETARD n'est pas un statut en base — calculé côté front : VALID + endDate < now
@@ -28,9 +27,8 @@ interface LoanGroup {
 })
 export class LoanComponent {
 
-  private router        = inject(Router);
-  private loanService   = inject(LoanService);
-  private eventService  = inject(EventService);
+  private router       = inject(Router);
+  private loanService  = inject(LoanService);
 
   filtreStatut = signal<string>('tous');
   filtreTemps  = signal<string>('tout');
@@ -38,23 +36,11 @@ export class LoanComponent {
   // Signal mutable — peuplé via HTTP et mis à jour après chaque action
   loans = signal<Loan[]>([]);
 
-  // Compteurs retours anticipés / prolongations (depuis les events)
-  private events = signal<{ type: string }[]>([]);
-
-  earlyReturnCount = computed(() =>
-    this.events().filter(e => e.type === 'EARLY_RETURN').length
-  );
-
-  extensionCount = computed(() =>
-    this.events().filter(e => e.type === 'EXTENSION').length
-  );
-
   // Tracks which group detail panel is open (null = aucun)
   openGroupId = signal<string | null>(null);
 
   constructor() {
     this.chargerEmprunts();
-    this.eventService.getAll().subscribe(data => this.events.set(data));
   }
 
   private chargerEmprunts(): void {
