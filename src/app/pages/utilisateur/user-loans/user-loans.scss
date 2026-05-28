@@ -317,10 +317,6 @@
 // ── Carte groupe ──────────────────────────────────────
 .loan-card-group {
   border-left: 3px solid var(--primary);
-  // Occupe toute la largeur de la grille sur desktop
-  @media (min-width: 900px) {
-    grid-column: 1 / -1;
-  }
 }
 
 .group-icon {
