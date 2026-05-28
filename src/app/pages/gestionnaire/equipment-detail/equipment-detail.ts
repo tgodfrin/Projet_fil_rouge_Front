@@ -1,7 +1,7 @@
 import { Component, inject, signal } from '@angular/core';
 import { CommonModule, Location } from '@angular/common';
 import { ActivatedRoute, Router } from '@angular/router';
-import { forkJoin, of } from 'rxjs';
+import { forkJoin, Observable, of } from 'rxjs';
 
 import { EquipmentService } from '../../../core/services/equipment.service';
 import { EquipmentFamilyService } from '../../../core/services/equipment-family.service';
@@ -137,7 +137,7 @@ export class EquipmentDetailComponent {
       // Nouvelles caractéristiques (sans id)
       const toCreate = output.caracteristiques.filter(r => !r.id && r.characteristicId !== null);
 
-      const ops = [
+      const ops: Observable<any>[] = [
         ...toDelete.map(id => this.characteristicService.delete(id)),
         ...toUpdate.map(r => this.characteristicService.update(r.id!, {
           value:            r.value,
@@ -151,7 +151,8 @@ export class EquipmentDetailComponent {
         })),
       ];
 
-      (ops.length > 0 ? forkJoin(ops) : of(null)).subscribe(() => {
+      const source$: Observable<any> = ops.length > 0 ? forkJoin(ops) : of(null);
+      source$.subscribe(() => {
         this.loadEquipment();
         this.loadCharacteristics();
         this.modalEditOpen.set(false);

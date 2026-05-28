@@ -7,7 +7,8 @@ export const authInterceptor: HttpInterceptorFn = (req, next) => {
   const token = authService.getToken();
 
   // Ne pas ajouter le header sur /login (pas encore de token à ce stade)
-  if (token && !req.url.endsWith('/login')) {
+  // N'injecter le token que si la requête n'a pas déjà un header Authorization
+  if (token && !req.url.endsWith('/login') && !req.headers.has('Authorization')) {
     const authReq = req.clone({
       setHeaders: { Authorization: `Bearer ${token}` }
     });
