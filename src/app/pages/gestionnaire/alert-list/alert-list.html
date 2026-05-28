@@ -60,8 +60,9 @@
           class="alert-card"
           [class.retard]="alert.type === 'RETARD'"
           [class.retard-read]="alert.type === 'RETARD' && alert.read"
-          [class.incident]="alert.type === 'BREAKDOWN' || alert.type === 'EARLY_RETURN' || alert.type === 'EXTENSION'"
-          [class.read]="alert.read">
+          [class.incident]="alert.type === 'BREAKDOWN'"
+          [class.notification]="alert.type === 'EARLY_RETURN' || alert.type === 'EXTENSION'"
+          [class.read]="alert.read && alert.type !== 'RETARD'">
 
           <div class="alert-body">
             <div class="alert-title">
@@ -76,7 +77,8 @@
           <div class="alert-right">
             <span class="badge"
               [class.badge-warning]="alert.type === 'RETARD'"
-              [class.badge-danger]="alert.type !== 'RETARD'">
+              [class.badge-danger]="alert.type === 'BREAKDOWN'"
+              [class.badge-info]="alert.type === 'EARLY_RETURN' || alert.type === 'EXTENSION'">
               {{ getAlertLabel(alert.type) }}
             </span>
             @if (!alert.read) {
