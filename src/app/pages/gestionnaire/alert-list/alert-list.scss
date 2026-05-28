@@ -170,11 +170,11 @@
   border-left: 4px solid transparent;
   transition: opacity 0.2s;
 
-  // Unread — flashy style with shadow
+  // Retard non vu — orange foncé
   &.retard:not(.read) {
-    background: var(--warning-bg);
-    border-left: 4px solid var(--warning);
-    box-shadow: 0 2px 8px rgba(255, 160, 0, 0.2);
+    background: #fff3e0;
+    border-left: 4px solid #e65100;
+    box-shadow: 0 2px 8px rgba(230, 81, 0, 0.2);
   }
 
   &.incident:not(.read) {
@@ -191,11 +191,11 @@
     box-shadow: none;
   }
 
-  // Retard vu — jaune clair pour distinguer du "retard non vu" et du "lu neutre"
+  // Retard vu — orange clair
   &.retard-read {
-    background: #fffde7;
-    border-left: 4px solid #f9a825;
-    opacity: 0.8;
+    background: #fce9d8;
+    border-left: 4px solid #fb8c00;
+    opacity: 0.85;
     box-shadow: none;
   }
 
@@ -231,7 +231,7 @@
   font-size: 0.875rem;
   font-weight: 700;
 
-  .retard & { color: var(--warning-text); }
+  .retard & { color: #e65100; }
   .incident & { color: var(--danger-text); }
   .notification & { color: #1565c0; }
 }
@@ -240,7 +240,7 @@
   font-size: 0.8rem;
   opacity: 0.85;
 
-  .retard & { color: var(--warning-text); }
+  .retard & { color: #e65100; }
   .incident & { color: var(--danger-text); }
   .notification & { color: #1565c0; }
 }
@@ -250,7 +250,7 @@
   opacity: 0.65;
   margin-top: 0.1rem;
 
-  .retard & { color: var(--warning-text); }
+  .retard & { color: #e65100; }
   .incident & { color: var(--danger-text); }
   .notification & { color: #1565c0; }
 }
