@@ -1,15 +1,12 @@
 <div class="profile-page">
 
-  <!-- Avatar + infos -->
+  <!-- Avatar + nom -->
   <div class="profile-header">
     <div class="avatar">{{ initials() }}</div>
-    @if (user()) {
-      <div class="profile-info">
-        <div class="profile-name">{{ user()!.name }} {{ user()!.lastname }}</div>
-        <div class="profile-role">Gestionnaire</div>
-        <div class="profile-email">{{ user()!.email }}</div>
-      </div>
-    }
+    <div class="profile-identity">
+      <div class="profile-name">{{ user()?.name }} {{ user()?.lastname }}</div>
+      <span class="role-badge">Gestionnaire</span>
+    </div>
   </div>
 
   <!-- Informations -->
@@ -23,73 +20,83 @@
       <span class="info-key">Rôle</span>
       <span class="info-val">Gestionnaire</span>
     </div>
+    <div class="info-row">
+      <span class="info-key">Membre depuis</span>
+      <span class="info-val">{{ user()?.createdAt ? formatDate(user()!.createdAt) : '' }}</span>
+    </div>
   </div>
 
-  <!-- Modifier email -->
-  <div class="edit-section">
-    <div class="edit-header" (click)="toggleEdit('email')">
-      <span>Modifier l'email</span>
-      <span class="chevron">{{ activeEdit() === 'email' ? '▲' : '▼' }}</span>
-    </div>
+  <!-- Actions -->
+  <div class="section-label">Compte</div>
+  <div class="actions-card">
+
+    <button class="action-row" (click)="toggleEdit('email')">
+      <span>✉️ Modifier l'email</span>
+      <span class="arrow">{{ activeEdit() === 'email' ? '˅' : '›' }}</span>
+    </button>
     @if (activeEdit() === 'email') {
-      <form [formGroup]="emailForm" (ngSubmit)="submitEmail()" class="edit-form">
+      <form class="edit-form edit-form-incard" [formGroup]="emailForm" (ngSubmit)="submitEmail()">
         <div class="form-group">
           <label>Nouvel email</label>
-          <input type="email" formControlName="newEmail" placeholder="nouveau@email.com" />
+          <input type="email" class="form-input" formControlName="newEmail" placeholder="nouveau@email.com" />
         </div>
         <div class="form-group">
           <label>Confirmer l'email</label>
-          <input type="email" formControlName="confirmEmail" placeholder="confirmer l'email" />
+          <input type="email" class="form-input" formControlName="confirmEmail" placeholder="nouveau@email.com" />
         </div>
         @if (successMessage()) {
-          <div class="msg-success">{{ successMessage() }}</div>
+          <div class="msg msg-success">{{ successMessage() }}</div>
         }
         @if (errorMessage()) {
-          <div class="msg-error">{{ errorMessage() }}</div>
+          <div class="msg msg-error">{{ errorMessage() }}</div>
         }
         <div class="form-actions">
-          <button type="button" class="btn-cancel" (click)="closeEdit()">Annuler</button>
-          <button type="submit" class="btn-save" [disabled]="submitting()">Enregistrer</button>
+          <button class="btn-save" type="submit" [disabled]="submitting()">
+            {{ submitting() ? 'Envoi...' : 'Enregistrer' }}
+          </button>
+          <button class="btn-cancel" type="button" (click)="closeEdit()">Annuler</button>
         </div>
       </form>
     }
-  </div>
 
-  <!-- Modifier mot de passe -->
-  <div class="edit-section">
-    <div class="edit-header" (click)="toggleEdit('password')">
-      <span>Modifier le mot de passe</span>
-      <span class="chevron">{{ activeEdit() === 'password' ? '▲' : '▼' }}</span>
-    </div>
+    <button class="action-row" (click)="toggleEdit('password')">
+      <span>🔑 Changer le mot de passe</span>
+      <span class="arrow">{{ activeEdit() === 'password' ? '˅' : '›' }}</span>
+    </button>
     @if (activeEdit() === 'password') {
-      <form [formGroup]="passwordForm" (ngSubmit)="submitPassword()" class="edit-form">
+      <form class="edit-form edit-form-incard" [formGroup]="passwordForm" (ngSubmit)="submitPassword()">
         <div class="form-group">
           <label>Mot de passe actuel</label>
-          <input type="password" formControlName="currentPassword" />
+          <input type="password" class="form-input" formControlName="currentPassword" placeholder="••••••••" />
         </div>
         <div class="form-group">
           <label>Nouveau mot de passe</label>
-          <input type="password" formControlName="newPassword" />
+          <input type="password" class="form-input" formControlName="newPassword" placeholder="••••••••" />
         </div>
         <div class="form-group">
           <label>Confirmer le mot de passe</label>
-          <input type="password" formControlName="confirmPassword" />
+          <input type="password" class="form-input" formControlName="confirmPassword" placeholder="••••••••" />
         </div>
         @if (successMessage()) {
-          <div class="msg-success">{{ successMessage() }}</div>
+          <div class="msg msg-success">{{ successMessage() }}</div>
         }
         @if (errorMessage()) {
-          <div class="msg-error">{{ errorMessage() }}</div>
+          <div class="msg msg-error">{{ errorMessage() }}</div>
         }
         <div class="form-actions">
-          <button type="button" class="btn-cancel" (click)="closeEdit()">Annuler</button>
-          <button type="submit" class="btn-save" [disabled]="submitting()">Enregistrer</button>
+          <button class="btn-save" type="submit" [disabled]="submitting()">
+            {{ submitting() ? 'Envoi...' : 'Enregistrer' }}
+          </button>
+          <button class="btn-cancel" type="button" (click)="closeEdit()">Annuler</button>
         </div>
       </form>
     }
-  </div>
 
-  <!-- Déconnexion -->
-  <button class="btn-logout" (click)="logout()">Se déconnecter</button>
+    <button class="action-row danger" (click)="logout()">
+      <span>🚪 Se déconnecter</span>
+      <span class="arrow">›</span>
+    </button>
+
+  </div>
 
 </div>

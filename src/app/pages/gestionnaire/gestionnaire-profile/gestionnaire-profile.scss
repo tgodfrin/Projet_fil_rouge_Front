@@ -36,39 +36,69 @@
   flex-shrink: 0;
 }
 
-.profile-name  { font-size: 1rem; font-weight: 700; color: var(--grey-900); }
-.profile-role  { font-size: 0.8rem; color: var(--primary); font-weight: 600; margin-top: 2px; }
-.profile-email { font-size: 0.8rem; color: var(--grey-400); margin-top: 2px; }
+.profile-identity {
+  display: flex;
+  flex-direction: column;
+  gap: 0.3rem;
+}
 
-// ── Sections éditables ────────────────────────────────
-.edit-section {
+.profile-name { font-size: 1rem; font-weight: 700; color: var(--grey-900); }
+
+.role-badge {
+  display: inline-block;
+  padding: 0.2rem 0.6rem;
+  border-radius: 999px;
+  background: var(--primary-light, #e8f0fe);
+  color: var(--primary);
+  font-size: 0.75rem;
+  font-weight: 600;
+  width: fit-content;
+}
+
+// ── Actions card (design unifié avec user-profile) ────
+.actions-card {
   background: white;
   border-radius: var(--r-md);
   box-shadow: var(--shadow-sm);
+  border: 1px solid var(--border, #e5e7eb);
   overflow: hidden;
 }
 
-.edit-header {
+.action-row {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  padding: 1rem 1.25rem;
-  cursor: pointer;
+  width: 100%;
+  padding: 0.9rem 1.25rem;
+  background: transparent;
+  border: none;
+  border-bottom: 1px solid var(--border, #e5e7eb);
   font-size: 0.875rem;
-  font-weight: 600;
+  font-weight: 500;
   color: var(--grey-800);
-  user-select: none;
+  cursor: pointer;
+  text-align: left;
+  transition: background 0.15s;
 
+  &:last-child { border-bottom: none; }
   &:hover { background: var(--grey-50); }
+
+  &.danger { color: var(--danger); }
 }
 
-.chevron { font-size: 0.7rem; color: var(--grey-400); }
+.arrow {
+  font-size: 1rem;
+  color: var(--grey-400);
+}
 
 .edit-form {
-  padding: 0 1.25rem 1.25rem;
   display: flex;
   flex-direction: column;
   gap: 0.875rem;
+}
+
+.edit-form-incard {
+  padding: 1rem 1.25rem 1.25rem;
   border-top: 1px solid var(--grey-100);
 }
 
@@ -82,18 +112,20 @@
     font-weight: 600;
     color: var(--grey-600);
   }
+}
 
-  input {
-    height: 36px;
-    padding: 0 0.75rem;
-    border: 1px solid var(--grey-200);
-    border-radius: var(--r-sm);
-    font-size: 0.875rem;
-    outline: none;
-    transition: border-color 0.2s;
+.form-input {
+  height: 36px;
+  padding: 0 0.75rem;
+  border: 1px solid var(--grey-200);
+  border-radius: var(--r-sm);
+  font-size: 0.875rem;
+  outline: none;
+  transition: border-color 0.2s;
+  width: 100%;
+  box-sizing: border-box;
 
-    &:focus { border-color: var(--primary); }
-  }
+  &:focus { border-color: var(--primary); }
 }
 
 .form-actions {
@@ -131,36 +163,20 @@
 }
 
 // ── Messages ──────────────────────────────────────────
-.msg-success {
+.msg {
   padding: 0.5rem 0.75rem;
-  background: var(--success-bg, #f0fdf4);
-  color: var(--success-text, #166534);
   border-radius: var(--r-sm);
   font-size: 0.82rem;
-}
 
-.msg-error {
-  padding: 0.5rem 0.75rem;
-  background: var(--danger-bg);
-  color: var(--danger-text);
-  border-radius: var(--r-sm);
-  font-size: 0.82rem;
-}
+  &.msg-success {
+    background: var(--success-bg, #f0fdf4);
+    color: var(--success-text, #166534);
+  }
 
-// ── Déconnexion ───────────────────────────────────────
-.btn-logout {
-  align-self: flex-start;
-  height: 36px;
-  padding: 0 1.25rem;
-  background: white;
-  border: 1px solid var(--danger);
-  border-radius: var(--r-sm);
-  font-size: 0.82rem;
-  color: var(--danger);
-  cursor: pointer;
-  font-weight: 600;
-
-  &:hover { background: var(--danger-bg); }
+  &.msg-error {
+    background: var(--danger-bg);
+    color: var(--danger-text);
+  }
 }
 
 // ── Section Informations ───────────────────────────────

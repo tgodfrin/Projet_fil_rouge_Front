@@ -151,8 +151,8 @@ export class UserProfileComponent implements OnInit {
     const currentPassword = this.passwordForm.value.currentPassword!;
     const newPassword     = this.passwordForm.value.newPassword!;
     this.submitting.set(true);
-    // Use /user/me/password so collaborateurs can change their own password without gestionnaire role
-    this.userService.updateMyPassword(currentPassword, newPassword).subscribe({
+    // Use /user/:id/password — back vérifie que l'utilisateur ne modifie que son propre mot de passe
+    this.userService.updatePassword(this.authService.currentUser()!.id, currentPassword, newPassword).subscribe({
       next: () => {
         this.successMessage.set('Mot de passe mis à jour.');
         setTimeout(() => this.closeEdit(), 1500);

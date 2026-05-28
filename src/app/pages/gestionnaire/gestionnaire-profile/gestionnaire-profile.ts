@@ -139,4 +139,10 @@ export class GestionnaireProfileComponent implements OnInit {
     this.authService.logout();
     this.router.navigate(['/login']);
   }
+
+  formatDate(dateStr: string): string {
+    return new Date(dateStr).toLocaleDateString('fr-FR', {
+      day: '2-digit', month: 'long', year: 'numeric'
+    });
+  }
 }
