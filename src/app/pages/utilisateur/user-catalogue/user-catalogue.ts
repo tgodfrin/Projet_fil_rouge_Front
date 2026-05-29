@@ -117,6 +117,10 @@ export class UserCatalogueComponent implements OnInit {
     return this.selectedIds().includes(id);
   }
 
+  goToDetail(id: number): void {
+    this.router.navigate(['/utilisateur/catalogue', id]);
+  }
+
   // Navigue vers la page de récapitulatif en passant les données via navigation state
   goToSummary(): void {
     if (!this.canSubmit()) return;

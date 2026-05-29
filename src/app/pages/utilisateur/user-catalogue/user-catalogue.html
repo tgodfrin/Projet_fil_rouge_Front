@@ -74,6 +74,7 @@
             <div class="item-name">{{ item.equipmentName }}</div>
             <div class="item-ref">{{ item.reference }}</div>
           </div>
+          <button class="btn-info" (click)="$event.stopPropagation(); goToDetail(item.id)" title="Voir les infos">ⓘ</button>
         </div>
       }
     </div>

@@ -158,6 +158,11 @@
     background: var(--success-bg);
     color: var(--success-text);
   }
+
+  &.badge-warning {
+    background: var(--warning-bg);
+    color: var(--warning-text);
+  }
 }
 
 .badge-dot {

@@ -231,6 +231,28 @@
   margin-top: 2px;
 }
 
+// ── Bouton info ───────────────────────────────────────
+.btn-info {
+  flex-shrink: 0;
+  width: 30px;
+  height: 30px;
+  border-radius: 50%;
+  border: 1.5px solid var(--grey-200);
+  background: white;
+  color: var(--primary);
+  font-size: 1rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: all 0.2s;
+
+  &:hover {
+    background: var(--primary-xlight);
+    border-color: var(--primary);
+  }
+}
+
 // ── Barre flottante ───────────────────────────────────
 .multi-bar {
   position: fixed;

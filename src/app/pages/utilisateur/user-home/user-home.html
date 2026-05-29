@@ -38,7 +38,7 @@
               <div class="loan-name">{{ loan.equipment.equipmentName }}</div>
               <div class="loan-dates">{{ formatDateRange(loan.beginDate, loan.endDate) }}</div>
             </div>
-            <span class="badge" [class.badge-danger]="isRetard(loan)" [class.badge-success]="!isRetard(loan)">
+            <span class="badge" [class.badge-warning]="isRetard(loan)" [class.badge-success]="!isRetard(loan)">
               <span class="badge-dot"></span>{{ isRetard(loan) ? 'En retard' : 'Actif' }}
             </span>
           </div>
