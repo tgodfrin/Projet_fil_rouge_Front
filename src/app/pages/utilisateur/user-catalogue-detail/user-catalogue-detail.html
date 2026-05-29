@@ -66,9 +66,9 @@
       </div>
     }
 
-    <!-- ACTION EMPRUNT -->
+    <!-- ACTION EMPRUNT : redirige vers le catalogue pour choisir les dates -->
     @if (equipement()!.status === 'DISPONIBLE') {
-      <a class="btn-borrow" [routerLink]="['/utilisateur/nouvelle-demande', equipement()!.id]">
+      <a class="btn-borrow" [routerLink]="['/utilisateur/catalogue']">
         Emprunter cet équipement
       </a>
     } @else {
