@@ -29,6 +29,7 @@ export class UserCatalogueComponent implements OnInit, OnDestroy {
   private families = toSignal(this.familyService.getAll(), { initialValue: [] as EquipmentFamily[] });
 
   equipments     = signal<Equipment[]>([]);
+  loading        = signal(true);
   searchTerm     = signal('');
   activeCategory = signal<string>('Tous');
   activeFamilyId = signal<number | null>(null);
@@ -48,11 +49,14 @@ export class UserCatalogueComponent implements OnInit, OnDestroy {
   categories = computed(() => ['Tous', ...this.families().map(f => f.nameEquipmentFamily)]);
 
   ngOnInit(): void {
-    // Chargement initial
-    this.equipmentService.getAll().subscribe(data => this.equipments.set(data));
+    // Initial load — loading flag cleared once data arrives
+    this.equipmentService.getAll().subscribe({
+      next:  (data) => { this.equipments.set(data); this.loading.set(false); },
+      error: ()     => this.loading.set(false)
+    });
 
-    // Recherche serveur avec debounce 300ms
-    // Si vide → rechargement selon la famille active
+    // Server-side search with 300ms debounce
+    // If empty → reload based on active family
     this.sub = this.searchSubject.pipe(
       debounceTime(300),
       distinctUntilChanged(),

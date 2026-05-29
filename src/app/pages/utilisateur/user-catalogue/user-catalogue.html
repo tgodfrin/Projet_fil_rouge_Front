@@ -53,7 +53,9 @@
   }
 
   <!-- Liste -->
-  @if (equipments().length === 0) {
+  @if (loading()) {
+    <div class="empty-state">Chargement…</div>
+  } @else if (equipments().length === 0) {
     <div class="empty-state">Aucun matériel pour ce filtre.</div>
   } @else {
     <div class="items-list">
@@ -75,7 +77,6 @@
             <div class="item-name">{{ item.equipmentName }}</div>
             <div class="item-ref">{{ item.reference }}</div>
           </div>
-<<<<<<< Updated upstream
           <div class="item-right">
             <span class="badge" [ngClass]="getStatusClass(item.status)">
               <span class="badge-dot"></span>{{ getStatusLabel(item.status) }}
@@ -90,9 +91,6 @@
               }
             }
           </div>
-=======
-          <button class="btn-info" (click)="$event.stopPropagation(); goToDetail(item.id)">Info</button>
->>>>>>> Stashed changes
         </div>
       }
     </div>
