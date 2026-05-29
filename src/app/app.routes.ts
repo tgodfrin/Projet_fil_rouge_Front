@@ -19,7 +19,7 @@ import { UserCatalogueDetailComponent } from './pages/utilisateur/user-catalogue
 import { UserLoansComponent } from './pages/utilisateur/user-loans/user-loans';
 import { UserProfileComponent } from './pages/utilisateur/user-profile/user-profile';
 import { UserIncidentComponent } from './pages/utilisateur/user-incident/user-incident';
-import { UserLoanRequestComponent } from './pages/utilisateur/user-loan-request/user-loan-request';
+import { UserLoanSummaryComponent } from './pages/utilisateur/user-loan-summary/user-loan-summary';
 import { UserConfirmationComponent } from './pages/utilisateur/user-confirmation/user-confirmation';
 import { LoginComponent } from './pages/login/login';
 import { NotFoundComponent } from './pages/not-found/not-found';
@@ -62,7 +62,7 @@ export const routes: Routes = [
       { path: 'mes-emprunts', component: UserLoansComponent },
       { path: 'profil', component: UserProfileComponent },
       { path: 'signalement/:id', component: UserIncidentComponent },
-      { path: 'nouvelle-demande/:id', component: UserLoanRequestComponent },
+      { path: 'recapitulatif', component: UserLoanSummaryComponent },
       { path: 'confirmation', component: UserConfirmationComponent },
     ]
   },

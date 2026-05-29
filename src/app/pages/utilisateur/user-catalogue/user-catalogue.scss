@@ -28,30 +28,8 @@
   @media (min-width: 769px) { font-size: 1.4rem; }
 }
 
-.btn-multi {
-  height: 34px;
-  padding: 0 1rem;
-  background: white;
-  border: 1.5px solid var(--primary);
-  border-radius: var(--r-sm);
-  font-size: 0.8rem;
-  font-weight: 600;
-  color: var(--primary);
-  cursor: pointer;
-  font-family: var(--font);
-  transition: all 0.2s;
-
-  &.active {
-    background: var(--danger-bg);
-    border-color: var(--danger-text);
-    color: var(--danger-text);
-  }
-
-  &:hover { opacity: 0.85; }
-}
-
-// ── Panneau multi ─────────────────────────────────────
-.multi-panel {
+// ── Date picker permanent ─────────────────────────────
+.date-panel {
   background: var(--primary-xlight);
   border: 1px solid var(--primary-light);
   border-radius: var(--r-md);
@@ -61,13 +39,13 @@
   gap: 0.75rem;
 }
 
-.multi-panel-title {
+.date-panel-title {
   font-size: 0.78rem;
   font-weight: 600;
   color: var(--primary-dark);
 }
 
-.multi-dates {
+.date-grid {
   display: grid;
   grid-template-columns: 1fr 1fr;
   gap: 0.625rem;
@@ -163,6 +141,14 @@
   &.active { background: var(--primary); border-color: var(--primary); color: white; }
 }
 
+// ── Label disponibilité ───────────────────────────────
+.availability-label {
+  font-size: 0.78rem;
+  font-weight: 500;
+  color: var(--grey-500);
+  padding: 0 0.25rem;
+}
+
 // ── Liste ─────────────────────────────────────────────
 .items-list {
   display: flex;
@@ -183,7 +169,10 @@
 
   &:hover { box-shadow: var(--shadow-md); }
 
-  &.selectable { cursor: pointer; }
+  &.selectable {
+    cursor: pointer;
+    &:hover { border-color: var(--primary-light); }
+  }
 
   &.selected {
     border-color: var(--primary);
@@ -242,66 +231,6 @@
   margin-top: 2px;
 }
 
-.item-right {
-  display: flex;
-  flex-direction: column;
-  align-items: flex-end;
-  gap: 0.4rem;
-  flex-shrink: 0;
-}
-
-// ── Badges ────────────────────────────────────────────
-.badge {
-  display: inline-flex;
-  align-items: center;
-  gap: 4px;
-  padding: 2px 8px;
-  border-radius: 999px;
-  font-size: 0.7rem;
-  font-weight: 700;
-
-  &.badge-success { background: var(--success-bg); color: var(--success-text); }
-  &.badge-warning { background: var(--warning-bg); color: var(--warning-text); }
-  &.badge-danger  { background: var(--danger-bg);  color: var(--danger-text);  }
-}
-
-.badge-dot {
-  width: 5px;
-  height: 5px;
-  border-radius: 50%;
-  background: currentColor;
-}
-
-// ── Boutons ───────────────────────────────────────────
-.btn-borrow {
-  padding: 0.25rem 0.625rem;
-  background: var(--primary);
-  color: white;
-  border: none;
-  border-radius: var(--r-sm);
-  font-size: 0.72rem;
-  font-weight: 600;
-  cursor: pointer;
-  font-family: var(--font);
-  text-decoration: none;
-  transition: opacity 0.2s;
-
-  &:hover { opacity: 0.85; }
-}
-
-.btn-unavailable {
-  padding: 0.25rem 0.625rem;
-  background: var(--grey-100);
-  color: var(--grey-400);
-  border: none;
-  border-radius: var(--r-sm);
-  font-size: 0.72rem;
-  font-weight: 600;
-  cursor: not-allowed;
-  font-family: var(--font);
-  opacity: 0.6;
-}
-
 // ── Barre flottante ───────────────────────────────────
 .multi-bar {
   position: fixed;
@@ -342,8 +271,7 @@
   font-family: var(--font);
   transition: opacity 0.2s;
 
-  &:hover:not(:disabled) { opacity: 0.85; }
-  &:disabled { opacity: 0.4; cursor: not-allowed; }
+  &:hover { opacity: 0.85; }
 }
 
 // ── Empty state ───────────────────────────────────────

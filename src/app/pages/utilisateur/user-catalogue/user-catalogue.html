@@ -2,30 +2,25 @@
 
   <div class="page-header">
     <div class="page-title">Catalogue</div>
-    <button class="btn-multi" [class.active]="multiMode()" (click)="toggleMultiMode()">
-      @if (multiMode()) { ✕ Annuler } @else { + Emprunt groupé }
-    </button>
   </div>
 
-  <!-- Panneau multi-sélection -->
-  @if (multiMode()) {
-    <div class="multi-panel">
-      <div class="multi-panel-title">Sélectionne une période et les matériels souhaités</div>
-      <div class="multi-dates">
-        <div class="form-group">
-          <label class="form-label">Date de début</label>
-          <input class="form-input" type="date" [min]="getTodayString()" (change)="onStartDate($event)" />
-        </div>
-        <div class="form-group">
-          <label class="form-label">Date de fin</label>
-          <input class="form-input" type="date" [min]="multiStartDate() || getTodayString()" (change)="onEndDate($event)" />
-        </div>
+  <!-- Date picker permanent -->
+  <div class="date-panel">
+    <div class="date-panel-title">Choisissez une période d'emprunt</div>
+    <div class="date-grid">
+      <div class="form-group">
+        <label class="form-label">Date de début</label>
+        <input class="form-input" type="date" [min]="getTodayString()" [value]="startDate()" (change)="onStartDate($event)" />
       </div>
-      @if (duration() > 0) {
-        <div class="info-banner">Durée : {{ duration() }} jour(s)</div>
-      }
+      <div class="form-group">
+        <label class="form-label">Date de fin</label>
+        <input class="form-input" type="date" [min]="startDate() || getTodayString()" [value]="endDate()" (change)="onEndDate($event)" />
+      </div>
     </div>
-  }
+    @if (datesSet()) {
+      <div class="info-banner">Durée : {{ duration() }} jour(s)</div>
+    }
+  </div>
 
   <!-- Recherche -->
   <div class="search-bar">
@@ -47,24 +42,28 @@
     }
   </div>
 
-  <!-- Erreur multi-emprunt -->
-  @if (multiError()) {
-    <div class="error-banner">⛔ {{ multiError() }}</div>
-  }
+  <!-- Label disponibilité -->
+  <div class="availability-label">
+    @if (datesSet()) {
+      {{ equipments().length }} équipement(s) disponible(s) du {{ formatDate(startDate()) }} au {{ formatDate(endDate()) }}
+    } @else {
+      Équipements disponibles actuellement
+    }
+  </div>
 
   <!-- Liste -->
   @if (equipments().length === 0) {
-    <div class="empty-state">Aucun matériel pour ce filtre.</div>
+    <div class="empty-state">Aucun équipement disponible.</div>
   } @else {
     <div class="items-list">
       @for (item of equipments(); track item.id) {
         <div class="item-card"
              [class.selected]="isSelected(item.id)"
-             [class.selectable]="multiMode() && item.status === 'DISPONIBLE'"
-             (click)="multiMode() ? (item.status === 'DISPONIBLE' ? toggleSelect(item) : null) : goToDetail(item.id)">
+             [class.selectable]="datesSet()"
+             (click)="datesSet() ? toggleSelect(item) : null">
 
-          <!-- Checkbox multi-mode -->
-          @if (multiMode()) {
+          <!-- Checkbox visible uniquement si les dates sont saisies -->
+          @if (datesSet()) {
             <div class="item-checkbox" [class.checked]="isSelected(item.id)">
               @if (isSelected(item.id)) { ✓ }
             </div>
@@ -75,31 +74,17 @@
             <div class="item-name">{{ item.equipmentName }}</div>
             <div class="item-ref">{{ item.reference }}</div>
           </div>
-          <div class="item-right">
-            <span class="badge" [ngClass]="getStatusClass(item.status)">
-              <span class="badge-dot"></span>{{ getStatusLabel(item.status) }}
-            </span>
-            @if (!multiMode()) {
-              @if (item.status === 'DISPONIBLE') {
-                <a class="btn-borrow" [routerLink]="['/utilisateur/nouvelle-demande', item.id]">
-                  Emprunter
-                </a>
-              } @else {
-                <button class="btn-unavailable" disabled>Indispo.</button>
-              }
-            }
-          </div>
         </div>
       }
     </div>
   }
 
-  <!-- Barre flottante multi-sélection -->
-  @if (multiMode() && selectedIds().length > 0) {
+  <!-- Barre flottante : apparaît dès qu'au moins 1 équipement est sélectionné -->
+  @if (canSubmit()) {
     <div class="multi-bar">
       <span class="multi-bar-count">{{ selectedIds().length }} matériel(s) sélectionné(s)</span>
-      <button class="multi-bar-btn" [disabled]="!canMultiSubmit()" (click)="submitMulti()">
-        Envoyer la demande
+      <button class="multi-bar-btn" (click)="goToSummary()">
+        Voir le récapitulatif
       </button>
     </div>
   }

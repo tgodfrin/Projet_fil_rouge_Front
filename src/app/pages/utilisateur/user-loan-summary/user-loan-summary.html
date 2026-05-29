@@ -1,0 +1,67 @@
+<div class="summary-page">
+
+  <div class="page-header">
+    <button class="btn-back" (click)="cancel()">← Retour</button>
+    <div class="page-title">Récapitulatif</div>
+  </div>
+
+  @if (loading()) {
+    <div class="loading-state">Chargement…</div>
+  } @else {
+
+    <!-- Bloc période -->
+    <div class="section-card">
+      <div class="section-label">Période d'emprunt</div>
+      <div class="period-row">
+        <div class="period-item">
+          <span class="period-key">Début</span>
+          <span class="period-val">{{ formatDate(beginDate) }}</span>
+        </div>
+        <div class="period-sep">→</div>
+        <div class="period-item">
+          <span class="period-key">Fin</span>
+          <span class="period-val">{{ formatDate(endDate) }}</span>
+        </div>
+      </div>
+      <div class="duration-badge">{{ duration() }} jour(s)</div>
+    </div>
+
+    <!-- Bloc équipements -->
+    <div class="section-card">
+      <div class="section-label">
+        {{ isGrouped() ? 'Emprunt groupé — ' + equipments().length + ' matériels' : 'Matériel sélectionné' }}
+      </div>
+      <div class="equipment-list">
+        @for (item of equipments(); track item.id) {
+          <div class="equipment-row">
+            <span class="eq-icon">{{ getCategoryIcon(item.equipmentFamily.nameEquipmentFamily) }}</span>
+            <div class="eq-info">
+              <div class="eq-name">{{ item.equipmentName }}</div>
+              <div class="eq-ref">{{ item.reference }}</div>
+            </div>
+          </div>
+        }
+      </div>
+    </div>
+
+    <!-- Erreurs -->
+    @if (forbiddenError()) {
+      <div class="error-banner">
+        ⛔ Votre profil ne vous autorise pas à emprunter un ou plusieurs matériels sélectionnés.
+      </div>
+    }
+    @if (submitError()) {
+      <div class="error-banner">⛔ {{ submitError() }}</div>
+    }
+
+    <!-- Actions -->
+    <div class="actions">
+      <button class="btn-primary" [disabled]="submitting()" (click)="confirm()">
+        @if (submitting()) { Envoi en cours… } @else { Confirmer la demande }
+      </button>
+      <button class="btn-ghost" (click)="cancel()">Annuler</button>
+    </div>
+
+  }
+
+</div>
