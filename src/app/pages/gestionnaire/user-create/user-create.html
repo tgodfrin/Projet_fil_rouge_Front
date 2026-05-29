@@ -9,8 +9,13 @@
   <div class="section-title">
     <div class="title-icon">👤</div>
     <div>
-      <div class="title-main">Nouvel utilisateur</div>
-      <div class="title-sub">Remplissez les informations pour créer un compte.</div>
+      @if (isEditMode()) {
+        <div class="title-main">Modifier l'utilisateur</div>
+        <div class="title-sub">Modifiez les informations du compte.</div>
+      } @else {
+        <div class="title-main">Nouvel utilisateur</div>
+        <div class="title-sub">Remplissez les informations pour créer un compte.</div>
+      }
     </div>
   </div>
 
@@ -102,57 +107,59 @@
       </div>
     </div>
 
-    <!-- Mot de passe -->
-    <div class="form-section">
-      <div class="form-section-title">Mot de passe temporaire</div>
-      <div class="form-row">
+    <!-- Mot de passe : uniquement en mode création -->
+    @if (!isEditMode()) {
+      <div class="form-section">
+        <div class="form-section-title">Mot de passe temporaire</div>
+        <div class="form-row">
 
-        <div class="form-group">
-          <label class="form-label" for="password">Mot de passe <span class="required">*</span></label>
-          <div class="input-password">
-            <input
-              id="password"
-              class="form-input"
-              [class.error]="hasError('password', 'required') || hasError('password', 'minlength')"
-              [type]="showPwd() ? 'text' : 'password'"
-              placeholder="Min. 8 caractères"
-              formControlName="password"
-            />
-            <button type="button" class="toggle-pwd" (click)="showPwd.set(!showPwd())">
-              {{ showPwd() ? '🙈' : '👁️' }}
-            </button>
+          <div class="form-group">
+            <label class="form-label" for="password">Mot de passe <span class="required">*</span></label>
+            <div class="input-password">
+              <input
+                id="password"
+                class="form-input"
+                [class.error]="hasError('password', 'required') || hasError('password', 'minlength')"
+                [type]="showPwd() ? 'text' : 'password'"
+                placeholder="Min. 8 caractères"
+                formControlName="password"
+              />
+              <button type="button" class="toggle-pwd" (click)="showPwd.set(!showPwd())">
+                {{ showPwd() ? '🙈' : '👁️' }}
+              </button>
+            </div>
+            @if (hasError('password', 'required')) {
+              <span class="form-error">Le mot de passe est requis.</span>
+            } @else if (hasError('password', 'minlength')) {
+              <span class="form-error">Minimum 8 caractères.</span>
+            }
           </div>
-          @if (hasError('password', 'required')) {
-            <span class="form-error">Le mot de passe est requis.</span>
-          } @else if (hasError('password', 'minlength')) {
-            <span class="form-error">Minimum 8 caractères.</span>
-          }
-        </div>
 
-        <div class="form-group">
-          <label class="form-label" for="confirmPassword">Confirmer <span class="required">*</span></label>
-          <div class="input-password">
-            <input
-              id="confirmPassword"
-              class="form-input"
-              [class.error]="hasError('confirmPassword', 'required') || hasError('confirmPassword', 'mismatch')"
-              [type]="showPwdCfm() ? 'text' : 'password'"
-              placeholder="Répéter le mot de passe"
-              formControlName="confirmPassword"
-            />
-            <button type="button" class="toggle-pwd" (click)="showPwdCfm.set(!showPwdCfm())">
-              {{ showPwdCfm() ? '🙈' : '👁️' }}
-            </button>
+          <div class="form-group">
+            <label class="form-label" for="confirmPassword">Confirmer <span class="required">*</span></label>
+            <div class="input-password">
+              <input
+                id="confirmPassword"
+                class="form-input"
+                [class.error]="hasError('confirmPassword', 'required') || hasError('confirmPassword', 'mismatch')"
+                [type]="showPwdCfm() ? 'text' : 'password'"
+                placeholder="Répéter le mot de passe"
+                formControlName="confirmPassword"
+              />
+              <button type="button" class="toggle-pwd" (click)="showPwdCfm.set(!showPwdCfm())">
+                {{ showPwdCfm() ? '🙈' : '👁️' }}
+              </button>
+            </div>
+            @if (hasError('confirmPassword', 'required')) {
+              <span class="form-error">La confirmation est requise.</span>
+            } @else if (hasError('confirmPassword', 'mismatch')) {
+              <span class="form-error">Les mots de passe ne correspondent pas.</span>
+            }
           </div>
-          @if (hasError('confirmPassword', 'required')) {
-            <span class="form-error">La confirmation est requise.</span>
-          } @else if (hasError('confirmPassword', 'mismatch')) {
-            <span class="form-error">Les mots de passe ne correspondent pas.</span>
-          }
-        </div>
 
+        </div>
       </div>
-    </div>
+    }
 
     <!-- Erreur serveur -->
     @if (errorMessage()) {
@@ -162,7 +169,9 @@
     <!-- Actions -->
     <div class="form-actions">
       <button type="button" class="btn btn-cancel" (click)="retour()">Annuler</button>
-      <button type="submit" class="btn btn-submit">Créer l'utilisateur</button>
+      <button type="submit" class="btn btn-submit">
+        {{ isEditMode() ? 'Enregistrer les modifications' : 'Créer l\'utilisateur' }}
+      </button>
     </div>
 
   </form>

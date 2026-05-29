@@ -64,6 +64,11 @@ export class UserService {
     });
   }
 
+  // PUT /user/:id — update name/lastname/email/profil (gestionnaire only, no password)
+  update(id: number, data: { name: string; lastname: string; email: string; profilId: number }): Observable<AppUser> {
+    return this.http.put<AppUser>(`${this.apiUrl}/user/${id}`, data);
+  }
+
   // DELETE /user/:id — gestionnaire only
   delete(id: number): Observable<void> {
     return this.http.delete<void>(`${this.apiUrl}/user/${id}`);

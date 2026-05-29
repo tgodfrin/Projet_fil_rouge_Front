@@ -1,7 +1,7 @@
 import { Component, signal, inject } from '@angular/core';
 import { CommonModule, Location } from '@angular/common';
 import { ReactiveFormsModule, FormBuilder, Validators, AbstractControl, ValidationErrors } from '@angular/forms';
-import { Router } from '@angular/router';
+import { ActivatedRoute, Router } from '@angular/router';
 import { toSignal } from '@angular/core/rxjs-interop';
 
 import { ProfilService } from '../../../core/services/profil.service';
@@ -19,11 +19,19 @@ import { Profil, ProfilType } from '../../../core/models/profil.model';
 export class UserCreateComponent {
   private fb            = inject(FormBuilder);
   private router        = inject(Router);
+  private route         = inject(ActivatedRoute);
   private location      = inject(Location);
   private profilService = inject(ProfilService);
   private userService   = inject(UserService);
 
   profils = toSignal(this.profilService.getAll(), { initialValue: [] as Profil[] });
+
+  // Edit mode if :id is present in the route (utilisateurs/:id/edit)
+  private editId = this.route.snapshot.paramMap.get('id')
+    ? Number(this.route.snapshot.paramMap.get('id'))
+    : null;
+
+  isEditMode = signal(this.editId !== null);
 
   submitted     = signal(false);
   showPwd       = signal(false);
@@ -45,14 +53,32 @@ export class UserCreateComponent {
     return null;
   }
 
+  // In edit mode, password fields are not required
   form = this.fb.group({
     name:            ['', [Validators.required, Validators.minLength(2)]],
     lastname:        ['', [Validators.required, Validators.minLength(2)]],
     email:           ['', [Validators.required, Validators.email]],
     profilId:        ['', Validators.required],
-    password:        ['', [Validators.required, Validators.minLength(8)]],
-    confirmPassword: ['', Validators.required],
-  }, { validators: this.matchPasswords });
+    password:        [this.isEditMode() ? '' : '', this.isEditMode() ? [] : [Validators.required, Validators.minLength(8)]],
+    confirmPassword: [this.isEditMode() ? '' : '', this.isEditMode() ? [] : [Validators.required]],
+  }, { validators: this.isEditMode() ? [] : this.matchPasswords });
+
+  constructor() {
+    // In edit mode: load user data and pre-fill the form
+    if (this.editId !== null) {
+      this.userService.getById(this.editId).subscribe({
+        next: (user) => {
+          this.form.patchValue({
+            name:     user.name,
+            lastname: user.lastname,
+            email:    user.email,
+            profilId: String(user.profil.id),
+          });
+        },
+        error: () => this.errorMessage.set('Impossible de charger les données utilisateur.')
+      });
+    }
+  }
 
   get f() { return this.form.controls; }
 
@@ -77,26 +103,47 @@ export class UserCreateComponent {
       return;
     }
     const val = this.form.value;
-    const payload: AppUserCreate = {
-      name:     val.name!,
-      lastname: val.lastname!,
-      email:    val.email!,
-      password: val.password!,
-      profilId: Number(val.profilId),
-    };
     this.errorMessage.set(null);
-    this.userService.create(payload).subscribe({
-      next: () => this.router.navigate(['/utilisateurs']),
-      error: (err) => {
-        if (err.status === 409) {
-          this.errorMessage.set('Cette adresse email est déjà utilisée.');
-        } else if (err.status === 400) {
-          this.errorMessage.set('Données invalides. Vérifiez les champs.');
-        } else {
-          this.errorMessage.set('Une erreur est survenue. Réessayez.');
+
+    if (this.isEditMode() && this.editId !== null) {
+      // Edit mode: call update endpoint (no password)
+      this.userService.update(this.editId, {
+        name:     val.name!,
+        lastname: val.lastname!,
+        email:    val.email!,
+        profilId: Number(val.profilId),
+      }).subscribe({
+        next: () => this.router.navigate(['/gestionnaire/utilisateurs', this.editId]),
+        error: (err) => {
+          if (err.status === 409) {
+            this.errorMessage.set('Cette adresse email est déjà utilisée.');
+          } else {
+            this.errorMessage.set('Une erreur est survenue. Réessayez.');
+          }
         }
-      }
-    });
+      });
+    } else {
+      // Create mode: call create endpoint (with password)
+      const payload: AppUserCreate = {
+        name:     val.name!,
+        lastname: val.lastname!,
+        email:    val.email!,
+        password: val.password!,
+        profilId: Number(val.profilId),
+      };
+      this.userService.create(payload).subscribe({
+        next: () => this.router.navigate(['/gestionnaire/utilisateurs']),
+        error: (err) => {
+          if (err.status === 409) {
+            this.errorMessage.set('Cette adresse email est déjà utilisée.');
+          } else if (err.status === 400) {
+            this.errorMessage.set('Données invalides. Vérifiez les champs.');
+          } else {
+            this.errorMessage.set('Une erreur est survenue. Réessayez.');
+          }
+        }
+      });
+    }
   }
 
   hasError(field: string, error: string): boolean {
