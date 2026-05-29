@@ -100,6 +100,9 @@ export class UserLoanSummaryComponent implements OnInit {
         if (err.status === 403) {
           // Le profil de l'utilisateur n'autorise pas la famille d'un équipement sélectionné
           this.forbiddenError.set(true);
+        } else if (err.status === 409) {
+          // Un autre utilisateur a réservé cet équipement entre la sélection et la confirmation
+          this.submitError.set('Un équipement n\'est plus disponible sur cette période. Retournez au catalogue pour en choisir un autre.');
         } else {
           this.submitError.set('Une erreur est survenue. Veuillez réessayer.');
         }
