@@ -24,7 +24,8 @@ export class PlanningComponent implements OnInit, OnDestroy {
   private families = toSignal(this.familyService.getAll(), { initialValue: [] as EquipmentFamily[] });
 
   // Loans chargés depuis le back pour la période visible — rerechargés à chaque navigation
-  loans = signal<Loan[]>([]);
+  loans   = signal<Loan[]>([]);
+  loading = signal(true);
 
   viewMode       = signal<'SEMAINE' | 'MOIS'>('SEMAINE');
   weekOffset     = signal(0);
@@ -49,7 +50,10 @@ export class PlanningComponent implements OnInit, OnDestroy {
     this.sub = this.rangeSubject.pipe(
       distinctUntilChanged((a, b) => a.begin === b.begin && a.end === b.end),
       switchMap(({ begin, end }) => this.loanService.getPlanning(begin, end))
-    ).subscribe(data => this.loans.set(data));
+    ).subscribe({
+      next:  (data) => { this.loans.set(data); this.loading.set(false); },
+      error: ()     => this.loading.set(false)
+    });
 
     // Chargement initial
     this.loadCurrentRange();

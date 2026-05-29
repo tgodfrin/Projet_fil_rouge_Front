@@ -63,4 +63,9 @@ export class UserService {
       params: { email }
     });
   }
+
+  // DELETE /user/:id — gestionnaire only
+  delete(id: number): Observable<void> {
+    return this.http.delete<void>(`${this.apiUrl}/user/${id}`);
+  }
 }

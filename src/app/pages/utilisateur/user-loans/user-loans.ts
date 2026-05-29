@@ -1,4 +1,5 @@
 import { Component, signal, computed, inject } from '@angular/core';
+import { tap } from 'rxjs';
 import { CommonModule } from '@angular/common';
 import { ReactiveFormsModule, FormBuilder, Validators } from '@angular/forms';
 import { RouterLink } from '@angular/router';
@@ -43,9 +44,14 @@ export class UserLoansComponent {
 
   private currentUserId = this.authService.currentUser()!.id;
 
+  // true tant que la requête HTTP n'a pas répondu
+  loading = signal(true);
+
   // Tous les emprunts de l'utilisateur courant
   private allLoans = toSignal(
-    this.loanService.getByUser(this.currentUserId),
+    this.loanService.getByUser(this.currentUserId).pipe(
+      tap({ next: () => this.loading.set(false), error: () => this.loading.set(false) })
+    ),
     { initialValue: [] as Loan[] }
   );
 

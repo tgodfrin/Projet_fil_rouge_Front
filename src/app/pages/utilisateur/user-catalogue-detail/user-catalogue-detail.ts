@@ -1,5 +1,5 @@
 import { Component, inject } from '@angular/core';
-import { ActivatedRoute, Router, RouterLink } from '@angular/router';
+import { ActivatedRoute, Router } from '@angular/router';
 import { CommonModule } from '@angular/common';
 import { toSignal } from '@angular/core/rxjs-interop';
 
@@ -13,7 +13,7 @@ import { Doc } from '../../../core/models/doc.model';
 @Component({
   selector: 'app-user-catalogue-detail',
   standalone: true,
-  imports: [CommonModule, RouterLink],
+  imports: [CommonModule],
   templateUrl: './user-catalogue-detail.html',
   styleUrl: './user-catalogue-detail.scss'
 })
@@ -69,5 +69,13 @@ export class UserCatalogueDetailComponent {
 
   retour(): void {
     this.router.navigate(['/utilisateur/catalogue']);
+  }
+
+  // Redirige vers le catalogue en passant l'id de l'équipement dans le router state
+  // Le catalogue peut lire history.state.preselectedId pour pré-sélectionner cet équipement
+  borrow(): void {
+    this.router.navigate(['/utilisateur/catalogue'], {
+      state: { preselectedId: this.equipmentId }
+    });
   }
 }

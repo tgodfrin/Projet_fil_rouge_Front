@@ -34,7 +34,8 @@ export class LoanComponent {
   filtreTemps  = signal<string>('tout');
 
   // Signal mutable — peuplé via HTTP et mis à jour après chaque action
-  loans = signal<Loan[]>([]);
+  loans   = signal<Loan[]>([]);
+  loading = signal(true);
 
   // Tracks which group detail panel is open (null = aucun)
   openGroupId = signal<string | null>(null);
@@ -44,7 +45,10 @@ export class LoanComponent {
   }
 
   private chargerEmprunts(): void {
-    this.loanService.getAll().subscribe(data => this.loans.set(data));
+    this.loanService.getAll().subscribe({
+      next: (data) => { this.loans.set(data); this.loading.set(false); },
+      error: ()     => this.loading.set(false)
+    });
   }
 
   // Emprunts individuels en attente (groupId null ou absent)

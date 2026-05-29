@@ -44,6 +44,7 @@ export const routes: Routes = [
       { path: 'utilisateurs', component: UserListComponent },
       { path: 'utilisateurs/nouveau', component: UserCreateComponent },
       { path: 'utilisateurs/:id', component: UserDetailComponent },
+      { path: 'utilisateurs/:id/edit', component: UserCreateComponent },
       { path: 'planning', component: PlanningComponent },
       { path: 'alertes', component: AlertListComponent },
       { path: 'categories', component: CategoryListComponent },
