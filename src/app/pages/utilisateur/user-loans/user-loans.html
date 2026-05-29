@@ -16,7 +16,9 @@
   </div>
 
   <!-- Liste -->
-  @if (displayItems().length === 0) {
+  @if (loading()) {
+    <div class="empty-state">Chargement…</div>
+  } @else if (displayItems().length === 0) {
     <div class="empty-state">Aucun emprunt dans cette catégorie.</div>
   } @else {
     <div class="loans-list">

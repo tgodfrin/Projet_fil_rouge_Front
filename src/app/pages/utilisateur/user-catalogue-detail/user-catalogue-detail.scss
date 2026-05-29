@@ -205,6 +205,74 @@
   text-align: right;
 }
 
+// ── Tableau documents ─────────────────────────────────
+.table-wrapper {
+  overflow-x: auto;
+  border-radius: var(--r-md);
+  border: 1px solid var(--grey-200);
+  box-shadow: var(--shadow-sm);
+}
+
+.table {
+  background: white;
+  width: 100%;
+}
+
+.table-head {
+  display: grid;
+  grid-template-columns: 1fr auto;
+  padding: 8px 16px;
+  background: var(--grey-50);
+  border-bottom: 1px solid var(--grey-200);
+}
+
+.th {
+  font-size: 10px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.8px;
+  color: var(--grey-400);
+}
+
+.table-row {
+  display: grid;
+  grid-template-columns: 1fr auto;
+  padding: 10px 16px;
+  border-bottom: 1px solid var(--grey-100);
+  align-items: center;
+
+  &:last-child { border-bottom: none; }
+  &:hover { background: var(--grey-50); }
+}
+
+.td-main {
+  font-size: 13px;
+  font-weight: 500;
+  color: var(--grey-900);
+}
+
+.doc-actions {
+  display: flex;
+  align-items: center;
+}
+
+.btn-voir {
+  padding: 4px 12px;
+  background: var(--grey-100);
+  color: var(--grey-700);
+  border-radius: var(--r-sm);
+  font-size: 0.75rem;
+  font-weight: 600;
+  font-family: var(--font);
+  text-decoration: none;
+  transition: all 0.2s;
+
+  &:hover {
+    background: var(--primary-xlight);
+    color: var(--primary);
+  }
+}
+
 // ── Bouton emprunt ────────────────────────────────────
 .btn-borrow {
   display: flex;

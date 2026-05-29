@@ -89,7 +89,9 @@
     En cours ({{ activeLoans().length }})
   </div>
 
-  @if (activeLoans().length === 0) {
+  @if (loading()) {
+    <div class="empty-state">Chargement…</div>
+  } @else if (activeLoans().length === 0) {
     <div class="empty-state">Aucun emprunt pour ce filtre.</div>
   } @else {
     <div class="table-wrapper">

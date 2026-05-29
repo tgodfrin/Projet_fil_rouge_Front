@@ -4,8 +4,8 @@
   <div class="page-header">
     <button class="btn btn-retour" (click)="retour()">← Retour</button>
     <div class="header-actions">
-      <button class="btn btn-edit">✎ Éditer</button>
-      <button class="btn btn-delete">🗑 Supprimer</button>
+      <button class="btn btn-edit" (click)="edit()">✎ Éditer</button>
+      <button class="btn btn-delete" (click)="delete()">🗑 Supprimer</button>
     </div>
   </div>
 
@@ -79,7 +79,9 @@
 
   <!-- ONGLET : EMPRUNTS -->
   @if (ongletActif() === 'emprunts') {
-    @if (loans().length === 0) {
+    @if (loadingLoans()) {
+      <div class="empty-state">Chargement…</div>
+    } @else if (loans().length === 0) {
       <div class="empty-state">Aucun emprunt pour cet utilisateur.</div>
     } @else {
       <div class="table-wrapper">
