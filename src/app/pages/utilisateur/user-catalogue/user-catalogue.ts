@@ -42,6 +42,10 @@ export class UserCatalogueComponent implements OnInit, OnDestroy {
   submittingMulti  = signal(false);
   multiError       = signal<string | null>(null);
 
+  // Aliases used by the template
+  startDate = this.multiStartDate;
+  endDate   = this.multiEndDate;
+
   private searchSubject = new Subject<string>();
   private sub!: Subscription;
 
@@ -60,6 +64,9 @@ export class UserCatalogueComponent implements OnInit, OnDestroy {
     this.multiEndDate() !== '' &&
     this.duration() > 0
   );
+
+  datesSet  = computed(() => this.multiStartDate() !== '' && this.multiEndDate() !== '');
+  canSubmit = this.canMultiSubmit;
 
   ngOnInit(): void {
     this.equipmentService.getAll().subscribe({
@@ -205,5 +212,48 @@ export class UserCatalogueComponent implements OnInit, OnDestroy {
 
   goToDetail(id: number): void {
     this.router.navigate(['/utilisateur/catalogue', id]);
+  }
+
+  goToSummary(): void {
+    const user = this.authService.currentUser();
+    if (!this.canMultiSubmit() || this.submittingMulti() || !user) return;
+    this.submittingMulti.set(true);
+    this.multiError.set(null);
+
+    const begin   = this.multiStartDate();
+    const end     = this.multiEndDate();
+    const groupId = crypto.randomUUID();
+
+    const requests = this.selectedIds().map(id =>
+      this.loanService.create({
+        beginDate:   begin,
+        endDate:     end,
+        requesterId: user.id,
+        equipmentId: id,
+        groupId:     groupId
+      })
+    );
+
+    forkJoin(requests).subscribe({
+      next: () => {
+        this.submittingMulti.set(false);
+        this.toggleMultiMode();
+        this.router.navigate(['/utilisateur/confirmation']);
+      },
+      error: (err) => {
+        this.submittingMulti.set(false);
+        if (err.status === 403) {
+          this.multiError.set('Votre profil ne vous autorise pas à emprunter un ou plusieurs équipements sélectionnés.');
+        } else {
+          this.multiError.set('Une erreur est survenue. Veuillez réessayer.');
+        }
+      }
+    });
+  }
+
+  formatDate(dateStr: string): string {
+    if (!dateStr) return '';
+    const [y, m, d] = dateStr.split('-');
+    return `${d}/${m}/${y}`;
   }
 }
