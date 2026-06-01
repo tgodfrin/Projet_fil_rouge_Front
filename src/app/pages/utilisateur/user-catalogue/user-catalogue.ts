@@ -22,21 +22,22 @@ export class UserCatalogueComponent implements OnInit {
 
   private families = toSignal(this.familyService.getAll(), { initialValue: [] as EquipmentFamily[] });
 
-  // Listes chargées depuis l'API
-  private allEquipments       = signal<Equipment[]>([]);  // tous les équipements (mode sans dates)
-  private availableEquipments = signal<Equipment[]>([]);  // filtrés par période (mode avec dates)
+  // Lists loaded from API
+  private allEquipments       = signal<Equipment[]>([]);  // all equipment (no date mode)
+  private availableEquipments = signal<Equipment[]>([]);  // filtered by period (date mode)
 
-  // État UI
+  // UI state
+  loading        = signal(true);
   startDate      = signal('');
   endDate        = signal('');
   searchTerm     = signal('');
   activeCategory = signal<string>('Tous');
   selectedIds    = signal<number[]>([]);
 
-  // Catégories dynamiques depuis les vraies familles
+  // Dynamic categories from API families
   categories = computed(() => ['Tous', ...this.families().map(f => f.nameEquipmentFamily)]);
 
-  // Les deux dates sont saisies et la période est valide (fin > début)
+  // Both dates entered and period is valid (end > start)
   datesSet = computed(() => {
     const s = this.startDate();
     const e = this.endDate();
@@ -49,15 +50,15 @@ export class UserCatalogueComponent implements OnInit {
     return Math.ceil(diff / (1000 * 60 * 60 * 24));
   });
 
-  // Sans dates : équipements DISPONIBLE actuellement
-  // Avec dates : équipements disponibles sur la période choisie
+  // No dates: currently DISPONIBLE equipment
+  // With dates: equipment available for the chosen period
   private baseList = computed(() =>
     this.datesSet()
       ? this.availableEquipments()
       : this.allEquipments().filter(e => e.status === 'DISPONIBLE')
   );
 
-  // Liste affichée : baseList filtrée par recherche + catégorie (client-side)
+  // Displayed list: baseList filtered by search + category (client-side)
   equipments = computed(() => {
     let list = this.baseList();
     const q = this.searchTerm().trim().toLowerCase();
@@ -74,7 +75,10 @@ export class UserCatalogueComponent implements OnInit {
   canSubmit = computed(() => this.selectedIds().length > 0 && this.datesSet());
 
   ngOnInit(): void {
-    this.equipmentService.getAll().subscribe(data => this.allEquipments.set(data));
+    this.equipmentService.getAll().subscribe({
+      next:  (data) => { this.allEquipments.set(data); this.loading.set(false); },
+      error: ()     => this.loading.set(false)
+    });
   }
 
   onStartDate(event: Event): void {
@@ -89,7 +93,7 @@ export class UserCatalogueComponent implements OnInit {
     this.loadAvailableIfReady();
   }
 
-  // Appelle getAvailable() uniquement si les deux dates forment une période valide
+  // Calls getAvailable() only if both dates form a valid period
   private loadAvailableIfReady(): void {
     const s = this.startDate();
     const e = this.endDate();
@@ -121,7 +125,7 @@ export class UserCatalogueComponent implements OnInit {
     this.router.navigate(['/utilisateur/catalogue', id]);
   }
 
-  // Navigue vers la page de récapitulatif en passant les données via navigation state
+  // Navigate to summary page passing data via navigation state
   goToSummary(): void {
     if (!this.canSubmit()) return;
     this.router.navigate(['/utilisateur/recapitulatif'], {

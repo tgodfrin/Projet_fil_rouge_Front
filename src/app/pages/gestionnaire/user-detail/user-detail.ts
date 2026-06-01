@@ -63,7 +63,7 @@ export class UserDetailComponent {
 
   // Navigue vers la page d'édition de l'utilisateur
   edit(): void {
-    this.router.navigate(['/gestionnaire/utilisateurs', this.userId, 'edit']);
+    this.router.navigate(['/utilisateurs', this.userId, 'edit']);
   }
 
   // Demande confirmation puis supprime l'utilisateur via le back, puis redirige vers la liste

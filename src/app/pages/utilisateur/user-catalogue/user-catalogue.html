@@ -52,7 +52,9 @@
   </div>
 
   <!-- Liste -->
-  @if (equipments().length === 0) {
+  @if (loading()) {
+    <div class="empty-state">Chargement…</div>
+  } @else if (equipments().length === 0) {
     <div class="empty-state">Aucun équipement disponible.</div>
   } @else {
     <div class="items-list">
