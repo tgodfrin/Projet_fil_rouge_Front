@@ -1,6 +1,6 @@
 import { Component, computed, inject, signal, OnInit, OnDestroy } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { Router, RouterLink } from '@angular/router';
+import { Router } from '@angular/router';
 import { toSignal } from '@angular/core/rxjs-interop';
 import { Subject, Subscription, forkJoin } from 'rxjs';
 import { debounceTime, distinctUntilChanged, switchMap } from 'rxjs/operators';
@@ -15,7 +15,7 @@ import { EquipmentFamily } from '../../../core/models/equipment-family.model';
 @Component({
   selector: 'app-user-catalogue',
   standalone: true,
-  imports: [CommonModule, RouterLink],
+  imports: [CommonModule],
   templateUrl: './user-catalogue.html',
   styleUrl: './user-catalogue.scss'
 })

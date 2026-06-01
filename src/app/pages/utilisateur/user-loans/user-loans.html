@@ -196,7 +196,7 @@
               }
 
               @if (selectedLoanId() === item.loan.id && activeForm() === 'prolong') {
-                <form class="inline-form" [formGroup]="prolongForm" (ngSubmit)="submitProlong(item.loan)">
+                <form class="inline-form" [formGroup]="prolongForm" (ngSubmit)="submitExtend(item.loan)">
                   <div class="inline-form-title">📅 Demande de prolongation</div>
                   <div class="form-group">
                     <label>Nouvelle date de fin</label>
