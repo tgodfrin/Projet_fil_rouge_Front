@@ -16,7 +16,7 @@
     </div>
   }
 
-  <!-- ACTIONS GESTIONNAIRE : validation individuelle -->
+  <!-- ACTIONS GESTIONNAIRE -->
   @if (loanData()?.statusType === 'IN_PROGRESS') {
     <div class="actions-bar">
       @if (!loanData()?.groupId) {
@@ -30,6 +30,12 @@
         <button class="btn btn-validate" (click)="onValidateGroup()">✔ Valider le groupe</button>
         <button class="btn btn-refuse" (click)="onRefuseGroup()">✖ Refuser le groupe</button>
       }
+    </div>
+  }
+
+  @if (loanData()?.statusType === 'VALID') {
+    <div class="actions-bar">
+      <button class="btn btn-return" (click)="onReturn()">↩ Marquer comme rendu</button>
     </div>
   }
 

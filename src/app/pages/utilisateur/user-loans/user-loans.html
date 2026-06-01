@@ -112,8 +112,8 @@
 
                       <!-- Formulaire prolongation -->
                       @if (selectedLoanId() === loan.id && activeForm() === 'prolong') {
-                        <form class="inline-form" [formGroup]="prolongForm" (ngSubmit)="submitProlong(loan)">
-                          <div class="inline-form-title">📅 Demande de prolongation</div>
+                        <form class="inline-form" [formGroup]="prolongForm" (ngSubmit)="submitExtend(loan)">
+                          <div class="inline-form-title">📅 Prolonger l'emprunt</div>
                           <div class="form-group">
                             <label>Nouvelle date de fin</label>
                             <input type="date" class="form-input" formControlName="date" [min]="loan.endDate.substring(0, 10)" />
@@ -121,16 +121,8 @@
                               <small class="form-error">La nouvelle date de fin est requise.</small>
                             }
                           </div>
-                          <div class="form-group">
-                            <label>Motif</label>
-                            <textarea class="form-input" rows="2" formControlName="motif"
-                              placeholder="Ex : projet prolongé d'une semaine..."></textarea>
-                            @if (prolongForm.get('motif')?.invalid && prolongForm.get('motif')?.touched) {
-                              <small class="form-error">Le motif est requis.</small>
-                            }
-                          </div>
                           <div class="form-actions">
-                            <button class="btn-submit" type="submit">Envoyer la demande</button>
+                            <button class="btn-submit" type="submit">Confirmer la prolongation</button>
                             <button class="btn-cancel" type="button" (click)="closeForm()">Annuler</button>
                           </div>
                         </form>

@@ -69,13 +69,13 @@ export class PlanningComponent implements OnInit, OnDestroy {
     this.rangeSubject.next(range);
   }
 
-  // Retourne begin/end au format LocalDateTime (ISO sans zone) selon la vue active
+  // Retourne begin/end au format LocalDate (YYYY-MM-DD) selon la vue active
   private getVisibleRange(): { begin: string; end: string } {
     if (this.viewMode() === 'SEMAINE') {
       const days = this.weekDays();
       return {
-        begin: `${this.toDateStr(days[0].date)}T00:00:00`,
-        end:   `${this.toDateStr(days[6].date)}T23:59:59`,
+        begin: this.toDateStr(days[0].date),
+        end:   this.toDateStr(days[6].date),
       };
     } else {
       // Vue MOIS : on prend le 1er et le dernier jour du mois affiché
@@ -86,8 +86,8 @@ export class PlanningComponent implements OnInit, OnDestroy {
       const first = new Date(year, month, 1);
       const last  = new Date(year, month + 1, 0);
       return {
-        begin: `${this.toDateStr(first)}T00:00:00`,
-        end:   `${this.toDateStr(last)}T23:59:59`,
+        begin: this.toDateStr(first),
+        end:   this.toDateStr(last),
       };
     }
   }

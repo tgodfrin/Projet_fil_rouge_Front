@@ -48,6 +48,19 @@ export class UserCatalogueComponent implements OnInit, OnDestroy {
   // Catégories dynamiques depuis les vraies familles
   categories = computed(() => ['Tous', ...this.families().map(f => f.nameEquipmentFamily)]);
 
+  duration = computed(() => {
+    if (!this.multiStartDate() || !this.multiEndDate()) return 0;
+    const diff = new Date(this.multiEndDate()).getTime() - new Date(this.multiStartDate()).getTime();
+    return Math.ceil(diff / (1000 * 60 * 60 * 24));
+  });
+
+  canMultiSubmit = computed(() =>
+    this.selectedIds().length > 0 &&
+    this.multiStartDate() !== '' &&
+    this.multiEndDate() !== '' &&
+    this.duration() > 0
+  );
+
   ngOnInit(): void {
     // Initial load — loading flag cleared once data arrives
     this.equipmentService.getAll().subscribe({
@@ -86,7 +99,6 @@ export class UserCatalogueComponent implements OnInit, OnDestroy {
     const family = this.families().find(f => f.nameEquipmentFamily === cat);
     this.activeFamilyId.set(family?.id ?? null);
 
-    // Si une recherche est active, relancer la recherche (le switchMap gérera la famille)
     const q = this.searchTerm().trim();
     if (q) {
       this.searchSubject.next(q);
@@ -96,19 +108,6 @@ export class UserCatalogueComponent implements OnInit, OnDestroy {
       this.equipmentService.getByFamily(family.id).subscribe(data => this.equipments.set(data));
     }
   }
-
-  duration = computed(() => {
-    if (!this.multiStartDate() || !this.multiEndDate()) return 0;
-    const diff = new Date(this.multiEndDate()).getTime() - new Date(this.multiStartDate()).getTime();
-    return Math.ceil(diff / (1000 * 60 * 60 * 24));
-  });
-
-  canMultiSubmit = computed(() =>
-    this.selectedIds().length > 0 &&
-    this.multiStartDate() !== '' &&
-    this.multiEndDate() !== '' &&
-    this.duration() > 0
-  );
 
   toggleMultiMode(): void {
     this.multiMode.update(v => !v);
@@ -136,14 +135,15 @@ export class UserCatalogueComponent implements OnInit, OnDestroy {
     this.multiEndDate.set((event.target as HTMLInputElement).value);
   }
 
+  // Submits grouped loan requests — dates sent as YYYY-MM-DD (no hardcoded time)
   submitMulti(): void {
     const user = this.authService.currentUser();
     if (!this.canMultiSubmit() || this.submittingMulti() || !user) return;
     this.submittingMulti.set(true);
     this.multiError.set(null);
 
-    const begin   = `${this.multiStartDate()}T08:00:00`;
-    const end     = `${this.multiEndDate()}T18:00:00`;
+    const begin   = this.multiStartDate();
+    const end     = this.multiEndDate();
     // UUID partagé par tous les emprunts du groupe — permet leur regroupement côté back et front
     const groupId = crypto.randomUUID();
 

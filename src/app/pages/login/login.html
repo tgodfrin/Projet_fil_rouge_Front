@@ -57,8 +57,36 @@
         </div>
 
         <div class="forgot-password">
-          <span>Mot de passe oublié ?</span>
+          <button type="button" class="btn-link" (click)="toggleForgotForm()">
+            Mot de passe oublié ?
+          </button>
         </div>
+
+        @if (showForgotForm()) {
+          <div class="forgot-form">
+            @if (forgotMessage()) {
+              <p class="forgot-confirm">{{ forgotMessage() }}</p>
+            } @else {
+              <div class="form-group">
+                <label>Votre adresse email</label>
+                <input
+                  class="form-input"
+                  type="email"
+                  placeholder="votre@email.fr"
+                  [value]="forgotEmail()"
+                  (input)="forgotEmail.set($any($event.target).value)"
+                />
+              </div>
+              <button
+                type="button"
+                class="btn-forgot-submit"
+                [disabled]="forgotLoading()"
+                (click)="submitForgotPassword()">
+                {{ forgotLoading() ? 'Envoi...' : 'Envoyer un mot de passe temporaire' }}
+              </button>
+            }
+          </div>
+        }
 
         @if (errorMessage()) {
           <div class="error-msg">{{ errorMessage() }}</div>

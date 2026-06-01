@@ -20,9 +20,15 @@ export class LoginComponent {
 
   private readonly apiUrl = 'http://localhost:8080';
 
-  showPassword = signal(false);
-  errorMessage = signal<string | null>(null);
-  loading      = signal(false);
+  showPassword    = signal(false);
+  errorMessage    = signal<string | null>(null);
+  loading         = signal(false);
+
+  // Forgot-password bloc
+  showForgotForm  = signal(false);
+  forgotEmail     = signal('');
+  forgotMessage   = signal<string | null>(null);
+  forgotLoading   = signal(false);
 
   form = this.fb.group({
     email:    ['', [Validators.required, Validators.email]],
@@ -33,6 +39,29 @@ export class LoginComponent {
   get password() { return this.form.get('password')!; }
 
   togglePassword() { this.showPassword.update(v => !v); }
+
+  toggleForgotForm(): void {
+    this.showForgotForm.update(v => !v);
+    this.forgotMessage.set(null);
+    this.forgotEmail.set('');
+  }
+
+  submitForgotPassword(): void {
+    const email = this.forgotEmail().trim();
+    if (!email) return;
+    this.forgotLoading.set(true);
+    this.authService.forgotPassword(email).subscribe({
+      next:  () => {
+        this.forgotMessage.set('Si un compte existe pour cet email, un mot de passe temporaire a été envoyé.');
+        this.forgotLoading.set(false);
+      },
+      error: () => {
+        // Same generic message — do not reveal whether the email exists
+        this.forgotMessage.set('Si un compte existe pour cet email, un mot de passe temporaire a été envoyé.');
+        this.forgotLoading.set(false);
+      }
+    });
+  }
 
   submit() {
     if (this.form.invalid) {
