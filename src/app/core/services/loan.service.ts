@@ -65,6 +65,16 @@ export class LoanService {
     return this.http.put<void>(`${this.apiUrl}/loan/${id}/return`, null);
   }
 
+  // PUT /loan/:id/extend  →  updates endDate, creates an EXTENSION event
+  extendLoan(loanId: number, newEndDate: string): Observable<Loan> {
+    return this.http.put<Loan>(`${this.apiUrl}/loan/${loanId}/extend`, { newEndDate });
+  }
+
+  // PUT /loan/:id/return  →  VALID → TERMINE (explicit alias for readability)
+  returnLoan(id: number): Observable<void> {
+    return this.return(id);
+  }
+
   // PUT /loan/group/:groupId/validate  →  validates all loans in the group at once
   validateGroup(groupId: string): Observable<void> {
     return this.http.put<void>(`${this.apiUrl}/loan/group/${groupId}/validate`, null);

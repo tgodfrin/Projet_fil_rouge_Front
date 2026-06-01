@@ -1,9 +1,7 @@
 import { Component, signal, computed, inject } from '@angular/core';
-import { tap } from 'rxjs';
 import { CommonModule } from '@angular/common';
 import { ReactiveFormsModule, FormBuilder, Validators } from '@angular/forms';
 import { RouterLink } from '@angular/router';
-import { toSignal } from '@angular/core/rxjs-interop';
 import { LoanService } from '../../../core/services/loan.service';
 import { EventService } from '../../../core/services/event.service';
 import { AuthService } from '../../../core/services/auth.service';
@@ -47,13 +45,20 @@ export class UserLoansComponent {
   // true tant que la requête HTTP n'a pas répondu
   loading = signal(true);
 
-  // Tous les emprunts de l'utilisateur courant
-  private allLoans = toSignal(
-    this.loanService.getByUser(this.currentUserId).pipe(
-      tap({ next: () => this.loading.set(false), error: () => this.loading.set(false) })
-    ),
-    { initialValue: [] as Loan[] }
-  );
+  // Tous les emprunts de l'utilisateur courant — signal mutable pour permettre le rechargement
+  private allLoans = signal<Loan[]>([]);
+
+  constructor() {
+    this.loadLoans();
+  }
+
+  private loadLoans(): void {
+    this.loading.set(true);
+    this.loanService.getByUser(this.currentUserId).subscribe({
+      next:  (loans) => { this.allLoans.set(loans); this.loading.set(false); },
+      error: ()      => this.loading.set(false)
+    });
+  }
 
   // ── Tabs ─────────────────────────────────────────────────────────────────────
   activeTab = signal<'EN_COURS' | 'EN_ATTENTE' | 'HISTORIQUE'>('EN_COURS');
@@ -186,9 +191,9 @@ export class UserLoansComponent {
     motif: ['']
   });
 
+  // Only a date is needed — the back creates the EXTENSION event automatically
   prolongForm = this.fb.group({
-    date:  ['', Validators.required],
-    motif: ['', Validators.required]
+    date: ['', Validators.required]
   });
 
   toggleForm(loanId: number, form: 'prolong' | 'return') {
@@ -225,17 +230,15 @@ export class UserLoansComponent {
     }).subscribe(() => this.closeForm());
   }
 
-  submitProlong(loan: Loan) {
+  submitExtend(loan: Loan): void {
     if (this.prolongForm.invalid) {
       this.prolongForm.markAllAsTouched();
       return;
     }
-    const { date, motif } = this.prolongForm.value;
-    const description = `Nouvelle date souhaitée : ${date} — ${motif}`;
-    this.eventService.create({
-      type:        'EXTENSION',
-      description,
-      loan:        { id: loan.id }
-    }).subscribe(() => this.closeForm());
+    const newEndDate = this.prolongForm.value.date!;
+    this.loanService.extendLoan(loan.id, newEndDate).subscribe({
+      next: () => { this.closeForm(); this.loadLoans(); },
+      error: () => { /* error handled silently — could add a toast here */ }
+    });
   }
 }

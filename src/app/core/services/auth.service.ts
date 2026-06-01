@@ -1,4 +1,6 @@
-import { Injectable, signal, computed } from '@angular/core';
+import { Injectable, signal, computed, inject } from '@angular/core';
+import { HttpClient } from '@angular/common/http';
+import { Observable } from 'rxjs';
 
 export type UserRole = 'GESTIONNAIRE' | 'COLLABORATEUR' | 'INTERVENANT' | 'STAGIAIRE';
 
@@ -15,6 +17,9 @@ const USER_KEY  = 'loc_mns_user';
 
 @Injectable({ providedIn: 'root' })
 export class AuthService {
+
+  private readonly http   = inject(HttpClient);
+  private readonly apiUrl = 'http://localhost:8080';
 
   private _currentUser = signal<AuthUser | null>(
     JSON.parse(localStorage.getItem(USER_KEY) ?? 'null')
@@ -70,5 +75,9 @@ export class AuthService {
     localStorage.removeItem(USER_KEY);
     this._token.set(null);
     this._currentUser.set(null);
+  }
+
+  forgotPassword(email: string): Observable<void> {
+    return this.http.post<void>(`${this.apiUrl}/auth/forgot-password`, { email });
   }
 }

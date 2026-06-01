@@ -71,6 +71,11 @@ export class LoanDetailComponent {
     this.loanService.refuseGroup(groupId).subscribe(() => this.reload());
   }
 
+  // Marks the loan as returned (VALID → TERMINE) — visible only when loan is VALID or IN_PROGRESS
+  onReturn(): void {
+    this.loanService.return(this.loanId).subscribe(() => this.reload());
+  }
+
   // ─── Navigation ───────────────────────────────────────────────────────────
 
   retour(): void { this.location.back(); }

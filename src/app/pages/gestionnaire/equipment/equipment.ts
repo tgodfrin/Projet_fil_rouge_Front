@@ -123,6 +123,7 @@ export class EquipmentComponent {
       this.chargerFamilles();
       this.fermerModal();
       this.onFiltreChange();
+      this.router.navigate(['/equipements']);
     });
   }
 
