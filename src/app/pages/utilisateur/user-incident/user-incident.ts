@@ -43,7 +43,7 @@ export class UserIncidentComponent {
 
   incidentOptions: IncidentOption[] = [
     { type: 'BREAKDOWN',    label: 'Panne',           icon: 'warning' },
-    { type: 'EARLY_RETURN', label: 'Retour anticipe', icon: 'return'  },
+    { type: 'EARLY_RETURN', label: 'Retour anticipé', icon: 'return'  },
     { type: 'EXTENSION',    label: 'Prolongation',    icon: 'extend'  },
   ];
 
@@ -56,9 +56,10 @@ export class UserIncidentComponent {
     description: ['', [Validators.required, Validators.minLength(10)]]
   });
 
-  // Form pour EARLY_RETURN et EXTENSION (date requise)
+  // Form pour EARLY_RETURN et EXTENSION (date requise + motif optionnel)
   dateForm = this.fb.group({
-    date: ['', Validators.required]
+    date:  ['', Validators.required],
+    motif: ['']
   });
 
   get description() { return this.breakdownForm.get('description')!; }
@@ -92,45 +93,64 @@ export class UserIncidentComponent {
         error: (err) => {
           this.submitting.set(false);
           this.errorMessage.set(err.status === 403
-            ? 'Action non autorisee.'
-            : 'Une erreur est survenue. Veuillez reessayer.');
+            ? 'Action non autorisée.'
+            : 'Une erreur est survenue. Veuillez réessayer.');
         }
       });
 
     } else if (type === 'EARLY_RETURN') {
+      // Crée un Event EARLY_RETURN — le gestionnaire voit la demande dans les alertes
+      // et marque l'emprunt comme rendu manuellement. L'emprunt reste visible côté user jusqu'à là.
       if (this.dateForm.invalid) {
         this.dateForm.markAllAsTouched();
         return;
       }
+      const date  = this.dateForm.value.date!;
+      const motif = this.dateForm.value.motif;
+      const description = motif
+        ? `${date}|${motif}`
+        : date; // Format: "YYYY-MM-DD|motif optionnel" — la date est parsable côté gestionnaire
+
       this.submitting.set(true);
-      this.loanService.returnLoan(this.loanId).subscribe({
+      this.eventService.create({
+        type:        'EARLY_RETURN',
+        description,
+        loanId:      this.loanId
+      }).subscribe({
         next:  () => this.router.navigate(['/utilisateur/mes-emprunts']),
         error: (err) => {
           this.submitting.set(false);
           this.errorMessage.set(err.status === 403
-            ? 'Action non autorisee.'
-            : 'Une erreur est survenue. Veuillez reessayer.');
+            ? 'Action non autorisée.'
+            : 'Une erreur est survenue. Veuillez réessayer.');
         }
       });
 
     } else if (type === 'EXTENSION') {
+      // Crée un Event EXTENSION — le gestionnaire valide depuis les alertes.
+      // La date de fin ne change que quand le gestionnaire approuve.
       if (this.dateForm.invalid) {
         this.dateForm.markAllAsTouched();
         return;
       }
-      this.submitting.set(true);
       const newEndDate = this.dateForm.value.date!;
-      this.loanService.extendLoan(this.loanId, newEndDate).subscribe({
+      const motif      = this.dateForm.value.motif;
+      const description = motif
+        ? `${newEndDate}|${motif}`
+        : newEndDate; // Format: "YYYY-MM-DD|motif" — la date est parsable côté gestionnaire
+
+      this.submitting.set(true);
+      this.eventService.create({
+        type:        'EXTENSION',
+        description,
+        loanId:      this.loanId
+      }).subscribe({
         next:  () => this.router.navigate(['/utilisateur/mes-emprunts']),
         error: (err) => {
           this.submitting.set(false);
-          if (err.status === 400) {
-            this.errorMessage.set('La nouvelle date doit etre apres la date de fin actuelle.');
-          } else if (err.status === 403) {
-            this.errorMessage.set('Action non autorisee.');
-          } else {
-            this.errorMessage.set('Une erreur est survenue. Veuillez reessayer.');
-          }
+          this.errorMessage.set(err.status === 403
+            ? 'Action non autorisée.'
+            : 'Une erreur est survenue. Veuillez réessayer.');
         }
       });
     }

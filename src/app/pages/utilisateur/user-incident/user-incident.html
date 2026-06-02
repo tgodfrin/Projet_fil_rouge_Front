@@ -66,7 +66,7 @@
   @if (selectedType() === 'EARLY_RETURN') {
     <form [formGroup]="dateForm" (ngSubmit)="submit()">
       <div class="form-group">
-        <label class="form-label">Date de retour</label>
+        <label class="form-label">📅 Date de retour prévue</label>
         <input class="form-input" type="date"
           [min]="todayString"
           formControlName="date" />
@@ -74,11 +74,21 @@
           <small class="form-error">Veuillez sélectionner une date.</small>
         }
       </div>
+      <div class="form-group">
+        <label class="form-label">Motif (optionnel)</label>
+        <textarea class="form-motif" rows="2"
+          placeholder="Ex : mission terminée plus tôt..."
+          formControlName="motif">
+        </textarea>
+      </div>
+      <div class="return-info">
+        ℹ️ Le gestionnaire sera notifié et validera le retour. L'emprunt reste visible jusqu'à sa confirmation.
+      </div>
       @if (errorMessage()) {
         <div class="form-error-banner">{{ errorMessage() }}</div>
       }
       <button class="btn-submit" type="submit" [disabled]="submitting()">
-        {{ submitting() ? 'Envoi...' : 'Confirmer le retour anticipé' }}
+        {{ submitting() ? 'Envoi...' : 'Envoyer la demande de retour' }}
       </button>
     </form>
   }
@@ -87,7 +97,7 @@
   @if (selectedType() === 'EXTENSION') {
     <form [formGroup]="dateForm" (ngSubmit)="submit()">
       <div class="form-group">
-        <label class="form-label">Nouvelle date de fin</label>
+        <label class="form-label">📅 Nouvelle date de fin souhaitée</label>
         <input class="form-input" type="date"
           [min]="todayString"
           formControlName="date" />
@@ -95,11 +105,21 @@
           <small class="form-error">Veuillez sélectionner une nouvelle date de fin.</small>
         }
       </div>
+      <div class="form-group">
+        <label class="form-label">Motif (optionnel)</label>
+        <textarea class="form-motif" rows="2"
+          placeholder="Ex : projet prolongé d'une semaine..."
+          formControlName="motif">
+        </textarea>
+      </div>
+      <div class="return-info">
+        ℹ️ Le gestionnaire validera la prolongation. La date reste inchangée jusqu'à son accord.
+      </div>
       @if (errorMessage()) {
         <div class="form-error-banner">{{ errorMessage() }}</div>
       }
       <button class="btn-submit" type="submit" [disabled]="submitting()">
-        {{ submitting() ? 'Envoi...' : 'Confirmer la prolongation' }}
+        {{ submitting() ? 'Envoi...' : 'Envoyer la demande de prolongation' }}
       </button>
     </form>
   }

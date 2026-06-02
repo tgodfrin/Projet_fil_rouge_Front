@@ -84,7 +84,7 @@ export class UserDetailComponent {
       next: () => this.router.navigate(['/utilisateurs']),
       error: (err) => {
         if (err.status === 409) {
-          this.deleteError.set('Impossible de supprimer cet utilisateur : il possede des emprunts ou des donnees liees en base.');
+          this.deleteError.set('Impossible de supprimer cet utilisateur : il a un ou plusieurs emprunts en cours (matériel sorti). Récupérez le matériel avant de supprimer le compte.');
         } else {
           this.deleteError.set('Une erreur est survenue lors de la suppression.');
         }

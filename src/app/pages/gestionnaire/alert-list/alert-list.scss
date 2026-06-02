@@ -310,6 +310,23 @@
   &:hover { background: var(--grey-100); }
 }
 
+// ── Bouton action primaire (valider retour / prolongation) ─────────────────────
+.btn-action-primary {
+  padding: 0.3rem 0.75rem;
+  background: var(--primary, #2563eb);
+  color: white;
+  border: none;
+  border-radius: var(--r-sm);
+  font-size: 0.78rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background 0.2s, opacity 0.2s;
+  white-space: nowrap;
+
+  &:hover:not(:disabled) { background: var(--primary-dark, #1d4ed8); }
+  &:disabled { opacity: 0.55; cursor: not-allowed; }
+}
+
 // ── État vide ─────────────────────────────────────────
 .empty-state {
   padding: 2rem;

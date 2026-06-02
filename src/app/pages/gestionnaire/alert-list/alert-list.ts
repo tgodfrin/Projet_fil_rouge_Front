@@ -28,8 +28,10 @@ export class AlertListComponent {
   // All events (read + unread) — avoids incidents disappearing after markAsRead + navigation
   private events = signal<Event[]>([]);
 
+  // IDs des alertes en cours de traitement (pour désactiver le bouton pendant la requête)
+  processingIds = signal<Set<number>>(new Set());
+
   // Retards vus — persistés dans sessionStorage pour survivre aux navigations
-  // (les retards n'ont pas d'entité back, leur état "lu" est géré uniquement côté front)
   private readonly SESSION_KEY = 'readRetardIds';
 
   private loadReadRetardIds(): Set<number> {
@@ -54,8 +56,13 @@ export class AlertListComponent {
   }
 
   private chargerEvents(): void {
-    // Load all events so read incidents stay visible when user navigates back
     this.eventService.getAll().subscribe(data => this.events.set(data));
+  }
+
+  private reloadLoansAndEvents(): void {
+    // Recharge loans + events après une action gestionnaire (retour rendu, prolongation validée)
+    this.loanService.getAll().subscribe();
+    this.chargerEvents();
   }
 
   activeTab = signal<'TOUTES' | AlertType>('TOUTES');
@@ -129,7 +136,6 @@ export class AlertListComponent {
 
   markAsRead(alert: Alert): void {
     if (alert.type === 'RETARD') {
-      // RETARD is front-only — track seen retard loan ids in sessionStorage (survives navigation)
       this.readRetardIds.update(s => {
         const next = new Set([...s, alert.loanId]);
         this.saveReadRetardIds(next);
@@ -138,11 +144,55 @@ export class AlertListComponent {
       return;
     }
     this.eventService.markAsRead(alert.id).subscribe(() => {
-      // Update locally so the card stays visible but switches to "read" state
       this.events.update(events =>
         events.map(e => e.id === alert.id ? { ...e, readingDate: new Date().toISOString() } : e)
       );
     });
+  }
+
+  /**
+   * Gestionnaire valide un retour anticipé : marque le matériel comme rendu (VALID → TERMINE).
+   * L'event est ensuite marqué comme lu. Le loan disparaît de la liste "En cours" côté user.
+   */
+  validerRetour(alert: Alert): void {
+    this.processingIds.update(s => new Set([...s, alert.id]));
+    this.loanService.return(alert.loanId).subscribe({
+      next: () => {
+        this.markAsRead(alert);
+        this.processingIds.update(s => { const n = new Set(s); n.delete(alert.id); return n; });
+        // Retire le loan des retards front-only si présent
+        this.readRetardIds.update(s => { const n = new Set(s); n.delete(alert.loanId); return n; });
+      },
+      error: () => {
+        this.processingIds.update(s => { const n = new Set(s); n.delete(alert.id); return n; });
+      }
+    });
+  }
+
+  /**
+   * Gestionnaire valide une prolongation : appelle extendLoan avec la date extraite de la description.
+   * Format description attendu : "YYYY-MM-DD" ou "YYYY-MM-DD|motif".
+   * L'event est marqué comme lu, la date de fin du loan est mise à jour.
+   */
+  validerExtension(alert: Alert): void {
+    // La date est la première partie de la description avant le "|"
+    const newEndDate = alert.description.split('|')[0].trim();
+    if (!newEndDate || !/^\d{4}-\d{2}-\d{2}$/.test(newEndDate)) return;
+
+    this.processingIds.update(s => new Set([...s, alert.id]));
+    this.loanService.extendLoan(alert.loanId, newEndDate).subscribe({
+      next: () => {
+        this.markAsRead(alert);
+        this.processingIds.update(s => { const n = new Set(s); n.delete(alert.id); return n; });
+      },
+      error: () => {
+        this.processingIds.update(s => { const n = new Set(s); n.delete(alert.id); return n; });
+      }
+    });
+  }
+
+  isProcessing(alertId: number): boolean {
+    return this.processingIds().has(alertId);
   }
 
   // Returns the display label for an alert type
@@ -156,11 +206,25 @@ export class AlertListComponent {
     return labels[type] ?? type;
   }
 
+  // Extrait le motif de la description (partie après le "|")
+  getMotif(description: string): string {
+    const parts = description.split('|');
+    return parts.length > 1 ? parts.slice(1).join('|').trim() : description;
+  }
+
+  // Extrait la date demandée de la description pour EARLY_RETURN / EXTENSION
+  getDateFromDescription(description: string): string {
+    const date = description.split('|')[0].trim();
+    if (/^\d{4}-\d{2}-\d{2}$/.test(date)) {
+      return new Date(date).toLocaleDateString('fr-FR', { day: '2-digit', month: 'short', year: 'numeric' });
+    }
+    return description;
+  }
+
   markAllAsRead(): void {
     const unread = this.allAlerts().filter(a => !a.read);
     if (unread.length === 0) return;
 
-    // Marquer les retards (front-only) dans le sessionStorage
     const retardIds = unread.filter(a => a.type === 'RETARD').map(a => a.loanId);
     if (retardIds.length > 0) {
       this.readRetardIds.update(s => {
@@ -170,7 +234,6 @@ export class AlertListComponent {
       });
     }
 
-    // Marquer les events (back) via API
     const unreadEvents = unread.filter(a => a.type !== 'RETARD');
     unreadEvents.forEach(a => {
       this.eventService.markAsRead(a.id).subscribe(() => {

@@ -2,12 +2,9 @@ import { Component, computed, inject, signal, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { Router } from '@angular/router';
 import { toSignal } from '@angular/core/rxjs-interop';
-import { forkJoin } from 'rxjs';
 
 import { EquipmentService } from '../../../core/services/equipment.service';
 import { EquipmentFamilyService } from '../../../core/services/equipment-family.service';
-import { LoanService } from '../../../core/services/loan.service';
-import { AuthService } from '../../../core/services/auth.service';
 import { Equipment } from '../../../core/models/equipment.model';
 import { EquipmentFamily } from '../../../core/models/equipment-family.model';
 
@@ -22,12 +19,12 @@ export class UserCatalogueComponent implements OnInit {
   private router           = inject(Router);
   private equipmentService = inject(EquipmentService);
   private familyService    = inject(EquipmentFamilyService);
-  private loanService      = inject(LoanService);
-  private authService      = inject(AuthService);
 
   private families = toSignal(this.familyService.getAll(), { initialValue: [] as EquipmentFamily[] });
 
+  // Catalogue filtré par profil (endpoint back) — chargé une seule fois au démarrage
   private allEquipments       = signal<Equipment[]>([]);
+  // Équipements disponibles sur la période sélectionnée, aussi filtrés par profil
   private availableEquipments = signal<Equipment[]>([]);
 
   loading        = signal(true);
@@ -36,7 +33,6 @@ export class UserCatalogueComponent implements OnInit {
   searchTerm     = signal('');
   activeCategory = signal<string>('Tous');
   selectedIds    = signal<number[]>([]);
-  submitting     = signal(false);
   submitError    = signal<string | null>(null);
 
   categories = computed(() => ['Tous', ...this.families().map(f => f.nameEquipmentFamily)]);
@@ -71,7 +67,8 @@ export class UserCatalogueComponent implements OnInit {
   canSubmit = computed(() => this.selectedIds().length > 0 && this.datesSet());
 
   ngOnInit(): void {
-    this.equipmentService.getAll().subscribe({
+    // Utilise l'endpoint catalogue filtré par profil — pas GET /equipment/list qui renvoie tout
+    this.equipmentService.getCatalogue().subscribe({
       next:  (data) => { this.allEquipments.set(data); this.loading.set(false); },
       error: ()     => this.loading.set(false)
     });
@@ -94,7 +91,8 @@ export class UserCatalogueComponent implements OnInit {
     const e = this.endDate();
     if (s && e && new Date(e) > new Date(s)) {
       this.loading.set(true);
-      this.equipmentService.getAvailable(s, e).subscribe({
+      // Utilise l'endpoint disponible + filtre profil combinés
+      this.equipmentService.getCatalogueAvailable(s, e).subscribe({
         next:  (data) => { this.availableEquipments.set(data); this.loading.set(false); },
         error: ()     => this.loading.set(false)
       });
@@ -123,40 +121,20 @@ export class UserCatalogueComponent implements OnInit {
     this.router.navigate(['/utilisateur/catalogue', id]);
   }
 
+  /**
+   * Navigue vers le récapitulatif avec les IDs et dates en navigation state.
+   * C'est le bouton "Confirmer" du récapitulatif qui crée réellement les emprunts.
+   * On ne crée plus les emprunts ici — l'utilisateur doit valider la récap avant.
+   */
   goToSummary(): void {
-    const user = this.authService.currentUser();
-    if (!this.canSubmit() || this.submitting() || !user) return;
-    this.submitting.set(true);
+    if (!this.canSubmit()) return;
     this.submitError.set(null);
 
-    const begin   = this.startDate();
-    const end     = this.endDate();
-    const groupId = crypto.randomUUID();
-
-    const requests = this.selectedIds().map(id =>
-      this.loanService.create({
-        beginDate:   begin,
-        endDate:     end,
-        requesterId: user.id,
-        equipmentId: id,
-        groupId
-      })
-    );
-
-    forkJoin(requests).subscribe({
-      next: () => {
-        this.submitting.set(false);
-        this.router.navigate(['/utilisateur/confirmation']);
-      },
-      error: (err) => {
-        this.submitting.set(false);
-        if (err.status === 403) {
-          this.submitError.set('Votre profil ne vous autorise pas a emprunter ces equipements.');
-        } else if (err.status === 409) {
-          this.submitError.set('Un ou plusieurs equipements ne sont plus disponibles. Veuillez actualiser.');
-        } else {
-          this.submitError.set('Une erreur est survenue. Veuillez reessayer.');
-        }
+    this.router.navigate(['/utilisateur/recapitulatif'], {
+      state: {
+        equipmentIds: this.selectedIds(),
+        beginDate:    this.startDate(),
+        endDate:      this.endDate(),
       }
     });
   }
@@ -173,7 +151,6 @@ export class UserCatalogueComponent implements OnInit {
   }
 
   getCategoryIcon(familyName: string): string {
-    // Icons are rendered directly in the template to avoid encoding issues
     return familyName;
   }
 }

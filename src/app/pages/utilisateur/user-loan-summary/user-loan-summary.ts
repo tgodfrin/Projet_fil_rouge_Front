@@ -9,10 +9,11 @@ import { AuthService } from '../../../core/services/auth.service';
 import { Equipment } from '../../../core/models/equipment.model';
 
 // Forme du navigation state attendu depuis user-catalogue
+// Les dates sont en format YYYY-MM-DD (input[type=date]) — directement compatibles avec LocalDate du back
 interface LoanSummaryState {
   equipmentIds: number[];
-  beginDate: string; // ex: "2026-06-10T08:00:00"
-  endDate: string;   // ex: "2026-06-15T18:00:00"
+  beginDate: string; // "YYYY-MM-DD"
+  endDate: string;   // "YYYY-MM-DD"
 }
 
 @Component({

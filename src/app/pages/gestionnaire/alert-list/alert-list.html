@@ -68,9 +68,28 @@
             <div class="alert-title">
               {{ getAlertLabel(alert.type) }} — {{ alert.equipmentName }}
             </div>
-            <div class="alert-sub">
-              {{ alert.borrowerName }} — {{ alert.description }}
-            </div>
+
+            <!-- Description adaptée selon le type -->
+            @if (alert.type === 'EARLY_RETURN') {
+              <div class="alert-sub">
+                {{ alert.borrowerName }} — Retour prévu le {{ getDateFromDescription(alert.description) }}
+                @if (alert.description.includes('|')) {
+                  — {{ getMotif(alert.description) }}
+                }
+              </div>
+            } @else if (alert.type === 'EXTENSION') {
+              <div class="alert-sub">
+                {{ alert.borrowerName }} — Prolongation demandée jusqu'au {{ getDateFromDescription(alert.description) }}
+                @if (alert.description.includes('|')) {
+                  — {{ getMotif(alert.description) }}
+                }
+              </div>
+            } @else {
+              <div class="alert-sub">
+                {{ alert.borrowerName }} — {{ alert.description }}
+              </div>
+            }
+
             <div class="alert-date">{{ formatDate(alert.date) }}</div>
           </div>
 
@@ -84,6 +103,27 @@
             @if (!alert.read) {
               <div class="unread-dot"></div>
             }
+
+            <!-- Bouton action : Retour anticipé → marquer comme rendu -->
+            @if (alert.type === 'EARLY_RETURN' && !alert.read) {
+              <button
+                class="btn-action-primary"
+                [disabled]="isProcessing(alert.id)"
+                (click)="validerRetour(alert)">
+                {{ isProcessing(alert.id) ? '…' : '✔ Marquer rendu' }}
+              </button>
+            }
+
+            <!-- Bouton action : Prolongation → valider et appliquer la nouvelle date -->
+            @if (alert.type === 'EXTENSION' && !alert.read) {
+              <button
+                class="btn-action-primary"
+                [disabled]="isProcessing(alert.id)"
+                (click)="validerExtension(alert)">
+                {{ isProcessing(alert.id) ? '…' : '✔ Valider prolongation' }}
+              </button>
+            }
+
             <button class="btn-ghost" (click)="voirEmprunt(alert)">Voir</button>
           </div>
 

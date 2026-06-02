@@ -27,9 +27,21 @@ export class EquipmentService {
     return this.http.get<Equipment>(`${this.apiUrl}/equipment/${id}`);
   }
 
-  // GET /equipment/available?begin=YYYY-MM-DD&end=YYYY-MM-DD
+  // GET /equipment/available?begin=YYYY-MM-DD&end=YYYY-MM-DD (gestionnaire — non filtré par profil)
   getAvailable(begin: string, end: string): Observable<Equipment[]> {
     return this.http.get<Equipment[]>(`${this.apiUrl}/equipment/available`, {
+      params: { begin, end }
+    });
+  }
+
+  // GET /equipment/catalogue → équipements filtrés par les familles autorisées du profil connecté
+  getCatalogue(): Observable<Equipment[]> {
+    return this.http.get<Equipment[]>(`${this.apiUrl}/equipment/catalogue`);
+  }
+
+  // GET /equipment/catalogue/available?begin=...&end=... → dispo + filtre profil
+  getCatalogueAvailable(begin: string, end: string): Observable<Equipment[]> {
+    return this.http.get<Equipment[]>(`${this.apiUrl}/equipment/catalogue/available`, {
       params: { begin, end }
     });
   }

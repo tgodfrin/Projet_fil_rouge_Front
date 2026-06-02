@@ -235,10 +235,16 @@ export class UserLoansComponent {
       this.prolongForm.markAllAsTouched();
       return;
     }
+    // Crée un Event EXTENSION — le gestionnaire valide depuis les alertes.
+    // La date de fin ne change que quand le gestionnaire approuve, donc elle reste inchangée ici.
     const newEndDate = this.prolongForm.value.date!;
-    this.loanService.extendLoan(loan.id, newEndDate).subscribe({
-      next: () => { this.closeForm(); this.loadLoans(); },
-      error: () => { /* error handled silently — could add a toast here */ }
+    this.eventService.create({
+      type:        'EXTENSION',
+      description: newEndDate, // Format YYYY-MM-DD — parsé par l'alert-list côté gestionnaire
+      loanId:      loan.id
+    }).subscribe({
+      next:  () => this.closeForm(),
+      error: () => { /* silently ignored — could add a toast */ }
     });
   }
 }
