@@ -132,7 +132,8 @@ export class UserDetailComponent {
   }
 
   getLoanStatusClass(status: LoanDisplayStatus): string {
-    const classes: Record<LoanDisplayStatus, string> = {
+    const classes: Record<LoanDisplayStatus, string>
+ = {
       IN_PROGRESS: 'b-warning',
       VALID:       'b-success',
       TERMINE:     'b-success',

@@ -71,7 +71,16 @@
             </div>
           }
 
-          <div class="item-icon">{{ getCategoryIcon(item.equipmentFamily.nameEquipmentFamily) }}</div>
+          <div class="item-icon">
+            @switch (item.equipmentFamily.nameEquipmentFamily) {
+              @case ('PC') { 💻 }
+              @case ('Écran') { 🖥️ }
+              @case ('Casque VR') { 🥽 }
+              @case ('Vidéoprojecteur') { 📽️ }
+              @case ('Périphérique') { 🖱️ }
+              @default { 📦 }
+            }
+          </div>
           <div class="item-info">
             <div class="item-name">{{ item.equipmentName }}</div>
             <div class="item-ref">{{ item.reference }}</div>

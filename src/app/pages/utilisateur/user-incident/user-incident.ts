@@ -73,10 +73,10 @@ export class UserIncidentComponent {
       next:  () => this.router.navigate(['/utilisateur/mes-emprunts']),
       error: (err) => {
         this.submitting.set(false);
-        if (err.status === 403) {
-          this.errorMessage.set('Vous n\'êtes pas autorisé à effectuer cette action.');
+          if (err.status === 403) {
+          this.errorMessage.set("Vous n'etes pas autorise a effectuer cette action.");
         } else {
-          this.errorMessage.set('Une erreur est survenue. Veuillez réessayer.');
+          this.errorMessage.set('Une erreur est survenue. Veuillez reessayer.');
         }
       }
     });

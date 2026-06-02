@@ -27,7 +27,6 @@ export class UserCatalogueComponent implements OnInit {
 
   private families = toSignal(this.familyService.getAll(), { initialValue: [] as EquipmentFamily[] });
 
-  // Deux listes : tous les équipements (sans dates) et ceux disponibles sur la période choisie
   private allEquipments       = signal<Equipment[]>([]);
   private availableEquipments = signal<Equipment[]>([]);
 
@@ -42,7 +41,6 @@ export class UserCatalogueComponent implements OnInit {
 
   categories = computed(() => ['Tous', ...this.families().map(f => f.nameEquipmentFamily)]);
 
-  // Les deux dates sont saisies et la période est valide (fin > début)
   datesSet = computed(() => {
     const s = this.startDate();
     const e = this.endDate();
@@ -55,15 +53,12 @@ export class UserCatalogueComponent implements OnInit {
     return Math.ceil(diff / (1000 * 60 * 60 * 24));
   });
 
-  // Sans dates → équipements DISPONIBLE actuellement
-  // Avec dates → équipements libres sur la période (filtrés par le back via /equipment/available)
   private baseList = computed(() =>
     this.datesSet()
       ? this.availableEquipments()
       : this.allEquipments().filter(e => e.status === 'DISPONIBLE')
   );
 
-  // Liste affichée : baseList filtrée par recherche + catégorie (client-side)
   equipments = computed(() => {
     let list = this.baseList();
     const q = this.searchTerm().trim().toLowerCase();
@@ -94,17 +89,15 @@ export class UserCatalogueComponent implements OnInit {
     this.loadAvailableIfReady();
   }
 
-  // Appelle /equipment/available uniquement si les deux dates forment une période valide
   private loadAvailableIfReady(): void {
     const s = this.startDate();
     const e = this.endDate();
     if (s && e && new Date(e) > new Date(s)) {
       this.loading.set(true);
-      this.equipmentService.getAvailable(s, e)
-        .subscribe({
-          next:  (data) => { this.availableEquipments.set(data); this.loading.set(false); },
-          error: ()     => this.loading.set(false)
-        });
+      this.equipmentService.getAvailable(s, e).subscribe({
+        next:  (data) => { this.availableEquipments.set(data); this.loading.set(false); },
+        error: ()     => this.loading.set(false)
+      });
     }
   }
 
@@ -130,7 +123,6 @@ export class UserCatalogueComponent implements OnInit {
     this.router.navigate(['/utilisateur/catalogue', id]);
   }
 
-  // Soumet directement les demandes groupées et redirige vers la confirmation
   goToSummary(): void {
     const user = this.authService.currentUser();
     if (!this.canSubmit() || this.submitting() || !user) return;
@@ -159,11 +151,11 @@ export class UserCatalogueComponent implements OnInit {
       error: (err) => {
         this.submitting.set(false);
         if (err.status === 403) {
-          this.submitError.set('Votre profil ne vous autorise pas à emprunter un ou plusieurs équipements sélectionnés.');
+          this.submitError.set('Votre profil ne vous autorise pas a emprunter ces equipements.');
         } else if (err.status === 409) {
-          this.submitError.set('Un ou plusieurs équipements ne sont plus disponibles sur cette période. Veuillez actualiser.');
+          this.submitError.set('Un ou plusieurs equipements ne sont plus disponibles. Veuillez actualiser.');
         } else {
-          this.submitError.set('Une erreur est survenue. Veuillez réessayer.');
+          this.submitError.set('Une erreur est survenue. Veuillez reessayer.');
         }
       }
     });
@@ -171,7 +163,9 @@ export class UserCatalogueComponent implements OnInit {
 
   getTodayString(): string {
     const d = new Date();
-    return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`;
+    return d.getFullYear() + '-'
+      + String(d.getMonth() + 1).padStart(2, '0') + '-'
+      + String(d.getDate()).padStart(2, '0');
   }
 
   formatDate(dateStr: string): string {
@@ -179,14 +173,7 @@ export class UserCatalogueComponent implements OnInit {
   }
 
   getCategoryIcon(familyName: string): string {
-    const icons: Record<string, string> = {
-      'PC':              '💻',
-      'Écran':           '🖥️',
-      'Casque VR':       '🥽',
-      'Vidéoprojecteur': '📽️',
-      'Périphérique':    '🖱️',
-      'Autre':           '📦',
-    };
-    return icons[familyName] ?? '📦';
+    // Icons are rendered directly in the template to avoid encoding issues
+    return familyName;
   }
 }
