@@ -88,6 +88,42 @@
 
     <!-- ONGLET HISTORIQUE -->
     @if (ongletActif() === 'historique') {
+
+      <!-- Incidents / pannes / réparations -->
+      @if (statusList().length > 0) {
+        <div class="history-section-title">Incidents techniques</div>
+        <div class="table-wrapper">
+          <div class="table">
+            <div class="table-head">
+              <div class="th">Type</div>
+              <div class="th">Début</div>
+              <div class="th">Fin</div>
+              <div class="th">Statut</div>
+            </div>
+            @for (s of statusList(); track s.id) {
+              <div class="table-row">
+                <div class="td-main">
+                  <span class="badge" [class.b-danger]="s.statusEquipmentType === 'OUT_OF_SERVICE'" [class.b-warning]="s.statusEquipmentType === 'UNDER_REPAIR'">
+                    <span class="badge-dot"></span>
+                    {{ s.statusEquipmentType === 'OUT_OF_SERVICE' ? 'Panne' : 'Réparation' }}
+                  </span>
+                </div>
+                <div class="td-muted">{{ formatDate(s.beginStatusDate) }}</div>
+                <div class="td-muted">{{ s.endStatusDate ? formatDate(s.endStatusDate) : '—' }}</div>
+                <div>
+                  <span class="badge" [class.b-success]="s.endStatusDate" [class.b-danger]="!s.endStatusDate">
+                    <span class="badge-dot"></span>
+                    {{ s.endStatusDate ? 'Résolu' : 'En cours' }}
+                  </span>
+                </div>
+              </div>
+            }
+          </div>
+        </div>
+      }
+
+      <!-- Emprunts -->
+      <div class="history-section-title">Emprunts</div>
       @if (loanHistory().length === 0) {
         <div class="empty-state">Aucun emprunt pour cet équipement.</div>
       } @else {
@@ -198,15 +234,6 @@
             <option value="UNDER_REPAIR">En réparation</option>
           </select>
         </div>
-        @if (newStatusType() !== 'DISPONIBLE') {
-          <div class="form-group">
-            <label class="form-label">Description</label>
-            <textarea class="form-control" rows="3"
-              [value]="newStatusDesc()"
-              (input)="newStatusDesc.set($any($event.target).value)"
-              placeholder="Décrivez le problème..."></textarea>
-          </div>
-        }
       </div>
       <div class="modal-footer">
         <button class="btn btn-ghost" (click)="modalStatusOpen.set(false)">Annuler</button>

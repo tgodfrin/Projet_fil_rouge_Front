@@ -113,7 +113,7 @@ export class UserCreateComponent {
         email:    val.email!,
         profilId: Number(val.profilId),
       }).subscribe({
-        next: () => this.router.navigate(['/gestionnaire/utilisateurs', this.editId]),
+        next: () => this.router.navigate(['/utilisateurs', this.editId]),
         error: (err) => {
           if (err.status === 409) {
             this.errorMessage.set('Cette adresse email est déjà utilisée.');
@@ -132,7 +132,7 @@ export class UserCreateComponent {
         profilId: Number(val.profilId),
       };
       this.userService.create(payload).subscribe({
-        next: () => this.router.navigate(['/gestionnaire/utilisateurs']),
+        next: () => this.router.navigate(['/utilisateurs']),
         error: (err) => {
           if (err.status === 409) {
             this.errorMessage.set('Cette adresse email est déjà utilisée.');

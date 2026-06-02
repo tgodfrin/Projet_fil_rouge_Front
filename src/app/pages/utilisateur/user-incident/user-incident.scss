@@ -1,3 +1,12 @@
+.form-error-banner {
+  background: var(--danger-bg, #fff0f0);
+  color: var(--danger-text, #c0392b);
+  border: 1px solid var(--danger-text, #c0392b);
+  border-radius: var(--r-sm, 6px);
+  padding: 0.6rem 1rem;
+  font-size: 0.85rem;
+}
+
 .incident-page {
   padding: 1rem;
   display: flex;

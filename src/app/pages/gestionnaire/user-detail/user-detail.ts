@@ -6,6 +6,7 @@ import { toSignal } from '@angular/core/rxjs-interop';
 
 import { UserService } from '../../../core/services/user.service';
 import { LoanService } from '../../../core/services/loan.service';
+import { EventService } from '../../../core/services/event.service';
 import { AppUser } from '../../../core/models/user.model';
 import { Loan, StatusLoanType } from '../../../core/models/loan.model';
 import { ProfilType } from '../../../core/models/profil.model';
@@ -22,20 +23,19 @@ type LoanDisplayStatus = StatusLoanType | 'RETARD';
 })
 export class UserDetailComponent {
 
-  private route       = inject(ActivatedRoute);
-  private router      = inject(Router);
-  private location    = inject(Location);
-  private userService = inject(UserService);
-  private loanService = inject(LoanService);
+  private route        = inject(ActivatedRoute);
+  private router       = inject(Router);
+  private location     = inject(Location);
+  private userService  = inject(UserService);
+  private loanService  = inject(LoanService);
+  private eventService = inject(EventService);
 
   private userId = Number(this.route.snapshot.paramMap.get('id'));
 
   // true tant que la requête HTTP des emprunts n'a pas répondu
   loadingLoans = signal(true);
 
-  // Sans initialValue → Signal<AppUser | undefined> (undefined pendant le chargement)
   user  = toSignal(this.userService.getById(this.userId));
-  // tap() passe à false dès que la réponse arrive (succès ou erreur)
   loans = toSignal(
     this.loanService.getByUser(this.userId).pipe(
       tap({ next: () => this.loadingLoans.set(false), error: () => this.loadingLoans.set(false) })
@@ -43,17 +43,26 @@ export class UserDetailComponent {
     { initialValue: [] as Loan[] }
   );
 
+  // Tous les events (gestionnaire) — on filtre sur les loan IDs de cet utilisateur
+  private allEvents = toSignal(this.eventService.getAll(), { initialValue: [] });
+
   ongletActif = signal<'infos' | 'emprunts' | 'statistiques'>('infos');
 
   loanStats = computed(() => {
-    const l   = this.loans();
-    const now = new Date();
+    const l      = this.loans();
+    const now    = new Date();
+    const loanIds = new Set(l.map(x => x.id));
+    // Incidents BREAKDOWN liés aux emprunts de cet utilisateur
+    const incidents = this.allEvents().filter(
+      e => e.type === 'BREAKDOWN' && loanIds.has(e.loan?.id)
+    ).length;
     return {
       total:     l.length,
       enCours:   l.filter(x => x.statusType === 'VALID').length,
       enAttente: l.filter(x => x.statusType === 'IN_PROGRESS').length,
       termine:   l.filter(x => x.statusType === 'TERMINE').length,
       enRetard:  l.filter(x => x.statusType === 'VALID' && new Date(x.endDate) < now).length,
+      incidents,
     };
   });
 
@@ -70,7 +79,7 @@ export class UserDetailComponent {
   delete(): void {
     if (!confirm('Supprimer cet utilisateur ?')) return;
     this.userService.delete(this.userId).subscribe({
-      next: () => this.router.navigate(['/gestionnaire/utilisateurs']),
+      next: () => this.router.navigate(['/utilisateurs']),
       error: (err) => console.error('Erreur lors de la suppression :', err)
     });
   }

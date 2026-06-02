@@ -43,6 +43,7 @@ export class UserIncidentComponent {
 
   selectedType = signal<IncidentType | null>(null);
   submitting   = signal(false);
+  errorMessage = signal<string | null>(null);
 
   form = this.fb.group({
     type:        [null as IncidentType | null, Validators.required],
@@ -63,13 +64,21 @@ export class UserIncidentComponent {
       return;
     }
     this.submitting.set(true);
+    this.errorMessage.set(null);
     this.eventService.create({
       type:        this.form.value.type as EventType,
       description: this.form.value.description ?? null,
       loan:        { id: this.loanId }
     }).subscribe({
       next:  () => this.router.navigate(['/utilisateur/mes-emprunts']),
-      error: () => this.submitting.set(false)
+      error: (err) => {
+        this.submitting.set(false);
+        if (err.status === 403) {
+          this.errorMessage.set('Vous n\'êtes pas autorisé à effectuer cette action.');
+        } else {
+          this.errorMessage.set('Une erreur est survenue. Veuillez réessayer.');
+        }
+      }
     });
   }
 

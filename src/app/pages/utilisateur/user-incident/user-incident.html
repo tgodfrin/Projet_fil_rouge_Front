@@ -69,6 +69,10 @@
       </div>
     </div>
 
+    @if (errorMessage()) {
+      <div class="form-error-banner">{{ errorMessage() }}</div>
+    }
+
     <!-- Submit -->
     <button class="btn-submit" type="submit" [disabled]="submitting()">
       {{ submitting() ? 'Envoi...' : 'Envoyer le signalement' }}

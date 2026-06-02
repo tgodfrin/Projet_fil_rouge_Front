@@ -148,7 +148,7 @@
   background: white;
   transition: border-color 0.2s;
 
-  &::placeholder { color: var(--grey-300); }
+  &::placeholder { color: #bbb; font-style: italic; }
 
   &:focus {
     outline: none;

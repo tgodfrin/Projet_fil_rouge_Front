@@ -28,7 +28,8 @@ export class PlanningComponent implements OnInit, OnDestroy {
   loading = signal(true);
 
   viewMode       = signal<'SEMAINE' | 'MOIS'>('SEMAINE');
-  weekOffset     = signal(0);
+  weekOffset     = signal(0);  // utilisé en mode SEMAINE (unité = 7 jours)
+  monthOffset    = signal(0);  // utilisé en mode MOIS (unité = 1 mois calendaire)
   selectedDate   = signal<string>(this.getTodayString());
   activeCategory = signal<string>('Tous');
 
@@ -78,9 +79,8 @@ export class PlanningComponent implements OnInit, OnDestroy {
         end:   this.toDateStr(days[6].date),
       };
     } else {
-      // Vue MOIS : on prend le 1er et le dernier jour du mois affiché
-      const base = new Date(this.selectedDate());
-      base.setDate(base.getDate() + this.weekOffset() * 7);
+      // Vue MOIS : 1er et dernier jour du mois affiché (via monthBase)
+      const base  = this.monthBase();
       const year  = base.getFullYear();
       const month = base.getMonth();
       const first = new Date(year, month, 1);
@@ -145,9 +145,15 @@ export class PlanningComponent implements OnInit, OnDestroy {
 
   // ── Mois ──────────────────────────────────────────────
 
-  monthDays = computed(() => {
+  // Base calendaire du mois affiché : on part de selectedDate et on ajoute monthOffset mois
+  private monthBase = computed(() => {
     const base = new Date(this.selectedDate());
-    base.setDate(base.getDate() + this.weekOffset() * 7);
+    base.setMonth(base.getMonth() + this.monthOffset());
+    return base;
+  });
+
+  monthDays = computed(() => {
+    const base  = this.monthBase();
     const year  = base.getFullYear();
     const month = base.getMonth();
 
@@ -163,11 +169,9 @@ export class PlanningComponent implements OnInit, OnDestroy {
     return days;
   });
 
-  monthLabel = computed(() => {
-    const base = new Date(this.selectedDate());
-    base.setDate(base.getDate() + this.weekOffset() * 7);
-    return base.toLocaleDateString('fr-FR', { month: 'long', year: 'numeric' });
-  });
+  monthLabel = computed(() =>
+    this.monthBase().toLocaleDateString('fr-FR', { month: 'long', year: 'numeric' })
+  );
 
   getMonthDayEvents(date: Date): PlanningEvent[] {
     const dateStr = this.toDateStr(date);
@@ -191,12 +195,20 @@ export class PlanningComponent implements OnInit, OnDestroy {
   // ── Navigation — chaque action recharge les données du back ───────────────
 
   prevWeek(): void {
-    this.weekOffset.update(v => v - 1);
+    if (this.viewMode() === 'MOIS') {
+      this.monthOffset.update(v => v - 1);
+    } else {
+      this.weekOffset.update(v => v - 1);
+    }
     this.loadCurrentRange();
   }
 
   nextWeek(): void {
-    this.weekOffset.update(v => v + 1);
+    if (this.viewMode() === 'MOIS') {
+      this.monthOffset.update(v => v + 1);
+    } else {
+      this.weekOffset.update(v => v + 1);
+    }
     this.loadCurrentRange();
   }
 
@@ -204,12 +216,14 @@ export class PlanningComponent implements OnInit, OnDestroy {
     const value = (event.target as HTMLInputElement).value;
     this.selectedDate.set(value);
     this.weekOffset.set(0);
+    this.monthOffset.set(0);
     this.loadCurrentRange();
   }
 
   setViewMode(mode: 'SEMAINE' | 'MOIS'): void {
     this.viewMode.set(mode);
     this.weekOffset.set(0);
+    this.monthOffset.set(0);
     this.loadCurrentRange();
   }
 

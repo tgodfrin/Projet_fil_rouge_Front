@@ -9,6 +9,20 @@
   }
 }
 
+// ── Historique sections ────────────────────────────────
+.history-section-title {
+  font-size: 0.8rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  color: var(--text-muted, #888);
+  margin: 1rem 0 0.5rem;
+
+  &:first-child {
+    margin-top: 0;
+  }
+}
+
 // ── En-tête ───────────────────────────────────────────
 .page-header {
   display: flex;

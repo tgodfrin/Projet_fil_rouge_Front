@@ -1,15 +1,14 @@
-import { Component, computed, inject, signal, OnInit, OnDestroy } from '@angular/core';
+import { Component, computed, inject, signal, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { Router } from '@angular/router';
 import { toSignal } from '@angular/core/rxjs-interop';
-import { Subject, Subscription, forkJoin } from 'rxjs';
-import { debounceTime, distinctUntilChanged, switchMap } from 'rxjs/operators';
+import { forkJoin } from 'rxjs';
 
 import { EquipmentService } from '../../../core/services/equipment.service';
 import { EquipmentFamilyService } from '../../../core/services/equipment-family.service';
 import { LoanService } from '../../../core/services/loan.service';
 import { AuthService } from '../../../core/services/auth.service';
-import { Equipment, EquipmentStatus } from '../../../core/models/equipment.model';
+import { Equipment } from '../../../core/models/equipment.model';
 import { EquipmentFamily } from '../../../core/models/equipment-family.model';
 
 @Component({
@@ -19,7 +18,7 @@ import { EquipmentFamily } from '../../../core/models/equipment-family.model';
   templateUrl: './user-catalogue.html',
   styleUrl: './user-catalogue.scss'
 })
-export class UserCatalogueComponent implements OnInit, OnDestroy {
+export class UserCatalogueComponent implements OnInit {
   private router           = inject(Router);
   private equipmentService = inject(EquipmentService);
   private familyService    = inject(EquipmentFamilyService);
@@ -28,100 +27,96 @@ export class UserCatalogueComponent implements OnInit, OnDestroy {
 
   private families = toSignal(this.familyService.getAll(), { initialValue: [] as EquipmentFamily[] });
 
-  equipments     = signal<Equipment[]>([]);
+  // Deux listes : tous les équipements (sans dates) et ceux disponibles sur la période choisie
+  private allEquipments       = signal<Equipment[]>([]);
+  private availableEquipments = signal<Equipment[]>([]);
+
   loading        = signal(true);
+  startDate      = signal('');
+  endDate        = signal('');
   searchTerm     = signal('');
   activeCategory = signal<string>('Tous');
-  activeFamilyId = signal<number | null>(null);
+  selectedIds    = signal<number[]>([]);
+  submitting     = signal(false);
+  submitError    = signal<string | null>(null);
 
-  // Mode multi-sélection
-  multiMode        = signal(false);
-  multiStartDate   = signal('');
-  multiEndDate     = signal('');
-  selectedIds      = signal<number[]>([]);
-  submittingMulti  = signal(false);
-  multiError       = signal<string | null>(null);
-
-  // Aliases used by the template
-  startDate = this.multiStartDate;
-  endDate   = this.multiEndDate;
-
-  private searchSubject = new Subject<string>();
-  private sub!: Subscription;
-
-  // Catégories dynamiques depuis les vraies familles
   categories = computed(() => ['Tous', ...this.families().map(f => f.nameEquipmentFamily)]);
 
+  // Les deux dates sont saisies et la période est valide (fin > début)
+  datesSet = computed(() => {
+    const s = this.startDate();
+    const e = this.endDate();
+    return !!s && !!e && new Date(e) > new Date(s);
+  });
+
   duration = computed(() => {
-    if (!this.multiStartDate() || !this.multiEndDate()) return 0;
-    const diff = new Date(this.multiEndDate()).getTime() - new Date(this.multiStartDate()).getTime();
+    if (!this.datesSet()) return 0;
+    const diff = new Date(this.endDate()).getTime() - new Date(this.startDate()).getTime();
     return Math.ceil(diff / (1000 * 60 * 60 * 24));
   });
 
-  canMultiSubmit = computed(() =>
-    this.selectedIds().length > 0 &&
-    this.multiStartDate() !== '' &&
-    this.multiEndDate() !== '' &&
-    this.duration() > 0
+  // Sans dates → équipements DISPONIBLE actuellement
+  // Avec dates → équipements libres sur la période (filtrés par le back via /equipment/available)
+  private baseList = computed(() =>
+    this.datesSet()
+      ? this.availableEquipments()
+      : this.allEquipments().filter(e => e.status === 'DISPONIBLE')
   );
 
-  datesSet  = computed(() => this.multiStartDate() !== '' && this.multiEndDate() !== '');
-  canSubmit = this.canMultiSubmit;
+  // Liste affichée : baseList filtrée par recherche + catégorie (client-side)
+  equipments = computed(() => {
+    let list = this.baseList();
+    const q = this.searchTerm().trim().toLowerCase();
+    if (q) list = list.filter(e => e.equipmentName.toLowerCase().includes(q));
+    const cat = this.activeCategory();
+    if (cat !== 'Tous') list = list.filter(e => e.equipmentFamily.nameEquipmentFamily === cat);
+    return list;
+  });
+
+  canSubmit = computed(() => this.selectedIds().length > 0 && this.datesSet());
 
   ngOnInit(): void {
     this.equipmentService.getAll().subscribe({
-      next:  (data) => { this.equipments.set(data); this.loading.set(false); },
+      next:  (data) => { this.allEquipments.set(data); this.loading.set(false); },
       error: ()     => this.loading.set(false)
     });
-
-    // Server-side search with 300ms debounce
-    this.sub = this.searchSubject.pipe(
-      debounceTime(300),
-      distinctUntilChanged(),
-      switchMap(q => {
-        if (q.trim()) return this.equipmentService.searchByName(q);
-        const familyId = this.activeFamilyId();
-        return familyId
-          ? this.equipmentService.getByFamily(familyId)
-          : this.equipmentService.getAll();
-      })
-    ).subscribe(data => this.equipments.set(data));
   }
 
-  ngOnDestroy(): void {
-    this.sub?.unsubscribe();
+  onStartDate(event: Event): void {
+    this.startDate.set((event.target as HTMLInputElement).value);
+    this.selectedIds.set([]);
+    this.loadAvailableIfReady();
+  }
+
+  onEndDate(event: Event): void {
+    this.endDate.set((event.target as HTMLInputElement).value);
+    this.selectedIds.set([]);
+    this.loadAvailableIfReady();
+  }
+
+  // Appelle /equipment/available uniquement si les deux dates forment une période valide
+  private loadAvailableIfReady(): void {
+    const s = this.startDate();
+    const e = this.endDate();
+    if (s && e && new Date(e) > new Date(s)) {
+      this.loading.set(true);
+      this.equipmentService.getAvailable(s, e)
+        .subscribe({
+          next:  (data) => { this.availableEquipments.set(data); this.loading.set(false); },
+          error: ()     => this.loading.set(false)
+        });
+    }
   }
 
   onSearch(event: Event): void {
-    const q = (event.target as HTMLInputElement).value;
-    this.searchTerm.set(q);
-    this.searchSubject.next(q);
+    this.searchTerm.set((event.target as HTMLInputElement).value);
   }
 
   setCategory(cat: string): void {
     this.activeCategory.set(cat);
-    const family = this.families().find(f => f.nameEquipmentFamily === cat);
-    this.activeFamilyId.set(family?.id ?? null);
-
-    const q = this.searchTerm().trim();
-    if (q) {
-      this.searchSubject.next(q);
-    } else if (cat === 'Tous') {
-      this.equipmentService.getAll().subscribe(data => this.equipments.set(data));
-    } else if (family) {
-      this.equipmentService.getByFamily(family.id).subscribe(data => this.equipments.set(data));
-    }
-  }
-
-  toggleMultiMode(): void {
-    this.multiMode.update(v => !v);
-    this.selectedIds.set([]);
-    this.multiStartDate.set('');
-    this.multiEndDate.set('');
   }
 
   toggleSelect(item: Equipment): void {
-    if (item.status !== 'DISPONIBLE') return;
     this.selectedIds.update(ids =>
       ids.includes(item.id) ? ids.filter(id => id !== item.id) : [...ids, item.id]
     );
@@ -131,23 +126,19 @@ export class UserCatalogueComponent implements OnInit, OnDestroy {
     return this.selectedIds().includes(id);
   }
 
-  onStartDate(event: Event): void {
-    this.multiStartDate.set((event.target as HTMLInputElement).value);
+  goToDetail(id: number): void {
+    this.router.navigate(['/utilisateur/catalogue', id]);
   }
 
-  onEndDate(event: Event): void {
-    this.multiEndDate.set((event.target as HTMLInputElement).value);
-  }
-
-  // Submits grouped loan requests — dates sent as YYYY-MM-DD (no hardcoded time)
-  submitMulti(): void {
+  // Soumet directement les demandes groupées et redirige vers la confirmation
+  goToSummary(): void {
     const user = this.authService.currentUser();
-    if (!this.canMultiSubmit() || this.submittingMulti() || !user) return;
-    this.submittingMulti.set(true);
-    this.multiError.set(null);
+    if (!this.canSubmit() || this.submitting() || !user) return;
+    this.submitting.set(true);
+    this.submitError.set(null);
 
-    const begin   = this.multiStartDate();
-    const end     = this.multiEndDate();
+    const begin   = this.startDate();
+    const end     = this.endDate();
     const groupId = crypto.randomUUID();
 
     const requests = this.selectedIds().map(id =>
@@ -156,22 +147,23 @@ export class UserCatalogueComponent implements OnInit, OnDestroy {
         endDate:     end,
         requesterId: user.id,
         equipmentId: id,
-        groupId:     groupId
+        groupId
       })
     );
 
     forkJoin(requests).subscribe({
       next: () => {
-        this.submittingMulti.set(false);
-        this.toggleMultiMode();
+        this.submitting.set(false);
         this.router.navigate(['/utilisateur/confirmation']);
       },
       error: (err) => {
-        this.submittingMulti.set(false);
+        this.submitting.set(false);
         if (err.status === 403) {
-          this.multiError.set('Votre profil ne vous autorise pas à emprunter un ou plusieurs équipements sélectionnés.');
+          this.submitError.set('Votre profil ne vous autorise pas à emprunter un ou plusieurs équipements sélectionnés.');
+        } else if (err.status === 409) {
+          this.submitError.set('Un ou plusieurs équipements ne sont plus disponibles sur cette période. Veuillez actualiser.');
         } else {
-          this.multiError.set('Une erreur est survenue. Veuillez réessayer.');
+          this.submitError.set('Une erreur est survenue. Veuillez réessayer.');
         }
       }
     });
@@ -180,6 +172,10 @@ export class UserCatalogueComponent implements OnInit, OnDestroy {
   getTodayString(): string {
     const d = new Date();
     return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`;
+  }
+
+  formatDate(dateStr: string): string {
+    return new Date(dateStr).toLocaleDateString('fr-FR', { day: 'numeric', month: 'long' });
   }
 
   getCategoryIcon(familyName: string): string {
@@ -192,68 +188,5 @@ export class UserCatalogueComponent implements OnInit, OnDestroy {
       'Autre':           '📦',
     };
     return icons[familyName] ?? '📦';
-  }
-
-  getStatusLabel(status: EquipmentStatus | null): string {
-    if (!status) return '—';
-    const labels: Record<EquipmentStatus, string> = {
-      DISPONIBLE: 'Dispo', EN_PRET: 'En prêt', OUT_OF_SERVICE: 'H.S.', UNDER_REPAIR: 'Réparation'
-    };
-    return labels[status];
-  }
-
-  getStatusClass(status: EquipmentStatus | null): string {
-    if (!status) return '';
-    const classes: Record<EquipmentStatus, string> = {
-      DISPONIBLE: 'badge-success', EN_PRET: 'badge-warning', OUT_OF_SERVICE: 'badge-danger', UNDER_REPAIR: 'badge-danger'
-    };
-    return classes[status];
-  }
-
-  goToDetail(id: number): void {
-    this.router.navigate(['/utilisateur/catalogue', id]);
-  }
-
-  goToSummary(): void {
-    const user = this.authService.currentUser();
-    if (!this.canMultiSubmit() || this.submittingMulti() || !user) return;
-    this.submittingMulti.set(true);
-    this.multiError.set(null);
-
-    const begin   = this.multiStartDate();
-    const end     = this.multiEndDate();
-    const groupId = crypto.randomUUID();
-
-    const requests = this.selectedIds().map(id =>
-      this.loanService.create({
-        beginDate:   begin,
-        endDate:     end,
-        requesterId: user.id,
-        equipmentId: id,
-        groupId:     groupId
-      })
-    );
-
-    forkJoin(requests).subscribe({
-      next: () => {
-        this.submittingMulti.set(false);
-        this.toggleMultiMode();
-        this.router.navigate(['/utilisateur/confirmation']);
-      },
-      error: (err) => {
-        this.submittingMulti.set(false);
-        if (err.status === 403) {
-          this.multiError.set('Votre profil ne vous autorise pas à emprunter un ou plusieurs équipements sélectionnés.');
-        } else {
-          this.multiError.set('Une erreur est survenue. Veuillez réessayer.');
-        }
-      }
-    });
-  }
-
-  formatDate(dateStr: string): string {
-    if (!dateStr) return '';
-    const [y, m, d] = dateStr.split('-');
-    return `${d}/${m}/${y}`;
   }
 }

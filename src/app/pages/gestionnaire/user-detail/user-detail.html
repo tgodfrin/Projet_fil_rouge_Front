@@ -114,6 +114,7 @@
 
   <!-- ONGLET : STATISTIQUES -->
   @if (ongletActif() === 'statistiques') {
+    <!-- Ligne 1 : emprunts -->
     <div class="stats-grid">
       <div class="stat-card">
         <div class="stat-value">{{ loanStats().total }}</div>
@@ -123,17 +124,24 @@
         <div class="stat-value">{{ loanStats().enCours }}</div>
         <div class="stat-label">En cours</div>
       </div>
-      <div class="stat-card stat-warning">
-        <div class="stat-value">{{ loanStats().enAttente }}</div>
-        <div class="stat-label">En attente</div>
-      </div>
       <div class="stat-card stat-success">
         <div class="stat-value">{{ loanStats().termine }}</div>
         <div class="stat-label">Terminés</div>
       </div>
-      <div class="stat-card stat-danger">
+    </div>
+    <!-- Ligne 2 : retards et incidents -->
+    <div class="stats-grid">
+      <div class="stat-card stat-neutral">
+        <div class="stat-value">{{ loanStats().enAttente }}</div>
+        <div class="stat-label">En attente</div>
+      </div>
+      <div class="stat-card stat-warning">
         <div class="stat-value">{{ loanStats().enRetard }}</div>
         <div class="stat-label">En retard</div>
+      </div>
+      <div class="stat-card stat-danger">
+        <div class="stat-value">{{ loanStats().incidents }}</div>
+        <div class="stat-label">Incidents</div>
       </div>
     </div>
   }

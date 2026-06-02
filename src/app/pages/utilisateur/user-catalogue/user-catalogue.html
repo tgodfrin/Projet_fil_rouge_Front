@@ -82,12 +82,16 @@
     </div>
   }
 
+  @if (submitError()) {
+    <div class="submit-error">{{ submitError() }}</div>
+  }
+
   <!-- Barre flottante : apparaît dès qu'au moins 1 équipement est sélectionné -->
   @if (canSubmit()) {
     <div class="multi-bar">
       <span class="multi-bar-count">{{ selectedIds().length }} matériel(s) sélectionné(s)</span>
-      <button class="multi-bar-btn" (click)="goToSummary()">
-        Voir le récapitulatif
+      <button class="multi-bar-btn" [disabled]="submitting()" (click)="goToSummary()">
+        {{ submitting() ? 'Envoi en cours...' : 'Valider la demande' }}
       </button>
     </div>
   }

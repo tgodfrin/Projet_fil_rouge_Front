@@ -334,6 +334,7 @@
   &.stat-warning { background: var(--warning-bg); }
   &.stat-success { background: var(--success-bg); }
   &.stat-danger  { background: var(--danger-bg); }
+  &.stat-neutral { background: var(--grey-100, #f5f5f5); }
 }
 
 .stat-value {
