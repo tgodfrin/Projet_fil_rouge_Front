@@ -33,6 +33,7 @@ export class UserCatalogueComponent implements OnInit {
   searchTerm     = signal('');
   activeCategory = signal<string>('Tous');
   selectedIds    = signal<number[]>([]);
+  submitting     = signal(false);
   submitError    = signal<string | null>(null);
 
   categories = computed(() => ['Tous', ...this.families().map(f => f.nameEquipmentFamily)]);
