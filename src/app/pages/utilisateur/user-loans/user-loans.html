@@ -28,7 +28,6 @@
         @if (item.kind === 'group') {
           <div class="loan-card loan-card-group">
 
-            <!-- Header du groupe -->
             <div class="loan-header">
               <div class="loan-icon group-icon">📦</div>
               <div class="loan-info">
@@ -40,14 +39,12 @@
               </span>
             </div>
 
-            <!-- Bouton détails -->
             <div class="group-toggle-row">
               <button class="btn-group-toggle" (click)="toggleGroupDetail(item.groupId)">
                 {{ openGroupId() === item.groupId ? '▲ Masquer les équipements' : '▼ Voir les équipements' }}
               </button>
             </div>
 
-            <!-- Détail dépliable : une mini-carte par équipement -->
             @if (openGroupId() === item.groupId) {
               <div class="group-loans-detail">
                 @for (loan of item.loans; track loan.id) {
@@ -64,69 +61,20 @@
                       </span>
                     </div>
 
-                    <!-- Progress (emprunts actifs VALID uniquement) -->
                     @if (loan.statusType === 'VALID') {
                       <div class="progress-bar">
                         <div class="progress-fill" [style.width.%]="getProgressPercent(loan)"></div>
                       </div>
                       <div class="days-left">
                         @if (getDaysLeft(loan) > 0) {
-                          Retour dans
-                          <strong [class.urgent]="getDaysLeft(loan) <= 1">
-                            {{ getDaysLeft(loan) }} jour(s)
-                          </strong>
+                          Retour dans <strong [class.urgent]="getDaysLeft(loan) <= 1">{{ getDaysLeft(loan) }} jour(s)</strong>
                         } @else {
                           <strong class="urgent">En retard de {{ -getDaysLeft(loan) }} jour(s)</strong>
                         }
                       </div>
-
-                      <!-- Actions par équipement du groupe -->
                       <div class="loan-actions">
                         <a class="btn-action btn-outline" [routerLink]="['/utilisateur/signalement', loan.id]">Signaler</a>
-                        <button class="btn-action btn-ghost" (click)="toggleForm(loan.id, 'return')">Retour anticipé</button>
-                        <button class="btn-action btn-ghost" (click)="toggleForm(loan.id, 'prolong')">Prolonger</button>
                       </div>
-
-                      <!-- Formulaire retour anticipé -->
-                      @if (selectedLoanId() === loan.id && activeForm() === 'return') {
-                        <form class="inline-form" [formGroup]="returnForm" (ngSubmit)="submitReturn(loan)">
-                          <div class="inline-form-title">🔄 Retour anticipé</div>
-                          <div class="form-group">
-                            <label>Date de retour</label>
-                            <input type="date" class="form-input" formControlName="date" />
-                            @if (returnForm.get('date')?.invalid && returnForm.get('date')?.touched) {
-                              <small class="form-error">La date de retour est requise.</small>
-                            }
-                          </div>
-                          <div class="form-group">
-                            <label>Motif (optionnel)</label>
-                            <textarea class="form-input" rows="2" formControlName="motif"
-                              placeholder="Ex : mission terminée plus tôt..."></textarea>
-                          </div>
-                          <div class="form-actions">
-                            <button class="btn-submit btn-danger" type="submit">Confirmer le retour</button>
-                            <button class="btn-cancel" type="button" (click)="closeForm()">Annuler</button>
-                          </div>
-                        </form>
-                      }
-
-                      <!-- Formulaire prolongation -->
-                      @if (selectedLoanId() === loan.id && activeForm() === 'prolong') {
-                        <form class="inline-form" [formGroup]="prolongForm" (ngSubmit)="submitExtend(loan)">
-                          <div class="inline-form-title">📅 Prolonger l'emprunt</div>
-                          <div class="form-group">
-                            <label>Nouvelle date de fin</label>
-                            <input type="date" class="form-input" formControlName="date" [min]="loan.endDate.substring(0, 10)" />
-                            @if (prolongForm.get('date')?.invalid && prolongForm.get('date')?.touched) {
-                              <small class="form-error">La nouvelle date de fin est requise.</small>
-                            }
-                          </div>
-                          <div class="form-actions">
-                            <button class="btn-submit" type="submit">Confirmer la prolongation</button>
-                            <button class="btn-cancel" type="button" (click)="closeForm()">Annuler</button>
-                          </div>
-                        </form>
-                      }
                     }
 
                   </div>
@@ -158,67 +106,14 @@
               </div>
               <div class="days-left">
                 @if (getDaysLeft(item.loan) > 0) {
-                  Retour dans
-                  <strong [class.urgent]="getDaysLeft(item.loan) <= 1">
-                    {{ getDaysLeft(item.loan) }} jour(s)
-                  </strong>
+                  Retour dans <strong [class.urgent]="getDaysLeft(item.loan) <= 1">{{ getDaysLeft(item.loan) }} jour(s)</strong>
                 } @else {
                   <strong class="urgent">En retard de {{ -getDaysLeft(item.loan) }} jour(s)</strong>
                 }
               </div>
-
               <div class="loan-actions">
                 <a class="btn-action btn-outline" [routerLink]="['/utilisateur/signalement', item.loan.id]">Signaler</a>
-                <button class="btn-action btn-ghost" (click)="toggleForm(item.loan.id, 'return')">Retour anticipé</button>
-                <button class="btn-action btn-ghost" (click)="toggleForm(item.loan.id, 'prolong')">Prolonger</button>
               </div>
-
-              @if (selectedLoanId() === item.loan.id && activeForm() === 'return') {
-                <form class="inline-form" [formGroup]="returnForm" (ngSubmit)="submitReturn(item.loan)">
-                  <div class="inline-form-title">🔄 Retour anticipé</div>
-                  <div class="form-group">
-                    <label>Date de retour</label>
-                    <input type="date" class="form-input" formControlName="date" />
-                    @if (returnForm.get('date')?.invalid && returnForm.get('date')?.touched) {
-                      <small class="form-error">La date de retour est requise.</small>
-                    }
-                  </div>
-                  <div class="form-group">
-                    <label>Motif (optionnel)</label>
-                    <textarea class="form-input" rows="2" formControlName="motif"
-                      placeholder="Ex : mission terminée plus tôt..."></textarea>
-                  </div>
-                  <div class="form-actions">
-                    <button class="btn-submit btn-danger" type="submit">Confirmer le retour</button>
-                    <button class="btn-cancel" type="button" (click)="closeForm()">Annuler</button>
-                  </div>
-                </form>
-              }
-
-              @if (selectedLoanId() === item.loan.id && activeForm() === 'prolong') {
-                <form class="inline-form" [formGroup]="prolongForm" (ngSubmit)="submitExtend(item.loan)">
-                  <div class="inline-form-title">📅 Demande de prolongation</div>
-                  <div class="form-group">
-                    <label>Nouvelle date de fin</label>
-                    <input type="date" class="form-input" formControlName="date" [min]="item.loan.endDate.substring(0, 10)" />
-                    @if (prolongForm.get('date')?.invalid && prolongForm.get('date')?.touched) {
-                      <small class="form-error">La nouvelle date de fin est requise.</small>
-                    }
-                  </div>
-                  <div class="form-group">
-                    <label>Motif</label>
-                    <textarea class="form-input" rows="2" formControlName="motif"
-                      placeholder="Ex : projet prolongé d'une semaine..."></textarea>
-                    @if (prolongForm.get('motif')?.invalid && prolongForm.get('motif')?.touched) {
-                      <small class="form-error">Le motif est requis.</small>
-                    }
-                  </div>
-                  <div class="form-actions">
-                    <button class="btn-submit" type="submit">Envoyer la demande</button>
-                    <button class="btn-cancel" type="button" (click)="closeForm()">Annuler</button>
-                  </div>
-                </form>
-              }
             }
 
           </div>

@@ -76,6 +76,12 @@ export class LoanService {
     return this.http.put<Loan>(`${this.apiUrl}/loan/${loanId}/validate-extension`, { newEndDate });
   }
 
+  // PUT /loan/:id/validate-early-return  →  gestionnaire validates early return request
+  // Updates endDate to the requested date — loan stays VALID until physically returned
+  validateEarlyReturn(loanId: number, newEndDate: string): Observable<Loan> {
+    return this.http.put<Loan>(`${this.apiUrl}/loan/${loanId}/validate-early-return`, { newEndDate });
+  }
+
   // PUT /loan/:id/return  →  VALID → TERMINE (explicit alias for readability)
   returnLoan(id: number): Observable<void> {
     return this.return(id);

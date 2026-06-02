@@ -152,13 +152,31 @@ export class AlertListComponent {
 
   /**
    * Gestionnaire valide une demande de retour anticipé.
-   * "Valider" = accuser réception de la demande (mark as read).
-   * Le loan reste VALID — le TERMINE est déclenché séparément quand le matériel est physiquement rendu
-   * (bouton "Retour" dans le détail du prêt). Cela évite que l'emprunt disparaisse
-   * du côté de l'utilisateur avant le retour physique réel.
+   * Met à jour la endDate du loan à la date demandée (le loan reste VALID — visible côté user).
+   * Le TERMINE est déclenché séparément quand le matériel est physiquement rendu.
+   * Format description : "YYYY-MM-DD" ou "YYYY-MM-DD|motif".
    */
   validerRetour(alert: Alert): void {
-    this.markAsRead(alert);
+    const newEndDate = alert.description.split('|')[0].trim();
+
+    // Si la description contient une date ISO valide, mettre à jour la endDate du loan
+    if (newEndDate && /^\d{4}-\d{2}-\d{2}$/.test(newEndDate)) {
+      this.processingIds.update(s => new Set([...s, alert.id]));
+      this.loanService.validateEarlyReturn(alert.loanId, newEndDate).subscribe({
+        next: () => {
+          this.markAsRead(alert);
+          this.processingIds.update(s => { const n = new Set(s); n.delete(alert.id); return n; });
+        },
+        error: () => {
+          // En cas d'erreur back, on marque quand même comme lu (la date ne change pas)
+          this.markAsRead(alert);
+          this.processingIds.update(s => { const n = new Set(s); n.delete(alert.id); return n; });
+        }
+      });
+    } else {
+      // Description sans date parsable (ancien format) → juste marquer comme lu
+      this.markAsRead(alert);
+    }
   }
 
   /**
