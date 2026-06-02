@@ -151,36 +151,27 @@ export class AlertListComponent {
   }
 
   /**
-   * Gestionnaire valide un retour anticipé : marque le matériel comme rendu (VALID → TERMINE).
-   * L'event est ensuite marqué comme lu. Le loan disparaît de la liste "En cours" côté user.
+   * Gestionnaire valide une demande de retour anticipé.
+   * "Valider" = accuser réception de la demande (mark as read).
+   * Le loan reste VALID — le TERMINE est déclenché séparément quand le matériel est physiquement rendu
+   * (bouton "Retour" dans le détail du prêt). Cela évite que l'emprunt disparaisse
+   * du côté de l'utilisateur avant le retour physique réel.
    */
   validerRetour(alert: Alert): void {
-    this.processingIds.update(s => new Set([...s, alert.id]));
-    this.loanService.return(alert.loanId).subscribe({
-      next: () => {
-        this.markAsRead(alert);
-        this.processingIds.update(s => { const n = new Set(s); n.delete(alert.id); return n; });
-        // Retire le loan des retards front-only si présent
-        this.readRetardIds.update(s => { const n = new Set(s); n.delete(alert.loanId); return n; });
-      },
-      error: () => {
-        this.processingIds.update(s => { const n = new Set(s); n.delete(alert.id); return n; });
-      }
-    });
+    this.markAsRead(alert);
   }
 
   /**
-   * Gestionnaire valide une prolongation : appelle extendLoan avec la date extraite de la description.
+   * Gestionnaire valide une prolongation : appelle validate-extension avec la date extraite de la description.
+   * Utilise l'endpoint gestionnaire (pas de vérif requester) — fonctionne aussi pour les loans en retard.
    * Format description attendu : "YYYY-MM-DD" ou "YYYY-MM-DD|motif".
-   * L'event est marqué comme lu, la date de fin du loan est mise à jour.
    */
   validerExtension(alert: Alert): void {
-    // La date est la première partie de la description avant le "|"
     const newEndDate = alert.description.split('|')[0].trim();
     if (!newEndDate || !/^\d{4}-\d{2}-\d{2}$/.test(newEndDate)) return;
 
     this.processingIds.update(s => new Set([...s, alert.id]));
-    this.loanService.extendLoan(alert.loanId, newEndDate).subscribe({
+    this.loanService.validateExtension(alert.loanId, newEndDate).subscribe({
       next: () => {
         this.markAsRead(alert);
         this.processingIds.update(s => { const n = new Set(s); n.delete(alert.id); return n; });

@@ -65,9 +65,15 @@ export class LoanService {
     return this.http.put<void>(`${this.apiUrl}/loan/${id}/return`, null);
   }
 
-  // PUT /loan/:id/extend  →  updates endDate, creates an EXTENSION event
+  // PUT /loan/:id/extend  →  updates endDate (user-initiated, checks requester ownership)
   extendLoan(loanId: number, newEndDate: string): Observable<Loan> {
     return this.http.put<Loan>(`${this.apiUrl}/loan/${loanId}/extend`, { newEndDate });
+  }
+
+  // PUT /loan/:id/validate-extension  →  gestionnaire validates an extension request
+  // No requester check — works for overdue loans too
+  validateExtension(loanId: number, newEndDate: string): Observable<Loan> {
+    return this.http.put<Loan>(`${this.apiUrl}/loan/${loanId}/validate-extension`, { newEndDate });
   }
 
   // PUT /loan/:id/return  →  VALID → TERMINE (explicit alias for readability)
