@@ -6,7 +6,7 @@
     <div class="page-title">Signaler un incident</div>
   </div>
 
-  <!-- Équipement concerné -->
+  <!-- Equipement concerne -->
   @if (loan(); as l) {
     <div class="equipment-card">
       <div class="equipment-icon">📦</div>
@@ -15,69 +15,97 @@
         <div class="equipment-dates">Emprunt du {{ dateRange() }}</div>
       </div>
     </div>
-  } @else {
-    <div class="equipment-card">
-      <div class="equipment-info">
-        <div class="equipment-name">Emprunt introuvable</div>
-      </div>
-    </div>
   }
 
-  <form [formGroup]="form" (ngSubmit)="submit()">
-
-    <!-- Type d'incident -->
-    <div class="section-label">Type d'incident</div>
-    <div class="incident-grid">
-      @for (option of incidentOptions; track option.type) {
-        <button
-          type="button"
-          class="incident-type"
-          [class.selected]="selectedType() === option.type"
-          (click)="selectType(option.type)">
-          <div class="incident-icon">{{ option.icon }}</div>
-          <div class="incident-label">{{ option.label }}</div>
-        </button>
-      }
-    </div>
-    @if (type.invalid && type.touched) {
-      <small class="form-error">Veuillez sélectionner un type d'incident.</small>
-    }
-
-    <!-- Description -->
-    <div class="form-group">
-      <label class="form-label">Description</label>
-      <textarea
-        class="form-textarea"
-        placeholder="Décrivez le problème rencontré..."
-        rows="4"
-        formControlName="description">
-      </textarea>
-      @if (description.invalid && description.touched) {
-        <small class="form-error">
-          @if (description.hasError('required')) { La description est requise. }
-          @else if (description.hasError('minlength')) { Minimum 10 caractères. }
-        </small>
-      }
-    </div>
-
-    <!-- Photo -->
-    <div class="form-group">
-      <label class="form-label">Photo (optionnel)</label>
-      <div class="photo-upload">
-        <span class="photo-icon">📷</span>
-        <span class="photo-label">Ajouter une photo</span>
-      </div>
-    </div>
-
-    @if (errorMessage()) {
-      <div class="form-error-banner">{{ errorMessage() }}</div>
-    }
-
-    <!-- Submit -->
-    <button class="btn-submit" type="submit" [disabled]="submitting()">
-      {{ submitting() ? 'Envoi...' : 'Envoyer le signalement' }}
+  <!-- Choix du type -->
+  <div class="section-label">Type d'action</div>
+  <div class="incident-grid">
+    <button type="button" class="incident-type"
+      [class.selected]="selectedType() === 'BREAKDOWN'"
+      (click)="selectType('BREAKDOWN')">
+      <div class="incident-label">🔴 Panne</div>
     </button>
+    <button type="button" class="incident-type"
+      [class.selected]="selectedType() === 'EARLY_RETURN'"
+      (click)="selectType('EARLY_RETURN')">
+      <div class="incident-label">↩️ Retour anticipé</div>
+    </button>
+    <button type="button" class="incident-type"
+      [class.selected]="selectedType() === 'EXTENSION'"
+      (click)="selectType('EXTENSION')">
+      <div class="incident-label">📅 Prolongation</div>
+    </button>
+  </div>
 
-  </form>
+  <!-- Formulaire PANNE -->
+  @if (selectedType() === 'BREAKDOWN') {
+    <form [formGroup]="breakdownForm" (ngSubmit)="submit()">
+      <div class="form-group">
+        <label class="form-label">Description du problème</label>
+        <textarea class="form-textarea" rows="4"
+          placeholder="Décrivez la panne rencontrée (min. 10 caractères)..."
+          formControlName="description">
+        </textarea>
+        @if (description.invalid && description.touched) {
+          <small class="form-error">
+            @if (description.hasError('required')) { La description est requise. }
+            @else if (description.hasError('minlength')) { Minimum 10 caractères. }
+          </small>
+        }
+      </div>
+      @if (errorMessage()) {
+        <div class="form-error-banner">{{ errorMessage() }}</div>
+      }
+      <button class="btn-submit" type="submit" [disabled]="submitting()">
+        {{ submitting() ? 'Envoi...' : 'Signaler la panne' }}
+      </button>
+    </form>
+  }
+
+  <!-- Formulaire RETOUR ANTICIPE -->
+  @if (selectedType() === 'EARLY_RETURN') {
+    <form [formGroup]="dateForm" (ngSubmit)="submit()">
+      <div class="form-group">
+        <label class="form-label">Date de retour</label>
+        <input class="form-input" type="date"
+          [min]="todayString"
+          formControlName="date" />
+        @if (date.invalid && date.touched) {
+          <small class="form-error">Veuillez sélectionner une date.</small>
+        }
+      </div>
+      @if (errorMessage()) {
+        <div class="form-error-banner">{{ errorMessage() }}</div>
+      }
+      <button class="btn-submit" type="submit" [disabled]="submitting()">
+        {{ submitting() ? 'Envoi...' : 'Confirmer le retour anticipé' }}
+      </button>
+    </form>
+  }
+
+  <!-- Formulaire PROLONGATION -->
+  @if (selectedType() === 'EXTENSION') {
+    <form [formGroup]="dateForm" (ngSubmit)="submit()">
+      <div class="form-group">
+        <label class="form-label">Nouvelle date de fin</label>
+        <input class="form-input" type="date"
+          [min]="todayString"
+          formControlName="date" />
+        @if (date.invalid && date.touched) {
+          <small class="form-error">Veuillez sélectionner une nouvelle date de fin.</small>
+        }
+      </div>
+      @if (errorMessage()) {
+        <div class="form-error-banner">{{ errorMessage() }}</div>
+      }
+      <button class="btn-submit" type="submit" [disabled]="submitting()">
+        {{ submitting() ? 'Envoi...' : 'Confirmer la prolongation' }}
+      </button>
+    </form>
+  }
+
+  @if (!selectedType()) {
+    <p class="hint-text">Sélectionnez une action ci-dessus pour continuer.</p>
+  }
 
 </div>

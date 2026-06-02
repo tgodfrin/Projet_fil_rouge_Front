@@ -9,6 +9,10 @@
     </div>
   </div>
 
+  @if (deleteError()) {
+    <div class="delete-error-banner">{{ deleteError() }}</div>
+  }
+
   @if (!user()) {
     <div class="empty-state">Chargement…</div>
   } @else {

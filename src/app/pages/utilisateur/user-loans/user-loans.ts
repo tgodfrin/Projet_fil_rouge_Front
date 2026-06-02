@@ -226,7 +226,7 @@ export class UserLoansComponent {
     this.eventService.create({
       type:        'EARLY_RETURN',
       description,
-      loan:        { id: loan.id }
+      loanId:      loan.id
     }).subscribe(() => this.closeForm());
   }
 

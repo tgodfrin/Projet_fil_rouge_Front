@@ -3,11 +3,11 @@ import { HttpClient } from '@angular/common/http';
 import { Observable } from 'rxjs';
 import { Event, EventType } from '../models/event.model';
 
-// Body attendu par POST /event
+// Body attendu par POST /event — loanId correspond au champ attendu par EventRequest.java côté back
 export interface EventCreate {
   type: EventType;
   description: string | null;
-  loan: { id: number };
+  loanId: number;
 }
 
 @Injectable({ providedIn: 'root' })

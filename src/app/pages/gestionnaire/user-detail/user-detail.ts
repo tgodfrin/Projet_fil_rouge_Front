@@ -34,6 +34,7 @@ export class UserDetailComponent {
 
   // true tant que la requête HTTP des emprunts n'a pas répondu
   loadingLoans = signal(true);
+  deleteError  = signal<string | null>(null);
 
   user  = toSignal(this.userService.getById(this.userId));
   loans = toSignal(
@@ -78,9 +79,16 @@ export class UserDetailComponent {
   // Demande confirmation puis supprime l'utilisateur via le back, puis redirige vers la liste
   delete(): void {
     if (!confirm('Supprimer cet utilisateur ?')) return;
+    this.deleteError.set(null);
     this.userService.delete(this.userId).subscribe({
       next: () => this.router.navigate(['/utilisateurs']),
-      error: (err) => console.error('Erreur lors de la suppression :', err)
+      error: (err) => {
+        if (err.status === 409) {
+          this.deleteError.set('Impossible de supprimer cet utilisateur : il possede des emprunts ou des donnees liees en base.');
+        } else {
+          this.deleteError.set('Une erreur est survenue lors de la suppression.');
+        }
+      }
     });
   }
 

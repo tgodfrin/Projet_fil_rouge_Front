@@ -360,5 +360,15 @@
   font-size: 14px;
   background: white;
   border-radius: var(--r-md);
-  border: 1px dashed var(--grey-200);
+}
+
+// ── Delete error banner ────────────────────────────────
+.delete-error-banner {
+  background: var(--danger-bg, #fff0f0);
+  color: var(--danger-text, #c0392b);
+  border: 1px solid var(--danger-text, #c0392b);
+  border-radius: var(--r-sm, 6px);
+  padding: 0.6rem 1rem;
+  font-size: 0.875rem;
+  margin-bottom: 0.5rem;
 }
