@@ -104,23 +104,35 @@
               <div class="unread-dot"></div>
             }
 
-            <!-- Bouton action : Retour anticipé → marquer comme rendu -->
+            <!-- Boutons action : Retour anticipé -->
             @if (alert.type === 'EARLY_RETURN' && !alert.read) {
               <button
-                class="btn-action-primary"
+                class="btn-action-success"
                 [disabled]="isProcessing(alert.id)"
                 (click)="validerRetour(alert)">
-                {{ isProcessing(alert.id) ? '…' : '✔ Marquer rendu' }}
+                {{ isProcessing(alert.id) ? '…' : '✔ Valider' }}
+              </button>
+              <button
+                class="btn-action-danger"
+                [disabled]="isProcessing(alert.id)"
+                (click)="refuserRetour(alert)">
+                ✕ Refuser
               </button>
             }
 
-            <!-- Bouton action : Prolongation → valider et appliquer la nouvelle date -->
+            <!-- Boutons action : Prolongation -->
             @if (alert.type === 'EXTENSION' && !alert.read) {
               <button
-                class="btn-action-primary"
+                class="btn-action-success"
                 [disabled]="isProcessing(alert.id)"
                 (click)="validerExtension(alert)">
-                {{ isProcessing(alert.id) ? '…' : '✔ Valider prolongation' }}
+                {{ isProcessing(alert.id) ? '…' : '✔ Valider' }}
+              </button>
+              <button
+                class="btn-action-danger"
+                [disabled]="isProcessing(alert.id)"
+                (click)="refuserExtension(alert)">
+                ✕ Refuser
               </button>
             }
 

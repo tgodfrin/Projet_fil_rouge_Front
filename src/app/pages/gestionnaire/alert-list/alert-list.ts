@@ -191,6 +191,22 @@ export class AlertListComponent {
     });
   }
 
+  /**
+   * Gestionnaire refuse un retour anticipé : l'emprunt continue normalement.
+   * L'event est marqué comme lu (= traité, décision prise : refus).
+   */
+  refuserRetour(alert: Alert): void {
+    this.markAsRead(alert);
+  }
+
+  /**
+   * Gestionnaire refuse une prolongation : la date de fin reste inchangée.
+   * L'event est marqué comme lu (= traité, décision prise : refus).
+   */
+  refuserExtension(alert: Alert): void {
+    this.markAsRead(alert);
+  }
+
   isProcessing(alertId: number): boolean {
     return this.processingIds().has(alertId);
   }
@@ -234,7 +250,8 @@ export class AlertListComponent {
       });
     }
 
-    const unreadEvents = unread.filter(a => a.type !== 'RETARD');
+    // EARLY_RETURN et EXTENSION nécessitent une action explicite (valider ou refuser) — exclus du tout-marquer-lu
+    const unreadEvents = unread.filter(a => a.type !== 'RETARD' && a.type !== 'EARLY_RETURN' && a.type !== 'EXTENSION');
     unreadEvents.forEach(a => {
       this.eventService.markAsRead(a.id).subscribe(() => {
         this.events.update(events =>

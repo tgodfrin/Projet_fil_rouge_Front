@@ -310,11 +310,9 @@
   &:hover { background: var(--grey-100); }
 }
 
-// ── Bouton action primaire (valider retour / prolongation) ─────────────────────
-.btn-action-primary {
+// ── Boutons action valider / refuser ──────────────────────────────────────────
+%btn-action-base {
   padding: 0.3rem 0.75rem;
-  background: var(--primary, #2563eb);
-  color: white;
   border: none;
   border-radius: var(--r-sm);
   font-size: 0.78rem;
@@ -322,9 +320,21 @@
   cursor: pointer;
   transition: background 0.2s, opacity 0.2s;
   white-space: nowrap;
+  color: white;
 
-  &:hover:not(:disabled) { background: var(--primary-dark, #1d4ed8); }
   &:disabled { opacity: 0.55; cursor: not-allowed; }
+}
+
+.btn-action-success {
+  @extend %btn-action-base;
+  background: #16a34a;
+  &:hover:not(:disabled) { background: #15803d; }
+}
+
+.btn-action-danger {
+  @extend %btn-action-base;
+  background: #dc2626;
+  &:hover:not(:disabled) { background: #b91c1c; }
 }
 
 // ── État vide ─────────────────────────────────────────
