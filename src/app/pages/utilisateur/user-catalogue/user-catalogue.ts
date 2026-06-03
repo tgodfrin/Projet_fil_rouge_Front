@@ -37,8 +37,9 @@ export class UserCatalogueComponent implements OnInit {
   searchTerm     = signal('');
   activeCategory = signal<string>('Tous');
   selectedIds    = signal<number[]>([]);
-  submitting     = signal(false);
-  submitError    = signal<string | null>(null);
+  submitting          = signal(false);
+  submitError         = signal<string | null>(null);
+  familyLockedMessage = signal<string | null>(null);
 
   categories = computed(() => ['Tous', ...this.families().map(f => f.nameEquipmentFamily)]);
 
@@ -123,6 +124,11 @@ export class UserCatalogueComponent implements OnInit {
   }
 
   setCategory(cat: string): void {
+    if (cat !== 'Tous' && !this.isFamilyAllowed(cat)) {
+      this.familyLockedMessage.set(`Les emprunts des équipements de la catégorie "${cat}" ne sont pas disponibles pour votre rôle.`);
+      return;
+    }
+    this.familyLockedMessage.set(null);
     this.activeCategory.set(cat);
   }
 

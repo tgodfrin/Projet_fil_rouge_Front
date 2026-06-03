@@ -48,6 +48,11 @@
     }
   </div>
 
+  <!-- Message famille non autorisée -->
+  @if (familyLockedMessage()) {
+    <div class="family-locked-msg">🔒 {{ familyLockedMessage() }}</div>
+  }
+
   <!-- Label disponibilité -->
   <div class="availability-label">
     @if (datesSet()) {
