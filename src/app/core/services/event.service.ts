@@ -30,6 +30,11 @@ export class EventService {
     return this.http.get<Event[]>(`${this.apiUrl}/event/unread`);
   }
 
+  // GET /event/user  →  events EARLY_RETURN et EXTENSION du user connecté
+  getMyEvents(): Observable<Event[]> {
+    return this.http.get<Event[]>(`${this.apiUrl}/event/user`);
+  }
+
   create(data: EventCreate): Observable<Event> {
     return this.http.post<Event>(`${this.apiUrl}/event`, data);
   }

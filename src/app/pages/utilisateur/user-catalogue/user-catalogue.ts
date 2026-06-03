@@ -5,6 +5,7 @@ import { toSignal } from '@angular/core/rxjs-interop';
 
 import { EquipmentService } from '../../../core/services/equipment.service';
 import { EquipmentFamilyService } from '../../../core/services/equipment-family.service';
+import { UserService } from '../../../core/services/user.service';
 import { Equipment } from '../../../core/models/equipment.model';
 import { EquipmentFamily } from '../../../core/models/equipment-family.model';
 
@@ -19,8 +20,11 @@ export class UserCatalogueComponent implements OnInit {
   private router           = inject(Router);
   private equipmentService = inject(EquipmentService);
   private familyService    = inject(EquipmentFamilyService);
+  private userService      = inject(UserService);
 
-  private families = toSignal(this.familyService.getAll(), { initialValue: [] as EquipmentFamily[] });
+  private families         = toSignal(this.familyService.getAll(), { initialValue: [] as EquipmentFamily[] });
+  // IDs des familles que le profil connecté est autorisé à emprunter
+  allowedFamilyIds         = signal<number[]>([]);
 
   // Catalogue filtré par profil (endpoint back) — chargé une seule fois au démarrage
   private allEquipments       = signal<Equipment[]>([]);
@@ -68,11 +72,25 @@ export class UserCatalogueComponent implements OnInit {
   canSubmit = computed(() => this.selectedIds().length > 0 && this.datesSet());
 
   ngOnInit(): void {
+    // Récupère les familles autorisées du profil connecté
+    this.userService.getMe().subscribe({
+      next: (user) => {
+        const ids = user.profil.equipmentFamilies?.map(f => f.id) ?? [];
+        this.allowedFamilyIds.set(ids);
+      }
+    });
+
     // Utilise l'endpoint catalogue filtré par profil — pas GET /equipment/list qui renvoie tout
     this.equipmentService.getCatalogue().subscribe({
       next:  (data) => { this.allEquipments.set(data); this.loading.set(false); },
       error: ()     => this.loading.set(false)
     });
+  }
+
+  isFamilyAllowed(familyName: string): boolean {
+    const family = this.families().find(f => f.nameEquipmentFamily === familyName);
+    if (!family) return true; // 'Tous' ou famille inconnue → pas de restriction
+    return this.allowedFamilyIds().includes(family.id);
   }
 
   onStartDate(event: Event): void {

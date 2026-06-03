@@ -1,3 +1,24 @@
+// ── Label de section (titre entre groupes de cards) ──────────────────────────
+.section-label {
+  font-size: 0.7rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: var(--grey-400);
+  margin-top: 0.5rem;
+}
+
+// ── Card event (retour anticipé / prolongation) ───────────────────────────────
+.loan-card-event {
+  border-left: 3px solid var(--grey-300);
+
+  .event-date {
+    font-size: 0.7rem;
+    color: var(--grey-400);
+    margin-top: 2px;
+  }
+}
+
 .loans-page {
   padding: 1rem;
   display: flex;

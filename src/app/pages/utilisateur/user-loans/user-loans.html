@@ -15,112 +15,252 @@
     </button>
   </div>
 
-  <!-- Liste -->
   @if (loading()) {
     <div class="empty-state">Chargement…</div>
-  } @else if (displayItems().length === 0) {
-    <div class="empty-state">Aucun emprunt dans cette catégorie.</div>
   } @else {
-    <div class="loans-list">
-      @for (item of displayItems(); track item.kind === 'group' ? item.groupId : item.loan.id) {
 
-        <!-- ── Carte GROUPE ── -->
-        @if (item.kind === 'group') {
-          <div class="loan-card loan-card-group">
+    <!-- ══════════════════ TAB EN COURS ══════════════════ -->
+    @if (activeTab() === 'EN_COURS') {
+      @if (displayItems().length === 0) {
+        <div class="empty-state">Aucun emprunt en cours.</div>
+      } @else {
+        <div class="loans-list">
+          @for (item of displayItems(); track item.kind === 'group' ? item.groupId : item.loan.id) {
 
-            <div class="loan-header">
-              <div class="loan-icon group-icon">📦</div>
-              <div class="loan-info">
-                <div class="loan-name">Emprunt groupé — {{ item.loans.length }} équipements</div>
-                <div class="loan-dates">{{ formatDateRange(item.beginDate, item.endDate) }}</div>
-              </div>
-              <span class="badge" [ngClass]="getStatusClass(item.statusType)">
-                <span class="badge-dot"></span>{{ getStatusLabel(item.statusType) }}
-              </span>
-            </div>
-
-            <div class="group-toggle-row">
-              <button class="btn-group-toggle" (click)="toggleGroupDetail(item.groupId)">
-                {{ openGroupId() === item.groupId ? '▲ Masquer les équipements' : '▼ Voir les équipements' }}
-              </button>
-            </div>
-
-            @if (openGroupId() === item.groupId) {
-              <div class="group-loans-detail">
-                @for (loan of item.loans; track loan.id) {
-                  <div class="group-loan-row">
-
-                    <div class="group-loan-header">
-                      <div class="group-loan-icon">{{ getCategoryIcon(loan) }}</div>
-                      <div class="group-loan-info">
-                        <div class="group-loan-name">{{ loan.equipment.equipmentName }}</div>
-                        <div class="group-loan-dates">{{ formatDateRange(loan.beginDate, loan.endDate) }}</div>
-                      </div>
-                      <span class="badge" [ngClass]="getStatusClass(getDisplayStatus(loan))">
-                        <span class="badge-dot"></span>{{ getStatusLabel(getDisplayStatus(loan)) }}
-                      </span>
-                    </div>
-
-                    @if (loan.statusType === 'VALID') {
-                      <div class="progress-bar">
-                        <div class="progress-fill" [style.width.%]="getProgressPercent(loan)"></div>
-                      </div>
-                      <div class="days-left">
-                        @if (getDaysLeft(loan) > 0) {
-                          Retour dans <strong [class.urgent]="getDaysLeft(loan) <= 1">{{ getDaysLeft(loan) }} jour(s)</strong>
-                        } @else {
-                          <strong class="urgent">En retard de {{ -getDaysLeft(loan) }} jour(s)</strong>
+            @if (item.kind === 'group') {
+              <div class="loan-card loan-card-group">
+                <div class="loan-header">
+                  <div class="loan-icon group-icon">📦</div>
+                  <div class="loan-info">
+                    <div class="loan-name">Emprunt groupé — {{ item.loans.length }} équipements</div>
+                    <div class="loan-dates">{{ formatDateRange(item.beginDate, item.endDate) }}</div>
+                  </div>
+                  <span class="badge" [ngClass]="getStatusClass(item.statusType)">
+                    <span class="badge-dot"></span>{{ getStatusLabel(item.statusType) }}
+                  </span>
+                </div>
+                <div class="group-toggle-row">
+                  <button class="btn-group-toggle" (click)="toggleGroupDetail(item.groupId)">
+                    {{ openGroupId() === item.groupId ? '▲ Masquer les équipements' : '▼ Voir les équipements' }}
+                  </button>
+                </div>
+                @if (openGroupId() === item.groupId) {
+                  <div class="group-loans-detail">
+                    @for (loan of item.loans; track loan.id) {
+                      <div class="group-loan-row">
+                        <div class="group-loan-header">
+                          <div class="group-loan-icon">{{ getCategoryIcon(loan) }}</div>
+                          <div class="group-loan-info">
+                            <div class="group-loan-name">{{ loan.equipment.equipmentName }}</div>
+                            <div class="group-loan-dates">{{ formatDateRange(loan.beginDate, loan.endDate) }}</div>
+                          </div>
+                          <span class="badge" [ngClass]="getStatusClass(getDisplayStatus(loan))">
+                            <span class="badge-dot"></span>{{ getStatusLabel(getDisplayStatus(loan)) }}
+                          </span>
+                        </div>
+                        @if (loan.statusType === 'VALID') {
+                          <div class="progress-bar">
+                            <div class="progress-fill" [style.width.%]="getProgressPercent(loan)"></div>
+                          </div>
+                          <div class="days-left">
+                            @if (getDaysLeft(loan) > 0) {
+                              Retour dans <strong [class.urgent]="getDaysLeft(loan) <= 1">{{ getDaysLeft(loan) }} jour(s)</strong>
+                            } @else {
+                              <strong class="urgent">En retard de {{ -getDaysLeft(loan) }} jour(s)</strong>
+                            }
+                          </div>
+                          <div class="loan-actions">
+                            <a class="btn-action btn-outline" [routerLink]="['/utilisateur/signalement', loan.id]">Signaler</a>
+                          </div>
                         }
                       </div>
-                      <div class="loan-actions">
-                        <a class="btn-action btn-outline" [routerLink]="['/utilisateur/signalement', loan.id]">Signaler</a>
-                      </div>
                     }
-
                   </div>
                 }
               </div>
             }
 
-          </div>
-        }
-
-        <!-- ── Carte INDIVIDUELLE ── -->
-        @if (item.kind === 'single') {
-          <div class="loan-card">
-
-            <div class="loan-header">
-              <div class="loan-icon">{{ getCategoryIcon(item.loan) }}</div>
-              <div class="loan-info">
-                <div class="loan-name">{{ item.loan.equipment.equipmentName }}</div>
-                <div class="loan-dates">{{ formatDateRange(item.loan.beginDate, item.loan.endDate) }}</div>
-              </div>
-              <span class="badge" [ngClass]="getStatusClass(getDisplayStatus(item.loan))">
-                <span class="badge-dot"></span>{{ getStatusLabel(getDisplayStatus(item.loan)) }}
-              </span>
-            </div>
-
-            @if (item.loan.statusType === 'VALID') {
-              <div class="progress-bar">
-                <div class="progress-fill" [style.width.%]="getProgressPercent(item.loan)"></div>
-              </div>
-              <div class="days-left">
-                @if (getDaysLeft(item.loan) > 0) {
-                  Retour dans <strong [class.urgent]="getDaysLeft(item.loan) <= 1">{{ getDaysLeft(item.loan) }} jour(s)</strong>
-                } @else {
-                  <strong class="urgent">En retard de {{ -getDaysLeft(item.loan) }} jour(s)</strong>
+            @if (item.kind === 'single') {
+              <div class="loan-card">
+                <div class="loan-header">
+                  <div class="loan-icon">{{ getCategoryIcon(item.loan) }}</div>
+                  <div class="loan-info">
+                    <div class="loan-name">{{ item.loan.equipment.equipmentName }}</div>
+                    <div class="loan-dates">{{ formatDateRange(item.loan.beginDate, item.loan.endDate) }}</div>
+                  </div>
+                  <span class="badge" [ngClass]="getStatusClass(getDisplayStatus(item.loan))">
+                    <span class="badge-dot"></span>{{ getStatusLabel(getDisplayStatus(item.loan)) }}
+                  </span>
+                </div>
+                @if (item.loan.statusType === 'VALID') {
+                  <div class="progress-bar">
+                    <div class="progress-fill" [style.width.%]="getProgressPercent(item.loan)"></div>
+                  </div>
+                  <div class="days-left">
+                    @if (getDaysLeft(item.loan) > 0) {
+                      Retour dans <strong [class.urgent]="getDaysLeft(item.loan) <= 1">{{ getDaysLeft(item.loan) }} jour(s)</strong>
+                    } @else {
+                      <strong class="urgent">En retard de {{ -getDaysLeft(item.loan) }} jour(s)</strong>
+                    }
+                  </div>
+                  <div class="loan-actions">
+                    <a class="btn-action btn-outline" [routerLink]="['/utilisateur/signalement', item.loan.id]">Signaler</a>
+                  </div>
                 }
-              </div>
-              <div class="loan-actions">
-                <a class="btn-action btn-outline" [routerLink]="['/utilisateur/signalement', item.loan.id]">Signaler</a>
               </div>
             }
 
-          </div>
-        }
-
+          }
+        </div>
       }
-    </div>
+    }
+
+    <!-- ══════════════════ TAB EN ATTENTE ══════════════════ -->
+    @if (activeTab() === 'EN_ATTENTE') {
+      @if (displayItems().length === 0 && pendingEvents().length === 0) {
+        <div class="empty-state">Aucune demande en attente.</div>
+      }
+
+      <!-- Demandes d'emprunt IN_PROGRESS -->
+      @if (displayItems().length > 0) {
+        <div class="section-label">Demandes d'emprunt</div>
+        <div class="loans-list">
+          @for (item of displayItems(); track item.kind === 'group' ? item.groupId : item.loan.id) {
+            @if (item.kind === 'single') {
+              <div class="loan-card">
+                <div class="loan-header">
+                  <div class="loan-icon">{{ getCategoryIcon(item.loan) }}</div>
+                  <div class="loan-info">
+                    <div class="loan-name">{{ item.loan.equipment.equipmentName }}</div>
+                    <div class="loan-dates">{{ formatDateRange(item.loan.beginDate, item.loan.endDate) }}</div>
+                  </div>
+                  <span class="badge badge-warning">
+                    <span class="badge-dot"></span>En attente
+                  </span>
+                </div>
+              </div>
+            }
+            @if (item.kind === 'group') {
+              <div class="loan-card loan-card-group">
+                <div class="loan-header">
+                  <div class="loan-icon group-icon">📦</div>
+                  <div class="loan-info">
+                    <div class="loan-name">Emprunt groupé — {{ item.loans.length }} équipements</div>
+                    <div class="loan-dates">{{ formatDateRange(item.beginDate, item.endDate) }}</div>
+                  </div>
+                  <span class="badge badge-warning"><span class="badge-dot"></span>En attente</span>
+                </div>
+              </div>
+            }
+          }
+        </div>
+      }
+
+      <!-- Demandes de retour anticipé et prolongation en attente -->
+      @if (pendingEvents().length > 0) {
+        <div class="section-label">Demandes de retour anticipé &amp; prolongation</div>
+        <div class="loans-list">
+          @for (ev of pendingEvents(); track ev.event.id) {
+            <div class="loan-card loan-card-event">
+              <div class="loan-header">
+                <div class="loan-icon">{{ getEventTypeIcon(ev.event.type) }}</div>
+                <div class="loan-info">
+                  <div class="loan-name">{{ getEventTypeLabel(ev.event.type) }} — {{ ev.loan?.equipment?.equipmentName ?? '—' }}</div>
+                  @if (ev.requestedDate) {
+                    <div class="loan-dates">
+                      @if (ev.event.type === 'EARLY_RETURN') {
+                        Retour demandé le {{ formatDate(ev.requestedDate) }}
+                      } @else {
+                        Prolongation jusqu'au {{ formatDate(ev.requestedDate) }}
+                      }
+                      @if (ev.motif) { — {{ ev.motif }} }
+                    </div>
+                  }
+                  <div class="loan-dates event-date">Envoyé le {{ formatDate(ev.event.createdAt) }}</div>
+                </div>
+                <span class="badge badge-warning"><span class="badge-dot"></span>En attente</span>
+              </div>
+            </div>
+          }
+        </div>
+      }
+    }
+
+    <!-- ══════════════════ TAB HISTORIQUE ══════════════════ -->
+    @if (activeTab() === 'HISTORIQUE') {
+      @if (displayItems().length === 0 && processedEvents().length === 0) {
+        <div class="empty-state">Aucun historique.</div>
+      }
+
+      <!-- Emprunts terminés / refusés -->
+      @if (displayItems().length > 0) {
+        <div class="section-label">Emprunts</div>
+        <div class="loans-list">
+          @for (item of displayItems(); track item.kind === 'group' ? item.groupId : item.loan.id) {
+            @if (item.kind === 'single') {
+              <div class="loan-card">
+                <div class="loan-header">
+                  <div class="loan-icon">{{ getCategoryIcon(item.loan) }}</div>
+                  <div class="loan-info">
+                    <div class="loan-name">{{ item.loan.equipment.equipmentName }}</div>
+                    <div class="loan-dates">{{ formatDateRange(item.loan.beginDate, item.loan.endDate) }}</div>
+                  </div>
+                  <span class="badge" [ngClass]="getStatusClass(item.loan.statusType)">
+                    <span class="badge-dot"></span>{{ getStatusLabel(item.loan.statusType) }}
+                  </span>
+                </div>
+              </div>
+            }
+            @if (item.kind === 'group') {
+              <div class="loan-card loan-card-group">
+                <div class="loan-header">
+                  <div class="loan-icon group-icon">📦</div>
+                  <div class="loan-info">
+                    <div class="loan-name">Emprunt groupé — {{ item.loans.length }} équipements</div>
+                    <div class="loan-dates">{{ formatDateRange(item.beginDate, item.endDate) }}</div>
+                  </div>
+                  <span class="badge" [ngClass]="getStatusClass(item.statusType)">
+                    <span class="badge-dot"></span>{{ getStatusLabel(item.statusType) }}
+                  </span>
+                </div>
+              </div>
+            }
+          }
+        </div>
+      }
+
+      <!-- Retours anticipés et prolongations traités -->
+      @if (processedEvents().length > 0) {
+        <div class="section-label">Retours anticipés &amp; prolongations</div>
+        <div class="loans-list">
+          @for (ev of processedEvents(); track ev.event.id) {
+            <div class="loan-card loan-card-event">
+              <div class="loan-header">
+                <div class="loan-icon">{{ getEventTypeIcon(ev.event.type) }}</div>
+                <div class="loan-info">
+                  <div class="loan-name">{{ getEventTypeLabel(ev.event.type) }} — {{ ev.loan?.equipment?.equipmentName ?? '—' }}</div>
+                  @if (ev.requestedDate) {
+                    <div class="loan-dates">
+                      @if (ev.event.type === 'EARLY_RETURN') {
+                        Retour demandé le {{ formatDate(ev.requestedDate) }}
+                      } @else {
+                        Prolongation jusqu'au {{ formatDate(ev.requestedDate) }}
+                      }
+                      @if (ev.motif) { — {{ ev.motif }} }
+                    </div>
+                  }
+                  <div class="loan-dates event-date">Envoyé le {{ formatDate(ev.event.createdAt) }}</div>
+                </div>
+                <span class="badge" [ngClass]="getEventStatusClass(ev.status)">
+                  <span class="badge-dot"></span>{{ getEventStatusLabel(ev.status) }}
+                </span>
+              </div>
+            </div>
+          }
+        </div>
+      }
+    }
+
   }
 
 </div>

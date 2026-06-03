@@ -2,8 +2,10 @@ import { Component, signal, computed, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { RouterLink } from '@angular/router';
 import { LoanService } from '../../../core/services/loan.service';
+import { EventService } from '../../../core/services/event.service';
 import { AuthService } from '../../../core/services/auth.service';
 import { Loan } from '../../../core/models/loan.model';
+import { Event } from '../../../core/models/event.model';
 
 // ── Types d'affichage ─────────────────────────────────────────────────────────
 interface SingleLoanItem {
@@ -21,6 +23,19 @@ interface GroupLoanItem {
   statusType: string;
 }
 
+// Card d'une demande de retour anticipé ou prolongation
+interface RequestEventItem {
+  kind: 'event';
+  event: Event;
+  loan: Loan | undefined;
+  // PENDING = gestionnaire n'a pas encore traité
+  // VALIDATED = gestionnaire a validé (date du loan correspond à la date demandée)
+  // REFUSED = gestionnaire a refusé (date inchangée)
+  status: 'PENDING' | 'VALIDATED' | 'REFUSED';
+  requestedDate: string; // YYYY-MM-DD extrait de la description
+  motif: string | null;
+}
+
 type LoanItem = SingleLoanItem | GroupLoanItem;
 
 @Component({
@@ -31,23 +46,37 @@ type LoanItem = SingleLoanItem | GroupLoanItem;
   styleUrl: './user-loans.scss'
 })
 export class UserLoansComponent {
-  private loanService = inject(LoanService);
-  private authService = inject(AuthService);
+  private loanService  = inject(LoanService);
+  private eventService = inject(EventService);
+  private authService  = inject(AuthService);
 
   private currentUserId = this.authService.currentUser()!.id;
 
   loading = signal(true);
-  private allLoans = signal<Loan[]>([]);
+  private allLoans  = signal<Loan[]>([]);
+  private allEvents = signal<Event[]>([]);
 
   constructor() {
-    this.loadLoans();
+    this.loadData();
   }
 
-  private loadLoans(): void {
+  private loadData(): void {
     this.loading.set(true);
+    let loansLoaded  = false;
+    let eventsLoaded = false;
+
+    const checkDone = () => {
+      if (loansLoaded && eventsLoaded) this.loading.set(false);
+    };
+
     this.loanService.getByUser(this.currentUserId).subscribe({
-      next:  (loans) => { this.allLoans.set(loans); this.loading.set(false); },
-      error: ()      => this.loading.set(false)
+      next:  (loans) => { this.allLoans.set(loans); loansLoaded = true; checkDone(); },
+      error: ()      => { loansLoaded = true; checkDone(); }
+    });
+
+    this.eventService.getMyEvents().subscribe({
+      next:  (events) => { this.allEvents.set(events); eventsLoaded = true; checkDone(); },
+      error: ()       => { eventsLoaded = true; checkDone(); }
     });
   }
 
@@ -62,9 +91,59 @@ export class UserLoansComponent {
   countByTab(tab: string): number {
     const loans = this.allLoans();
     if (tab === 'EN_COURS')   return loans.filter(l => l.statusType === 'VALID').length;
-    if (tab === 'EN_ATTENTE') return loans.filter(l => l.statusType === 'IN_PROGRESS').length;
-    return loans.filter(l => l.statusType === 'TERMINE' || l.statusType === 'INVALID').length;
+    if (tab === 'EN_ATTENTE') return loans.filter(l => l.statusType === 'IN_PROGRESS').length
+                                   + this.pendingEvents().length;
+    return loans.filter(l => l.statusType === 'TERMINE' || l.statusType === 'INVALID').length
+         + this.processedEvents().length;
   }
+
+  // ── Events helpers ────────────────────────────────────────────────────────────
+  // Extrait la date ISO (YYYY-MM-DD) du début de la description
+  private parseDate(description: string): string {
+    const part = description.split('|')[0].trim();
+    return /^\d{4}-\d{2}-\d{2}$/.test(part) ? part : '';
+  }
+
+  private parseMotif(description: string): string | null {
+    const parts = description.split('|');
+    return parts.length > 1 ? parts.slice(1).join('|').trim() : null;
+  }
+
+  // Détermine si l'event a été validé ou refusé en comparant la date demandée avec la endDate du loan
+  private resolveEventStatus(event: Event): 'PENDING' | 'VALIDATED' | 'REFUSED' {
+    if (!event.readingDate) return 'PENDING';
+    const requestedDate = this.parseDate(event.description ?? '');
+    if (!requestedDate) return 'REFUSED'; // description non parsable = on ne peut pas vérifier
+    const loan = this.allLoans().find(l => l.id === event.loan.id);
+    if (!loan) return 'REFUSED';
+    // Si la endDate du loan correspond à la date demandée → gestionnaire a validé
+    return loan.endDate.startsWith(requestedDate) ? 'VALIDATED' : 'REFUSED';
+  }
+
+  private buildEventItem(event: Event): RequestEventItem {
+    return {
+      kind:          'event',
+      event,
+      loan:          this.allLoans().find(l => l.id === event.loan.id),
+      status:        this.resolveEventStatus(event),
+      requestedDate: this.parseDate(event.description ?? ''),
+      motif:         this.parseMotif(event.description ?? ''),
+    };
+  }
+
+  // Events en attente (gestionnaire n'a pas encore lu)
+  pendingEvents = computed((): RequestEventItem[] =>
+    this.allEvents()
+      .filter(e => !e.readingDate)
+      .map(e => this.buildEventItem(e))
+  );
+
+  // Events traités (gestionnaire a lu = traité)
+  processedEvents = computed((): RequestEventItem[] =>
+    this.allEvents()
+      .filter(e => !!e.readingDate)
+      .map(e => this.buildEventItem(e))
+  );
 
   // ── Emprunts filtrés ──────────────────────────────────────────────────────────
   private filteredLoans = computed(() => {
@@ -120,7 +199,7 @@ export class UserLoansComponent {
     return loan.statusType;
   }
 
-  // ── Badges ────────────────────────────────────────────────────────────────────
+  // ── Badges loans ──────────────────────────────────────────────────────────────
   getStatusClass(status: string): string {
     const map: Record<string, string> = {
       VALID:       'badge-success',
@@ -143,11 +222,35 @@ export class UserLoansComponent {
     return map[status] ?? status;
   }
 
+  // ── Badges events ─────────────────────────────────────────────────────────────
+  getEventStatusClass(status: 'PENDING' | 'VALIDATED' | 'REFUSED'): string {
+    const map = { PENDING: 'badge-warning', VALIDATED: 'badge-success', REFUSED: 'badge-danger' };
+    return map[status];
+  }
+
+  getEventStatusLabel(status: 'PENDING' | 'VALIDATED' | 'REFUSED'): string {
+    const map = { PENDING: 'En attente', VALIDATED: 'Validé', REFUSED: 'Refusé' };
+    return map[status];
+  }
+
+  getEventTypeLabel(type: string): string {
+    return type === 'EARLY_RETURN' ? 'Retour anticipé' : 'Prolongation';
+  }
+
+  getEventTypeIcon(type: string): string {
+    return type === 'EARLY_RETURN' ? '↩️' : '📅';
+  }
+
   getCategoryIcon(_loan: Loan): string {
     return '📦';
   }
 
   // ── Dates & progress ──────────────────────────────────────────────────────────
+  formatDate(dateStr: string): string {
+    if (!dateStr) return '';
+    return new Date(dateStr).toLocaleDateString('fr-FR', { day: 'numeric', month: 'short', year: 'numeric' });
+  }
+
   formatDateRange(start: string, end: string): string {
     const fmt = (d: string) =>
       new Date(d).toLocaleDateString('fr-FR', { day: 'numeric', month: 'short' });

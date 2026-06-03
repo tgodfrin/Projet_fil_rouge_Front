@@ -36,8 +36,14 @@
   <!-- Filtres catégories -->
   <div class="chip-row">
     @for (cat of categories(); track cat) {
-      <button class="chip" [class.active]="activeCategory() === cat" (click)="setCategory(cat)">
+      <button class="chip"
+              [class.active]="activeCategory() === cat"
+              [class.chip-disabled]="cat !== 'Tous' && !isFamilyAllowed(cat)"
+              (click)="setCategory(cat)">
         {{ cat }}
+        @if (cat !== 'Tous' && !isFamilyAllowed(cat)) {
+          <span class="chip-lock">🔒</span>
+        }
       </button>
     }
   </div>
@@ -61,11 +67,12 @@
       @for (item of equipments(); track item.id) {
         <div class="item-card"
              [class.selected]="isSelected(item.id)"
-             [class.selectable]="datesSet()"
-             (click)="datesSet() ? toggleSelect(item) : null">
+             [class.selectable]="datesSet() && isFamilyAllowed(item.equipmentFamily.nameEquipmentFamily)"
+             [class.card-forbidden]="!isFamilyAllowed(item.equipmentFamily.nameEquipmentFamily)"
+             (click)="datesSet() && isFamilyAllowed(item.equipmentFamily.nameEquipmentFamily) ? toggleSelect(item) : null">
 
-          <!-- Checkbox visible uniquement si les dates sont saisies -->
-          @if (datesSet()) {
+          <!-- Checkbox visible uniquement si les dates sont saisies et famille autorisée -->
+          @if (datesSet() && isFamilyAllowed(item.equipmentFamily.nameEquipmentFamily)) {
             <div class="item-checkbox" [class.checked]="isSelected(item.id)">
               @if (isSelected(item.id)) { ✓ }
             </div>
@@ -84,6 +91,9 @@
           <div class="item-info">
             <div class="item-name">{{ item.equipmentName }}</div>
             <div class="item-ref">{{ item.reference }}</div>
+            @if (!isFamilyAllowed(item.equipmentFamily.nameEquipmentFamily)) {
+              <div class="item-forbidden">Non autorisé pour votre rôle</div>
+            }
           </div>
           <button class="btn-info" (click)="$event.stopPropagation(); goToDetail(item.id)">Info</button>
         </div>
