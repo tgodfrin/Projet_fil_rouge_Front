@@ -6,7 +6,8 @@ import { LoanService } from '../../../core/services/loan.service';
 import { Loan, StatusLoanType } from '../../../core/models/loan.model';
 
 // RETARD n'est pas un statut en base — calculé côté front : VALID + endDate < now
-type LoanDisplayStatus = StatusLoanType | 'RETARD';
+// A_VENIR : VALID + beginDate > now (validé mais pas encore démarré)
+type LoanDisplayStatus = StatusLoanType | 'RETARD' | 'A_VENIR';
 
 // Représente un groupe d'emprunts partageant le même groupId
 interface LoanGroup {
@@ -109,7 +110,12 @@ export class LoanComponent {
   }
 
   getDisplayStatus(loan: Loan): LoanDisplayStatus {
-    return this.isRetard(loan) ? 'RETARD' : loan.statusType;
+    const now = new Date();
+    if (loan.statusType === 'VALID') {
+      if (new Date(loan.endDate) < now)   return 'RETARD';
+      if (new Date(loan.beginDate) > now) return 'A_VENIR';
+    }
+    return loan.statusType;
   }
 
   // ── Actions emprunts individuels ─────────────────────
@@ -181,7 +187,8 @@ export class LoanComponent {
       VALID:       'En cours',
       RETARD:      'Retard',
       TERMINE:     'Terminé',
-      INVALID:     'Refusé'
+      INVALID:     'Refusé',
+      A_VENIR:     'Validé',
     };
     return labels[status];
   }
@@ -192,7 +199,8 @@ export class LoanComponent {
       VALID:       'badge-success',
       RETARD:      'badge-danger',
       TERMINE:     'badge-neutral',
-      INVALID:     'badge-danger'
+      INVALID:     'badge-danger',
+      A_VENIR:     'badge-info',
     };
     return classes[status];
   }

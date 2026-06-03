@@ -17,7 +17,7 @@ import { Loan, StatusLoanType } from '../../../core/models/loan.model';
 import { StatusEquipment, StatusEquipmentType } from '../../../core/models/status-equipment.model';
 import { EquipmentFormComponent, EquipmentFormOutput } from '../equipment/equipment-form/equipment-form';
 
-type LoanDisplayStatus = StatusLoanType | 'RETARD';
+type LoanDisplayStatus = StatusLoanType | 'RETARD' | 'A_VENIR';
 
 @Component({
   selector: 'app-equipment-detail',
@@ -83,7 +83,11 @@ export class EquipmentDetailComponent {
   }
 
   private loadStatusHistory(): void {
-    this.statusEquipmentService.getByEquipment(this.equipmentId).subscribe(data => this.statusList.set(data));
+    this.statusEquipmentService.getByEquipment(this.equipmentId).subscribe(data =>
+      this.statusList.set([...data].sort((a, b) =>
+        new Date(b.beginStatusDate).getTime() - new Date(a.beginStatusDate).getTime()
+      ))
+    );
   }
 
   private loadCharacteristics(): void {
@@ -91,7 +95,11 @@ export class EquipmentDetailComponent {
   }
 
   private loadLoanHistory(): void {
-    this.loanService.getByEquipment(this.equipmentId).subscribe(data => this.loanHistory.set(data));
+    this.loanService.getByEquipment(this.equipmentId).subscribe(data =>
+      this.loanHistory.set([...data].sort((a, b) =>
+        new Date(b.beginDate).getTime() - new Date(a.beginDate).getTime()
+      ))
+    );
   }
 
   // ── Helpers ──────────────────────────────────────────
@@ -205,8 +213,10 @@ export class EquipmentDetailComponent {
   // ── Label helpers ────────────────────────────────────
 
   getLoanDisplayStatus(loan: Loan): LoanDisplayStatus {
-    if (loan.statusType === 'VALID' && new Date(loan.endDate) < new Date()) {
-      return 'RETARD';
+    const now = new Date();
+    if (loan.statusType === 'VALID') {
+      if (new Date(loan.endDate) < now)   return 'RETARD';
+      if (new Date(loan.beginDate) > now) return 'A_VENIR';
     }
     return loan.statusType;
   }
@@ -218,6 +228,7 @@ export class EquipmentDetailComponent {
       TERMINE:     'Terminé',
       RETARD:      'En retard',
       INVALID:     'Refusé',
+      A_VENIR:     'Validé',
     };
     return labels[status];
   }
