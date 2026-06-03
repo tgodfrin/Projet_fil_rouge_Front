@@ -1,3 +1,9 @@
+.form-error {
+  font-size: 0.7rem;
+  color: var(--danger-text);
+  font-weight: 500;
+}
+
 .login-page {
   min-height: 100vh;
   background: var(--secondary);
