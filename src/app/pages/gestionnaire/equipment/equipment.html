@@ -8,6 +8,19 @@
     </div>
   </div>
 
+  <!-- FILTRE PAR DATE -->
+  <div class="date-filter-bar">
+    <div class="date-toggle">
+      <button class="toggle-btn" [class.active]="dateMode() === 'unique'" (click)="setDateMode('unique')">Jour</button>
+      <button class="toggle-btn" [class.active]="dateMode() === 'plage'"  (click)="setDateMode('plage')">Période</button>
+    </div>
+    <input class="date-picker" type="date" [value]="startDate()" (change)="onStartDateChange($event)" />
+    @if (dateMode() === 'plage') {
+      <span class="date-separator">→</span>
+      <input class="date-picker" type="date" [value]="endDate()" [min]="startDate()" (change)="onEndDateChange($event)" />
+    }
+  </div>
+
   <div class="search-bar">
     <input
       class="search-input"

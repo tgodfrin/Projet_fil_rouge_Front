@@ -46,6 +46,14 @@ export class EquipmentService {
     });
   }
 
+  // GET /equipment/list/by-date?startDate=...&endDate=... (gestionnaire — tous équipements avec statut calculé sur la période)
+  // endDate est optionnel : si absent, le back utilise startDate comme date de fin (mode jour unique)
+  getAllByDate(startDate: string, endDate?: string): Observable<Equipment[]> {
+    const params: Record<string, string> = { startDate };
+    if (endDate) params['endDate'] = endDate;
+    return this.http.get<Equipment[]>(`${this.apiUrl}/equipment/list/by-date`, { params });
+  }
+
   // GET /equipment/search?q= → recherche serveur par nom
   searchByName(q: string): Observable<Equipment[]> {
     return this.http.get<Equipment[]>(`${this.apiUrl}/equipment/search`, { params: { q } });

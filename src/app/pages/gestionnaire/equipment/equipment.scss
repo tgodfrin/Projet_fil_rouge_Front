@@ -49,6 +49,60 @@
   &.btn-sm      { padding: 4px 10px; font-size: 11px; }
 }
 
+// ── Filtre par date ───────────────────────────────────
+.date-filter-bar {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+.date-toggle {
+  display: flex;
+  border: 1px solid var(--grey-200);
+  border-radius: var(--r-sm);
+  overflow: hidden;
+}
+
+.toggle-btn {
+  padding: 0 14px;
+  height: 36px;
+  font-size: 12px;
+  font-weight: 600;
+  font-family: var(--font);
+  border: none;
+  background: white;
+  color: var(--grey-500);
+  cursor: pointer;
+  transition: all 0.15s;
+
+  &:hover:not(.active) { background: var(--grey-50); }
+
+  &.active {
+    background: var(--primary);
+    color: white;
+  }
+}
+
+.date-picker {
+  height: 36px;
+  border: 1px solid var(--grey-200);
+  border-radius: var(--r-sm);
+  padding: 0 10px;
+  font-size: 12px;
+  font-family: var(--font);
+  color: var(--grey-900);
+  background: white;
+  cursor: pointer;
+
+  &:focus { outline: none; border-color: var(--primary); }
+}
+
+.date-separator {
+  font-size: 14px;
+  color: var(--grey-400);
+}
+
 // ── Recherche ─────────────────────────────────────────
 .search-bar {
   display: flex;

@@ -32,6 +32,11 @@ export class EquipmentComponent {
   pageCourante = 1;
   itemsParPage = 10;
 
+  // Filtre par date — 'unique' = 1 date picker, 'plage' = 2 date pickers
+  dateMode  = signal<'unique' | 'plage'>('unique');
+  startDate = signal<string>(this.getTodayString());
+  endDate   = signal<string>(this.getTodayString());
+
   // Signals mutables — chargés via HTTP
   equipements = signal<Equipment[]>([]);
   families    = signal<EquipmentFamily[]>([]);
@@ -42,7 +47,9 @@ export class EquipmentComponent {
   }
 
   private chargerEquipements(): void {
-    this.equipmentService.getAll().subscribe(data => this.equipements.set(data));
+    const start = this.startDate();
+    const end   = this.dateMode() === 'plage' ? this.endDate() : undefined;
+    this.equipmentService.getAllByDate(start, end).subscribe(data => this.equipements.set(data));
   }
 
   private chargerFamilles(): void {
@@ -98,6 +105,35 @@ export class EquipmentComponent {
     }));
   }
 
+  setDateMode(mode: 'unique' | 'plage'): void {
+    this.dateMode.set(mode);
+    // En passant en mode unique, on remet endDate = startDate pour cohérence
+    if (mode === 'unique') this.endDate.set(this.startDate());
+    this.chargerEquipements();
+    this.onFiltreChange();
+  }
+
+  onStartDateChange(event: Event): void {
+    const value = (event.target as HTMLInputElement).value;
+    this.startDate.set(value);
+    // En mode plage, si endDate < startDate, on ajuste endDate
+    if (this.dateMode() === 'plage' && this.endDate() < value) this.endDate.set(value);
+    this.chargerEquipements();
+    this.onFiltreChange();
+  }
+
+  onEndDateChange(event: Event): void {
+    const value = (event.target as HTMLInputElement).value;
+    this.endDate.set(value);
+    this.chargerEquipements();
+    this.onFiltreChange();
+  }
+
+  private getTodayString(): string {
+    const d = new Date();
+    return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`;
+  }
+
   ouvrirModal(): void { this.modalOuvert = true; }
   fermerModal(): void { this.modalOuvert = false; }
 
@@ -119,7 +155,7 @@ export class EquipmentComponent {
         );
       })
     ).subscribe(() => {
-      this.chargerEquipements();
+      this.chargerEquipements(); // recharge avec les dates courantes
       this.chargerFamilles();
       this.fermerModal();
       this.onFiltreChange();
