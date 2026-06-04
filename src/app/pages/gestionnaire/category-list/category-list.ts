@@ -1,9 +1,12 @@
-import { Component, inject, signal, OnInit } from '@angular/core';
+import { Component, inject, signal, computed, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { ReactiveFormsModule, FormBuilder, Validators } from '@angular/forms';
 import { HttpErrorResponse } from '@angular/common/http';
+import { switchMap } from 'rxjs';
 import { EquipmentFamilyService } from '../../../core/services/equipment-family.service';
+import { ProfilService } from '../../../core/services/profil.service';
 import { EquipmentFamily } from '../../../core/models/equipment-family.model';
+import { Profil, ProfilType } from '../../../core/models/profil.model';
 
 @Component({
   selector: 'app-category-list',
@@ -15,32 +18,58 @@ import { EquipmentFamily } from '../../../core/models/equipment-family.model';
 export class CategoryListComponent implements OnInit {
 
   private familyService = inject(EquipmentFamilyService);
+  private profilService = inject(ProfilService);
   private fb            = inject(FormBuilder);
 
   families     = signal<EquipmentFamily[]>([]);
   modalOpen    = signal(false);
-  editingId    = signal<number | null>(null); // null = create mode, otherwise rename
+  editingId    = signal<number | null>(null); // null = create mode, otherwise edit
   errorMessage = signal<string | null>(null);
   submitting   = signal(false);
 
+  // All profils loaded from /profil/list (used both for the checkboxes and to prefill them)
+  private allProfils = signal<Profil[]>([]);
+  // Roles offered as borrow rights — gestionnaires manage the park, they do not borrow
+  borrowableProfils  = computed(() => this.allProfils().filter(p => p.type !== 'GESTIONNAIRE'));
+
+  // Ids of the profils currently checked in the modal
+  selectedProfilIds = signal<number[]>([]);
+
   nameForm = this.fb.group({
-    nameEquipmentFamily: ['', [Validators.required, Validators.minLength(2)]]
+    nameEquipmentFamily: ['', [Validators.required, Validators.minLength(3), Validators.maxLength(30)]]
   });
 
   get name() { return this.nameForm.get('nameEquipmentFamily')!; }
 
-  ngOnInit(): void {
-    this.load();
+  private readonly roleLabels: Record<ProfilType, string> = {
+    GESTIONNAIRE:  'Gestionnaire',
+    COLLABORATEUR: 'Collaborateur',
+    INTERVENANT:   'Intervenant',
+    STAGIAIRE:     'Stagiaire'
+  };
+
+  roleLabel(type: ProfilType): string {
+    return this.roleLabels[type];
   }
 
-  private load(): void {
+  ngOnInit(): void {
+    this.loadFamilies();
+    this.loadProfils();
+  }
+
+  private loadFamilies(): void {
     this.familyService.getAll().subscribe(data => this.families.set(data));
+  }
+
+  private loadProfils(): void {
+    this.profilService.getAll().subscribe(data => this.allProfils.set(data));
   }
 
   openCreate(): void {
     this.editingId.set(null);
     this.errorMessage.set(null);
     this.nameForm.reset({ nameEquipmentFamily: '' });
+    this.selectedProfilIds.set([]);
     this.modalOpen.set(true);
   }
 
@@ -48,11 +77,27 @@ export class CategoryListComponent implements OnInit {
     this.editingId.set(family.id);
     this.errorMessage.set(null);
     this.nameForm.reset({ nameEquipmentFamily: family.nameEquipmentFamily });
+    // Prefill: profils whose can_loan list already contains this family
+    const allowed = this.allProfils()
+      .filter(p => p.equipmentFamilies.some(f => f.id === family.id))
+      .map(p => p.id);
+    this.selectedProfilIds.set(allowed);
     this.modalOpen.set(true);
   }
 
   closeModal(): void {
     this.modalOpen.set(false);
+  }
+
+  isProfilChecked(id: number): boolean {
+    return this.selectedProfilIds().includes(id);
+  }
+
+  toggleProfil(id: number): void {
+    const current = this.selectedProfilIds();
+    this.selectedProfilIds.set(
+      current.includes(id) ? current.filter(x => x !== id) : [...current, id]
+    );
   }
 
   save(): void {
@@ -62,17 +107,23 @@ export class CategoryListComponent implements OnInit {
     }
     const payload = { nameEquipmentFamily: this.name.value!.trim() };
     const id = this.editingId();
+    const profilIds = this.selectedProfilIds();
     this.submitting.set(true);
 
-    const request$ = id === null
-      ? this.familyService.create(payload)
-      : this.familyService.update(id, payload);
+    // Create returns the new family (with its id); update returns 204 (no body),
+    // so in edit mode we reuse the known id rather than the response.
+    const chain$ = id === null
+      ? this.familyService.create(payload).pipe(
+          switchMap(family => this.familyService.setProfils(family.id, profilIds)))
+      : this.familyService.update(id, payload).pipe(
+          switchMap(() => this.familyService.setProfils(id, profilIds)));
 
-    request$.subscribe({
+    chain$.subscribe({
       next: () => {
         this.submitting.set(false);
         this.closeModal();
-        this.load();
+        this.loadFamilies();
+        this.loadProfils(); // associations changed → refresh prefill source
       },
       error: () => {
         this.submitting.set(false);
@@ -87,7 +138,7 @@ export class CategoryListComponent implements OnInit {
 
     this.errorMessage.set(null);
     this.familyService.delete(family.id).subscribe({
-      next: () => this.load(),
+      next: () => this.loadFamilies(),
       error: (err: HttpErrorResponse) => {
         // 409 = the family still holds equipment (server-side guard)
         this.errorMessage.set(err.status === 409

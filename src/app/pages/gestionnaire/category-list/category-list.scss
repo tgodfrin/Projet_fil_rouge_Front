@@ -243,6 +243,45 @@
   color: var(--danger-text, #a51212);
 }
 
+// ── Cases à cocher des rôles ──────────────────────────
+.roles-field {
+  border: 1px solid var(--grey-200);
+  border-radius: var(--r-md);
+  padding: 0.75rem 1rem 1rem;
+  margin: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+
+  legend {
+    font-size: 0.8rem;
+    font-weight: 600;
+    color: var(--grey-700);
+    padding: 0 0.35rem;
+  }
+}
+
+.role-checkbox {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-size: 0.88rem;
+  color: var(--grey-700);
+  cursor: pointer;
+
+  input {
+    width: 16px;
+    height: 16px;
+    accent-color: var(--primary);
+    cursor: pointer;
+
+    &:focus-visible {
+      outline: 2px solid var(--primary);
+      outline-offset: 2px;
+    }
+  }
+}
+
 .modal-actions {
   display: flex;
   justify-content: flex-end;

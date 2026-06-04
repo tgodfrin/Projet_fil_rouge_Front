@@ -34,8 +34,8 @@
               <td class="actions-cell">
                 <button class="btn-ghost" type="button"
                         (click)="openRename(family)"
-                        [attr.aria-label]="'Renommer la catégorie ' + family.nameEquipmentFamily">
-                  Renommer
+                        [attr.aria-label]="'Modifier la catégorie ' + family.nameEquipmentFamily">
+                  Modifier
                 </button>
                 <button class="btn-danger" type="button"
                         (click)="confirmDelete(family)"
@@ -56,7 +56,7 @@
       <div class="modal" role="dialog" aria-modal="true" aria-labelledby="category-modal-title"
            (click)="$event.stopPropagation()">
         <h2 class="modal-title" id="category-modal-title">
-          {{ editingId() === null ? 'Nouvelle catégorie' : 'Renommer la catégorie' }}
+          {{ editingId() === null ? 'Nouvelle catégorie' : 'Modifier la catégorie' }}
         </h2>
 
         <form [formGroup]="nameForm" (ngSubmit)="save()">
@@ -68,10 +68,23 @@
                    aria-describedby="category-name-error" />
             @if (name.invalid && name.touched) {
               <span class="field-error" id="category-name-error" role="alert">
-                Le nom doit contenir au moins 2 caractères.
+                Le nom doit contenir entre 3 et 30 caractères.
               </span>
             }
           </div>
+
+          <!-- Droits d'emprunt par rôle (can_loan) -->
+          <fieldset class="roles-field">
+            <legend>Rôles autorisés à emprunter cette catégorie</legend>
+            @for (profil of borrowableProfils(); track profil.id) {
+              <label class="role-checkbox">
+                <input type="checkbox"
+                       [checked]="isProfilChecked(profil.id)"
+                       (change)="toggleProfil(profil.id)" />
+                <span>{{ roleLabel(profil.type) }}</span>
+              </label>
+            }
+          </fieldset>
 
           @if (errorMessage()) {
             <div class="alert-error" role="alert">{{ errorMessage() }}</div>
