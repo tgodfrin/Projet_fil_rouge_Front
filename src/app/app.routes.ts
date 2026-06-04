@@ -4,6 +4,7 @@ import { UserLayoutComponent } from './pages/utilisateur/_layout/user-layout';
 import { DashboardComponent } from './pages/gestionnaire/dashboard/dashboard';
 import { EquipmentComponent } from './pages/gestionnaire/equipment/equipment';
 import { EquipmentDetailComponent } from './pages/gestionnaire/equipment-detail/equipment-detail';
+import { CategoryListComponent } from './pages/gestionnaire/category-list/category-list';
 import { LoanComponent } from './pages/gestionnaire/loan/loan';
 import { UserListComponent } from './pages/gestionnaire/user-list/user-list';
 import { UserDetailComponent } from './pages/gestionnaire/user-detail/user-detail';
@@ -21,6 +22,7 @@ import { UserIncidentComponent } from './pages/utilisateur/user-incident/user-in
 import { UserLoanSummaryComponent } from './pages/utilisateur/user-loan-summary/user-loan-summary';
 import { UserConfirmationComponent } from './pages/utilisateur/user-confirmation/user-confirmation';
 import { LoginComponent } from './pages/login/login';
+import { MentionsComponent } from './pages/mentions/mentions';
 import { NotFoundComponent } from './pages/not-found/not-found';
 import { authGuard }         from './core/guards/auth.guard';
 import { gestionnaireGuard } from './core/guards/gestionnaire.guard';
@@ -29,6 +31,7 @@ import { userGuard }         from './core/guards/user.guard';
 export const routes: Routes = [
   { path: '', redirectTo: 'login', pathMatch: 'full' },
   { path: 'login', component: LoginComponent },
+  { path: 'mentions', component: MentionsComponent },
   {
     path: '',
     component: LayoutComponent,
@@ -38,6 +41,7 @@ export const routes: Routes = [
       { path: 'dashboard', component: DashboardComponent },
       { path: 'equipements', component: EquipmentComponent },
       { path: 'equipements/:id', component: EquipmentDetailComponent },
+      { path: 'categories', component: CategoryListComponent },
       { path: 'emprunts', component: LoanComponent },
       { path: 'emprunts/:id', component: LoanDetailComponent },
       { path: 'utilisateurs', component: UserListComponent },

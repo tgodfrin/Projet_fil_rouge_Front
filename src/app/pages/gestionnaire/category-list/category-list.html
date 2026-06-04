@@ -1,0 +1,91 @@
+<div class="category-page">
+
+  <!-- En-tête -->
+  <div class="page-header">
+    <h1 class="page-title">Catégories de matériel</h1>
+    <button class="btn-add" type="button" (click)="openCreate()">
+      <span class="btn-full">+ Ajouter une catégorie</span>
+      <span class="btn-short">+ Ajouter</span>
+    </button>
+  </div>
+
+  <!-- Message d'erreur (suppression / chargement) -->
+  @if (errorMessage()) {
+    <div class="alert-error" role="alert">{{ errorMessage() }}</div>
+  }
+
+  <!-- Tableau -->
+  @if (families().length === 0) {
+    <div class="empty-state">Aucune catégorie pour le moment.</div>
+  } @else {
+    <div class="table-container">
+      <table class="category-table">
+        <caption class="sr-only">Liste des catégories de matériel</caption>
+        <thead>
+          <tr>
+            <th scope="col">Nom de la catégorie</th>
+            <th scope="col"><span class="sr-only">Actions</span></th>
+          </tr>
+        </thead>
+        <tbody>
+          @for (family of families(); track family.id) {
+            <tr>
+              <td class="name-cell">{{ family.nameEquipmentFamily }}</td>
+              <td class="actions-cell">
+                <button class="btn-ghost" type="button"
+                        (click)="openRename(family)"
+                        [attr.aria-label]="'Renommer la catégorie ' + family.nameEquipmentFamily">
+                  Renommer
+                </button>
+                <button class="btn-danger" type="button"
+                        (click)="confirmDelete(family)"
+                        [attr.aria-label]="'Supprimer la catégorie ' + family.nameEquipmentFamily">
+                  Supprimer
+                </button>
+              </td>
+            </tr>
+          }
+        </tbody>
+      </table>
+    </div>
+  }
+
+  <!-- Modal créer / renommer -->
+  @if (modalOpen()) {
+    <div class="modal-overlay" (click)="closeModal()">
+      <div class="modal" role="dialog" aria-modal="true" aria-labelledby="category-modal-title"
+           (click)="$event.stopPropagation()">
+        <h2 class="modal-title" id="category-modal-title">
+          {{ editingId() === null ? 'Nouvelle catégorie' : 'Renommer la catégorie' }}
+        </h2>
+
+        <form [formGroup]="nameForm" (ngSubmit)="save()">
+          <div class="field">
+            <label for="category-name">Nom de la catégorie</label>
+            <input id="category-name" type="text" formControlName="nameEquipmentFamily"
+                   autocomplete="off"
+                   [attr.aria-invalid]="name.invalid && name.touched"
+                   aria-describedby="category-name-error" />
+            @if (name.invalid && name.touched) {
+              <span class="field-error" id="category-name-error" role="alert">
+                Le nom doit contenir au moins 2 caractères.
+              </span>
+            }
+          </div>
+
+          @if (errorMessage()) {
+            <div class="alert-error" role="alert">{{ errorMessage() }}</div>
+          }
+
+          <div class="modal-actions">
+            <button class="btn-cancel" type="button" (click)="closeModal()">Annuler</button>
+            <button class="btn-add" type="submit" [disabled]="submitting()">
+              {{ editingId() === null ? 'Créer' : 'Enregistrer' }}
+            </button>
+          </div>
+        </form>
+      </div>
+    </div>
+  }
+
+</div>
