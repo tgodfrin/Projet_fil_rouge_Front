@@ -9,6 +9,7 @@ import { DocService } from '../../../core/services/doc.service';
 import { EquipmentStatus } from '../../../core/models/equipment.model';
 import { CharacteristicValue } from '../../../core/models/characteristic-value.model';
 import { Doc } from '../../../core/models/doc.model';
+import { getCategoryIcon } from '../../../core/utils/category-icon';
 
 @Component({
   selector: 'app-user-catalogue-detail',
@@ -54,11 +55,7 @@ export class UserCatalogueDetailComponent {
   }
 
   getCategoryIcon(familyName: string): string {
-    const icons: Record<string, string> = {
-      'PC': '💻', 'VR': '🥽', 'Tablette': '📱', 'Écran': '🖥️', 'Périphérique': '🖱️',
-      'Informatique': '💻', 'Audio': '🎧', 'Réseau': '🌐',
-    };
-    return icons[familyName] ?? '📦';
+    return getCategoryIcon(familyName);
   }
 
   formatDate(dateStr: string): string {

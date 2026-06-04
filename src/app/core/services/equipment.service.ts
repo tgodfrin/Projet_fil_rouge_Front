@@ -27,13 +27,6 @@ export class EquipmentService {
     return this.http.get<Equipment>(`${this.apiUrl}/equipment/${id}`);
   }
 
-  // GET /equipment/available?begin=YYYY-MM-DD&end=YYYY-MM-DD (gestionnaire — non filtré par profil)
-  getAvailable(begin: string, end: string): Observable<Equipment[]> {
-    return this.http.get<Equipment[]>(`${this.apiUrl}/equipment/available`, {
-      params: { begin, end }
-    });
-  }
-
   // GET /equipment/catalogue → équipements filtrés par les familles autorisées du profil connecté
   getCatalogue(): Observable<Equipment[]> {
     return this.http.get<Equipment[]>(`${this.apiUrl}/equipment/catalogue`);
@@ -52,16 +45,6 @@ export class EquipmentService {
     const params: Record<string, string> = { startDate };
     if (endDate) params['endDate'] = endDate;
     return this.http.get<Equipment[]>(`${this.apiUrl}/equipment/list/by-date`, { params });
-  }
-
-  // GET /equipment/search?q= → recherche serveur par nom
-  searchByName(q: string): Observable<Equipment[]> {
-    return this.http.get<Equipment[]>(`${this.apiUrl}/equipment/search`, { params: { q } });
-  }
-
-  // GET /equipment/family/{familyId} → filtre par famille
-  getByFamily(familyId: number): Observable<Equipment[]> {
-    return this.http.get<Equipment[]>(`${this.apiUrl}/equipment/family/${familyId}`);
   }
 
   create(data: EquipmentPayload): Observable<Equipment> {

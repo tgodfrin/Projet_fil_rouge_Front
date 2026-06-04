@@ -3,7 +3,8 @@ import { CommonModule } from '@angular/common';
 import { ReactiveFormsModule, FormBuilder, Validators } from '@angular/forms';
 import { Router, ActivatedRoute } from '@angular/router';
 import { toSignal } from '@angular/core/rxjs-interop';
-import { IncidentType, IncidentOption } from '../../../core/models/incident.model';
+import { IncidentOption } from '../../../core/models/incident.model';
+import { EventType } from '../../../core/models/event.model';
 import { LoanService } from '../../../core/services/loan.service';
 import { EventService } from '../../../core/services/event.service';
 
@@ -47,7 +48,7 @@ export class UserIncidentComponent {
     { type: 'EXTENSION',    label: 'Prolongation',    icon: 'extend'  },
   ];
 
-  selectedType = signal<IncidentType | null>(null);
+  selectedType = signal<EventType | null>(null);
   submitting   = signal(false);
   errorMessage = signal<string | null>(null);
 
@@ -65,7 +66,7 @@ export class UserIncidentComponent {
   get description() { return this.breakdownForm.get('description')!; }
   get date()        { return this.dateForm.get('date')!; }
 
-  selectType(incidentType: IncidentType): void {
+  selectType(incidentType: EventType): void {
     this.selectedType.set(incidentType);
     this.errorMessage.set(null);
     this.breakdownForm.reset();

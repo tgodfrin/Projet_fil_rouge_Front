@@ -7,6 +7,7 @@ import { EquipmentService } from '../../../core/services/equipment.service';
 import { LoanService } from '../../../core/services/loan.service';
 import { AuthService } from '../../../core/services/auth.service';
 import { Equipment } from '../../../core/models/equipment.model';
+import { getCategoryIcon } from '../../../core/utils/category-icon';
 
 // Forme du navigation state attendu depuis user-catalogue
 // Les dates sont en format YYYY-MM-DD (input[type=date]) — directement compatibles avec LocalDate du back
@@ -123,14 +124,6 @@ export class UserLoanSummaryComponent implements OnInit {
   }
 
   getCategoryIcon(familyName: string): string {
-    const icons: Record<string, string> = {
-      'PC':              '💻',
-      'Écran':           '🖥️',
-      'Casque VR':       '🥽',
-      'Vidéoprojecteur': '📽️',
-      'Périphérique':    '🖱️',
-      'Autre':           '📦',
-    };
-    return icons[familyName] ?? '📦';
+    return getCategoryIcon(familyName);
   }
 }
