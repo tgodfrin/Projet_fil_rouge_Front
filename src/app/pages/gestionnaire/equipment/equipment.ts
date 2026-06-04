@@ -1,4 +1,4 @@
-import { Component, inject, signal } from '@angular/core';
+import { Component, inject, signal, OnInit } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { CommonModule } from '@angular/common';
 import { Router } from '@angular/router';
@@ -18,7 +18,7 @@ import { EquipmentFamily } from '../../../core/models/equipment-family.model';
   templateUrl: './equipment.html',
   styleUrl: './equipment.scss'
 })
-export class EquipmentComponent {
+export class EquipmentComponent implements OnInit {
 
   private router                   = inject(Router);
   private equipmentService         = inject(EquipmentService);
@@ -41,7 +41,12 @@ export class EquipmentComponent {
   equipements = signal<Equipment[]>([]);
   families    = signal<EquipmentFamily[]>([]);
 
-  constructor() {
+  // Initial load: apply the default "single date = today" filter so the list renders
+  // immediately on screen open, without any user interaction.
+  ngOnInit(): void {
+    this.dateMode.set('unique');
+    this.startDate.set(this.getTodayString());
+    this.endDate.set(this.getTodayString());
     this.chargerEquipements();
     this.chargerFamilles();
   }
