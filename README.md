@@ -11,24 +11,30 @@ LOC MNS permet de gérer l'ensemble du parc informatique et matériel mis à dis
 des étudiants, stagiaires et intervenants de MNS.
 
 ### Fonctionnalités principales
-- Authentification et gestion des rôles (Gestionnaire / Emprunteur / Super Admin)
+- Authentification JWT et gestion des rôles (Gestionnaire, Collaborateur, Intervenant, Stagiaire)
 - Gestion des équipements (CRUD, états, catégories)
-- Gestion des emprunts (demande, validation, refus, retour)
-- Signalement d'événements (panne, dysfonctionnement, prolongation)
+- Gestion des catégories de matériel et des droits d'emprunt par rôle
+- Gestion des emprunts (demande, validation, refus, retour, emprunts groupés)
+- Signalement d'événements (panne, retour anticipé, prolongation)
 - Système d'alertes et notifications
 - Planning des réservations
 - Export des données (CSV, XML)
 - Gestion documentaire (notices, fiches techniques)
+- Page « Mentions & données personnelles » (RGPD)
 
 ---
 
 ## 🛠️ Stack technique
 
-- Angular 
-- TypeScript 
-- PrimeNG 
-- Node.js 
-- npm 
+| Technologie | Version | Rôle |
+|---|---|---|
+| Angular | 21 (standalone components + signals) | Framework front-end |
+| TypeScript | 5.9 | Langage |
+| RxJS | 7.8 | Programmation réactive (HTTP, observables) |
+| Node.js | 20+ LTS | Environnement d'exécution |
+| npm | 11 | Gestionnaire de paquets |
+
+> Pas de librairie de composants UI tierce : l'interface est construite en HTML/SCSS sur mesure.
 
 ---
 
