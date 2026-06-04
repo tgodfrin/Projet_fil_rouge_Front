@@ -35,7 +35,7 @@
         <div class="th">Statut</div>
       </div>
 
-      @for (notif of notifications(); track notif.utilisateur) {
+      @for (notif of notifications(); track notif.id) {
       <div class="table-row">
         <div class="td-main">{{ notif.utilisateur }}</div>
         <div class="td-main">{{ notif.materiel }}</div>

@@ -50,6 +50,7 @@ export class DashboardComponent {
   // Tableau de notifications : retards + demandes en attente
   notifications = computed(() => {
     const retards = this.retardLoans().map(l => ({
+      id:          `retard-${l.id}`,
       utilisateur: `${l.requester.name} ${l.requester.lastname}`,
       materiel:    l.equipment.equipmentName,
       dates:       `${this.formatDate(l.beginDate)} au ${this.formatDate(l.endDate)}`,
@@ -57,6 +58,7 @@ export class DashboardComponent {
       label:       'Retard',
     }));
     const pending = this.pendingLoans().map(l => ({
+      id:          `pending-${l.id}`,
       utilisateur: `${l.requester.name} ${l.requester.lastname}`,
       materiel:    l.equipment.equipmentName,
       dates:       `${this.formatDate(l.beginDate)} au ${this.formatDate(l.endDate)}`,
