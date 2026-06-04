@@ -24,6 +24,7 @@
         <thead>
           <tr>
             <th scope="col">Nom de la catégorie</th>
+            <th scope="col" class="count-head">Équipements</th>
             <th scope="col"><span class="sr-only">Actions</span></th>
           </tr>
         </thead>
@@ -31,6 +32,7 @@
           @for (family of families(); track family.id) {
             <tr>
               <td class="name-cell">{{ family.nameEquipmentFamily }}</td>
+              <td class="count-cell">{{ countFor(family.id) }}</td>
               <td class="actions-cell">
                 <button class="btn-ghost" type="button"
                         (click)="openRename(family)"

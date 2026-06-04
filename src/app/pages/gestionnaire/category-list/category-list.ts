@@ -5,7 +5,9 @@ import { HttpErrorResponse } from '@angular/common/http';
 import { switchMap } from 'rxjs';
 import { EquipmentFamilyService } from '../../../core/services/equipment-family.service';
 import { ProfilService } from '../../../core/services/profil.service';
+import { EquipmentService } from '../../../core/services/equipment.service';
 import { EquipmentFamily } from '../../../core/models/equipment-family.model';
+import { Equipment } from '../../../core/models/equipment.model';
 import { Profil, ProfilType } from '../../../core/models/profil.model';
 
 @Component({
@@ -17,11 +19,13 @@ import { Profil, ProfilType } from '../../../core/models/profil.model';
 })
 export class CategoryListComponent implements OnInit {
 
-  private familyService = inject(EquipmentFamilyService);
-  private profilService = inject(ProfilService);
-  private fb            = inject(FormBuilder);
+  private familyService    = inject(EquipmentFamilyService);
+  private profilService    = inject(ProfilService);
+  private equipmentService = inject(EquipmentService);
+  private fb               = inject(FormBuilder);
 
   families     = signal<EquipmentFamily[]>([]);
+  private equipments = signal<Equipment[]>([]);
   modalOpen    = signal(false);
   editingId    = signal<number | null>(null); // null = create mode, otherwise edit
   errorMessage = signal<string | null>(null);
@@ -55,6 +59,7 @@ export class CategoryListComponent implements OnInit {
   ngOnInit(): void {
     this.loadFamilies();
     this.loadProfils();
+    this.loadEquipments();
   }
 
   private loadFamilies(): void {
@@ -63,6 +68,15 @@ export class CategoryListComponent implements OnInit {
 
   private loadProfils(): void {
     this.profilService.getAll().subscribe(data => this.allProfils.set(data));
+  }
+
+  private loadEquipments(): void {
+    this.equipmentService.getAll().subscribe(data => this.equipments.set(data));
+  }
+
+  // Number of equipment items belonging to a given family
+  countFor(familyId: number): number {
+    return this.equipments().filter(e => e.equipmentFamily?.id === familyId).length;
   }
 
   openCreate(): void {

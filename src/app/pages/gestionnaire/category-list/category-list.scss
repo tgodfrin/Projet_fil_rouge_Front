@@ -151,6 +151,16 @@
   color: var(--grey-900);
 }
 
+.count-cell {
+  color: var(--grey-500);
+  font-variant-numeric: tabular-nums;
+  text-align: center;
+}
+
+.category-table th.count-head {
+  text-align: center;
+}
+
 .actions-cell {
   display: flex;
   gap: 0.5rem;
