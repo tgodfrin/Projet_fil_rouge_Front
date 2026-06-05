@@ -5,7 +5,8 @@ import { LoanService } from '../../../core/services/loan.service';
 import { EventService } from '../../../core/services/event.service';
 import { AuthService } from '../../../core/services/auth.service';
 import { Loan } from '../../../core/models/loan.model';
-import { Event } from '../../../core/models/event.model';
+import { Event, EventStatusType } from '../../../core/models/event.model';
+import { getCategoryIcon } from '../../../core/utils/category-icon';
 
 // ── Types d'affichage ─────────────────────────────────────────────────────────
 interface SingleLoanItem {
@@ -28,12 +29,10 @@ interface RequestEventItem {
   kind: 'event';
   event: Event;
   loan: Loan | undefined;
-  // PENDING = gestionnaire n'a pas encore traité
-  // VALIDATED = gestionnaire a validé (date du loan correspond à la date demandée)
-  // REFUSED = gestionnaire a refusé (date inchangée)
-  status: 'PENDING' | 'VALIDATED' | 'REFUSED';
-  requestedDate: string; // YYYY-MM-DD extrait de la description
-  motif: string | null;
+  // Statut fiable lu directement depuis decisionStatus (plus de déduction par comparaison de dates)
+  status: EventStatusType;
+  requestedDate: string | null; // date demandée (champ dédié côté back)
+  motif: string | null;         // motif libre saisi par l'utilisateur
 }
 
 type LoanItem = SingleLoanItem | GroupLoanItem;
@@ -98,50 +97,28 @@ export class UserLoansComponent {
   }
 
   // ── Events helpers ────────────────────────────────────────────────────────────
-  // Extrait la date ISO (YYYY-MM-DD) du début de la description
-  private parseDate(description: string): string {
-    const part = description.split('|')[0].trim();
-    return /^\d{4}-\d{2}-\d{2}$/.test(part) ? part : '';
-  }
-
-  private parseMotif(description: string): string | null {
-    const parts = description.split('|');
-    return parts.length > 1 ? parts.slice(1).join('|').trim() : null;
-  }
-
-  // Détermine si l'event a été validé ou refusé en comparant la date demandée avec la endDate du loan
-  private resolveEventStatus(event: Event): 'PENDING' | 'VALIDATED' | 'REFUSED' {
-    if (!event.readingDate) return 'PENDING';
-    const requestedDate = this.parseDate(event.description ?? '');
-    if (!requestedDate) return 'REFUSED'; // description non parsable = on ne peut pas vérifier
-    const loan = this.allLoans().find(l => l.id === event.loan.id);
-    if (!loan) return 'REFUSED';
-    // Si la endDate du loan correspond à la date demandée → gestionnaire a validé
-    return loan.endDate.startsWith(requestedDate) ? 'VALIDATED' : 'REFUSED';
-  }
-
   private buildEventItem(event: Event): RequestEventItem {
     return {
       kind:          'event',
       event,
       loan:          this.allLoans().find(l => l.id === event.loan.id),
-      status:        this.resolveEventStatus(event),
-      requestedDate: this.parseDate(event.description ?? ''),
-      motif:         this.parseMotif(event.description ?? ''),
+      status:        event.decisionStatus, // statut fiable lu côté back
+      requestedDate: event.requestedDate,
+      motif:         event.description,
     };
   }
 
-  // Events en attente (gestionnaire n'a pas encore lu)
+  // Demandes encore en attente de décision (decisionStatus PENDING)
   pendingEvents = computed((): RequestEventItem[] =>
     this.allEvents()
-      .filter(e => !e.readingDate)
+      .filter(e => e.decisionStatus === 'PENDING')
       .map(e => this.buildEventItem(e))
   );
 
-  // Events traités (gestionnaire a lu = traité)
+  // Demandes traitées (acceptées ou refusées)
   processedEvents = computed((): RequestEventItem[] =>
     this.allEvents()
-      .filter(e => !!e.readingDate)
+      .filter(e => e.decisionStatus !== 'PENDING')
       .map(e => this.buildEventItem(e))
   );
 
@@ -223,13 +200,21 @@ export class UserLoansComponent {
   }
 
   // ── Badges events ─────────────────────────────────────────────────────────────
-  getEventStatusClass(status: 'PENDING' | 'VALIDATED' | 'REFUSED'): string {
-    const map = { PENDING: 'badge-warning', VALIDATED: 'badge-success', REFUSED: 'badge-danger' };
+  getEventStatusClass(status: EventStatusType): string {
+    const map: Record<EventStatusType, string> = {
+      PENDING:  'badge-warning',
+      ACCEPTED: 'badge-success',
+      REFUSED:  'badge-danger'
+    };
     return map[status];
   }
 
-  getEventStatusLabel(status: 'PENDING' | 'VALIDATED' | 'REFUSED'): string {
-    const map = { PENDING: 'En attente', VALIDATED: 'Validé', REFUSED: 'Refusé' };
+  getEventStatusLabel(status: EventStatusType): string {
+    const map: Record<EventStatusType, string> = {
+      PENDING:  'En attente',
+      ACCEPTED: 'Validé',
+      REFUSED:  'Refusé'
+    };
     return map[status];
   }
 
@@ -241,8 +226,9 @@ export class UserLoansComponent {
     return type === 'EARLY_RETURN' ? '↩️' : '📅';
   }
 
-  getCategoryIcon(_loan: Loan): string {
-    return '📦';
+  // Icône de catégorie réelle, à partir du nom de la famille de l'équipement emprunté
+  getCategoryIcon(loan: Loan): string {
+    return getCategoryIcon(loan.equipment.equipmentFamily.nameEquipmentFamily);
   }
 
   // ── Dates & progress ──────────────────────────────────────────────────────────

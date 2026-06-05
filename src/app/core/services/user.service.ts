@@ -36,32 +36,24 @@ export class UserService {
     return this.http.get<AppUser[]>(`${this.apiUrl}/user/profil/${type}`);
   }
 
-  // PUT /user/:id/email?email=...
+  // PUT /user/:id/email — email envoyé dans le corps JSON (plus en paramètre d'URL)
   updateEmail(id: number, email: string): Observable<AppUser> {
-    return this.http.put<AppUser>(`${this.apiUrl}/user/${id}/email`, null, {
-      params: { email }
-    });
+    return this.http.put<AppUser>(`${this.apiUrl}/user/${id}/email`, { email });
   }
 
-  // PUT /user/:id/password?oldPassword=...&password=...  (gestionnaire only)
+  // PUT /user/:id/password — identifiants dans le corps JSON (gestionnaire only)
   updatePassword(id: number, oldPassword: string, password: string): Observable<AppUser> {
-    return this.http.put<AppUser>(`${this.apiUrl}/user/${id}/password`, null, {
-      params: { oldPassword, password }
-    });
+    return this.http.put<AppUser>(`${this.apiUrl}/user/${id}/password`, { oldPassword, password });
   }
 
-  // PUT /user/me/password — allows collaborateurs to change their own password
+  // PUT /user/me/password — identifiants dans le corps JSON (utilisateur change son propre mot de passe)
   updateMyPassword(oldPassword: string, password: string): Observable<void> {
-    return this.http.put<void>(`${this.apiUrl}/user/me/password`, null, {
-      params: { oldPassword, password }
-    });
+    return this.http.put<void>(`${this.apiUrl}/user/me/password`, { oldPassword, password });
   }
 
-  // PUT /user/me/email — allows collaborateurs to change their own email
+  // PUT /user/me/email — email dans le corps JSON (utilisateur change son propre email)
   updateMyEmail(email: string): Observable<void> {
-    return this.http.put<void>(`${this.apiUrl}/user/me/email`, null, {
-      params: { email }
-    });
+    return this.http.put<void>(`${this.apiUrl}/user/me/email`, { email });
   }
 
   // PUT /user/:id — update name/lastname/email/profil (gestionnaire only, no password)

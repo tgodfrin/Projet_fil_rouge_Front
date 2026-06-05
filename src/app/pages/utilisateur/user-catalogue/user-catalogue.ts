@@ -8,6 +8,7 @@ import { EquipmentFamilyService } from '../../../core/services/equipment-family.
 import { UserService } from '../../../core/services/user.service';
 import { Equipment } from '../../../core/models/equipment.model';
 import { EquipmentFamily } from '../../../core/models/equipment-family.model';
+import { getCategoryIcon } from '../../../core/utils/category-icon';
 
 @Component({
   selector: 'app-user-catalogue',
@@ -176,6 +177,6 @@ export class UserCatalogueComponent implements OnInit {
   }
 
   getCategoryIcon(familyName: string): string {
-    return familyName;
+    return getCategoryIcon(familyName);
   }
 }

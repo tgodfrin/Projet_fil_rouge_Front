@@ -11,8 +11,8 @@
 import { EquipmentFamily } from './equipment-family.model';
 
 // Champ @Transient calculé par EquipmentService.setCalculatedStatus() côté back :
-//   DISPONIBLE     → aucun emprunt actif + aucun StatusEquipment ouvert
-//   EN_PRET        → emprunt IN_PROGRESS en cours
+//   DISPONIBLE     → aucun emprunt VALID en cours + aucun StatusEquipment ouvert
+//   EN_PRET        → emprunt VALID (validé) qui chevauche la date/période consultée
 //   OUT_OF_SERVICE → StatusEquipment de type OUT_OF_SERVICE non résolu
 //   UNDER_REPAIR   → StatusEquipment de type UNDER_REPAIR non résolu
 export type EquipmentStatus = 'DISPONIBLE' | 'EN_PRET' | 'OUT_OF_SERVICE' | 'UNDER_REPAIR';

@@ -21,9 +21,10 @@ export interface LoanUser {
   lastname: string;
 }
 
-// Sous-objet EquipmentFamily dans Loan — seul l'id est exposé en LoanView
+// Sous-objet EquipmentFamily dans Loan — id + nom exposés en LoanView (le nom sert à l'icône de catégorie)
 export interface LoanEquipmentFamily {
   id: number;
+  nameEquipmentFamily: string;
 }
 
 // Sous-objet Equipment dans Loan — champs exposés via @JsonView(LoanView) dans Equipment

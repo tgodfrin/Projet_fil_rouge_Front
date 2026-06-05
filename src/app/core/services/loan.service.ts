@@ -65,17 +65,8 @@ export class LoanService {
     return this.http.put<void>(`${this.apiUrl}/loan/${id}/return`, null);
   }
 
-  // PUT /loan/:id/validate-extension  →  gestionnaire validates an extension request
-  // No requester check — works for overdue loans too
-  validateExtension(loanId: number, newEndDate: string): Observable<Loan> {
-    return this.http.put<Loan>(`${this.apiUrl}/loan/${loanId}/validate-extension`, { newEndDate });
-  }
-
-  // PUT /loan/:id/validate-early-return  →  gestionnaire validates early return request
-  // Updates endDate to the requested date — loan stays VALID until physically returned
-  validateEarlyReturn(loanId: number, newEndDate: string): Observable<Loan> {
-    return this.http.put<Loan>(`${this.apiUrl}/loan/${loanId}/validate-early-return`, { newEndDate });
-  }
+  // La validation/refus des demandes de retour anticipé et de prolongation passe désormais
+  // par EventService.accept() / refuse() (PUT /event/:id/accept et /refuse) qui tracent la décision.
 
   // PUT /loan/group/:groupId/validate  →  validates all loans in the group at once
   validateGroup(groupId: string): Observable<void> {

@@ -78,8 +78,12 @@ export class AlertListComponent {
         equipmentName: loan?.equipment?.equipmentName ?? '—',
         borrowerName:  loan ? `${loan.requester.name} ${loan.requester.lastname}` : '—',
         description:   e.description ?? '',
+        requestedDate: e.requestedDate,
         date:          e.createdAt,
-        read:          e.readingDate !== null,
+        // Pour un retour anticipé / une prolongation, "traité" = décision prise (≠ PENDING)
+        read:          (e.type === 'EARLY_RETURN' || e.type === 'EXTENSION')
+                         ? e.decisionStatus !== 'PENDING'
+                         : e.readingDate !== null,
       };
     });
 
@@ -92,6 +96,7 @@ export class AlertListComponent {
         equipmentName: l.equipment.equipmentName,
         borrowerName:  `${l.requester.name} ${l.requester.lastname}`,
         description:   `Retour prévu le ${new Date(l.endDate).toLocaleDateString('fr-FR')}`,
+        requestedDate: null,
         date:          l.endDate,
         read:          this.readRetardIds().has(l.id),
       }));
@@ -151,47 +156,20 @@ export class AlertListComponent {
   }
 
   /**
-   * Gestionnaire valide une demande de retour anticipé.
-   * Met à jour la endDate du loan à la date demandée (le loan reste VALID — visible côté user).
-   * Le TERMINE est déclenché séparément quand le matériel est physiquement rendu.
-   * Format description : "YYYY-MM-DD" ou "YYYY-MM-DD|motif".
+   * Gestionnaire accepte une demande de retour anticipé ou de prolongation.
+   * Un seul appel back (PUT /event/:id/accept) qui trace la décision (ACCEPTED)
+   * ET met à jour la date de fin de l'emprunt avec la date demandée. Le loan reste VALID.
    */
-  validerRetour(alert: Alert): void {
-    const newEndDate = alert.description.split('|')[0].trim();
-
-    // Si la description contient une date ISO valide, mettre à jour la endDate du loan
-    if (newEndDate && /^\d{4}-\d{2}-\d{2}$/.test(newEndDate)) {
-      this.processingIds.update(s => new Set([...s, alert.id]));
-      this.loanService.validateEarlyReturn(alert.loanId, newEndDate).subscribe({
-        next: () => {
-          this.markAsRead(alert);
-          this.processingIds.update(s => { const n = new Set(s); n.delete(alert.id); return n; });
-        },
-        error: () => {
-          // En cas d'erreur back, on marque quand même comme lu (la date ne change pas)
-          this.markAsRead(alert);
-          this.processingIds.update(s => { const n = new Set(s); n.delete(alert.id); return n; });
-        }
-      });
-    } else {
-      // Description sans date parsable (ancien format) → juste marquer comme lu
-      this.markAsRead(alert);
-    }
-  }
-
-  /**
-   * Gestionnaire valide une prolongation : appelle validate-extension avec la date extraite de la description.
-   * Utilise l'endpoint gestionnaire (pas de vérif requester) — fonctionne aussi pour les loans en retard.
-   * Format description attendu : "YYYY-MM-DD" ou "YYYY-MM-DD|motif".
-   */
-  validerExtension(alert: Alert): void {
-    const newEndDate = alert.description.split('|')[0].trim();
-    if (!newEndDate || !/^\d{4}-\d{2}-\d{2}$/.test(newEndDate)) return;
-
+  private acceptEvent(alert: Alert): void {
     this.processingIds.update(s => new Set([...s, alert.id]));
-    this.loanService.validateExtension(alert.loanId, newEndDate).subscribe({
+    this.eventService.accept(alert.id).subscribe({
       next: () => {
-        this.markAsRead(alert);
+        this.events.update(events =>
+          events.map(e => e.id === alert.id
+            ? { ...e, decisionStatus: 'ACCEPTED', readingDate: new Date().toISOString() }
+            : e)
+        );
+        this.reloadLoansAndEvents();
         this.processingIds.update(s => { const n = new Set(s); n.delete(alert.id); return n; });
       },
       error: () => {
@@ -201,20 +179,30 @@ export class AlertListComponent {
   }
 
   /**
-   * Gestionnaire refuse un retour anticipé : l'emprunt continue normalement.
-   * L'event est marqué comme lu (= traité, décision prise : refus).
+   * Gestionnaire refuse une demande : la décision (REFUSED) est tracée explicitement côté back.
+   * L'emprunt reste inchangé ; l'utilisateur verra un statut "Refusé" fiable.
    */
-  refuserRetour(alert: Alert): void {
-    this.markAsRead(alert);
+  private refuseEvent(alert: Alert): void {
+    this.processingIds.update(s => new Set([...s, alert.id]));
+    this.eventService.refuse(alert.id).subscribe({
+      next: () => {
+        this.events.update(events =>
+          events.map(e => e.id === alert.id
+            ? { ...e, decisionStatus: 'REFUSED', readingDate: new Date().toISOString() }
+            : e)
+        );
+        this.processingIds.update(s => { const n = new Set(s); n.delete(alert.id); return n; });
+      },
+      error: () => {
+        this.processingIds.update(s => { const n = new Set(s); n.delete(alert.id); return n; });
+      }
+    });
   }
 
-  /**
-   * Gestionnaire refuse une prolongation : la date de fin reste inchangée.
-   * L'event est marqué comme lu (= traité, décision prise : refus).
-   */
-  refuserExtension(alert: Alert): void {
-    this.markAsRead(alert);
-  }
+  validerRetour(alert: Alert): void    { this.acceptEvent(alert); }
+  validerExtension(alert: Alert): void { this.acceptEvent(alert); }
+  refuserRetour(alert: Alert): void    { this.refuseEvent(alert); }
+  refuserExtension(alert: Alert): void { this.refuseEvent(alert); }
 
   isProcessing(alertId: number): boolean {
     return this.processingIds().has(alertId);
@@ -229,21 +217,6 @@ export class AlertListComponent {
       EXTENSION:    'Prolongation',
     };
     return labels[type] ?? type;
-  }
-
-  // Extrait le motif de la description (partie après le "|")
-  getMotif(description: string): string {
-    const parts = description.split('|');
-    return parts.length > 1 ? parts.slice(1).join('|').trim() : description;
-  }
-
-  // Extrait la date demandée de la description pour EARLY_RETURN / EXTENSION
-  getDateFromDescription(description: string): string {
-    const date = description.split('|')[0].trim();
-    if (/^\d{4}-\d{2}-\d{2}$/.test(date)) {
-      return new Date(date).toLocaleDateString('fr-FR', { day: '2-digit', month: 'short', year: 'numeric' });
-    }
-    return description;
   }
 
   markAllAsRead(): void {

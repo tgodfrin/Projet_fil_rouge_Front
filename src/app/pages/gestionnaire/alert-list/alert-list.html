@@ -72,16 +72,16 @@
             <!-- Description adaptée selon le type -->
             @if (alert.type === 'EARLY_RETURN') {
               <div class="alert-sub">
-                {{ alert.borrowerName }} — Retour prévu le {{ getDateFromDescription(alert.description) }}
-                @if (alert.description.includes('|')) {
-                  — {{ getMotif(alert.description) }}
+                {{ alert.borrowerName }} — Retour prévu le {{ alert.requestedDate ? formatDate(alert.requestedDate) : '—' }}
+                @if (alert.description) {
+                  — {{ alert.description }}
                 }
               </div>
             } @else if (alert.type === 'EXTENSION') {
               <div class="alert-sub">
-                {{ alert.borrowerName }} — Prolongation demandée jusqu'au {{ getDateFromDescription(alert.description) }}
-                @if (alert.description.includes('|')) {
-                  — {{ getMotif(alert.description) }}
+                {{ alert.borrowerName }} — Prolongation demandée jusqu'au {{ alert.requestedDate ? formatDate(alert.requestedDate) : '—' }}
+                @if (alert.description) {
+                  — {{ alert.description }}
                 }
               </div>
             } @else {

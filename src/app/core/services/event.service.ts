@@ -7,6 +7,7 @@ import { Event, EventType } from '../models/event.model';
 export interface EventCreate {
   type: EventType;
   description: string | null;
+  requestedDate?: string | null; // date demandée (retour anticipé / prolongation), champ dédié
   loanId: number;
 }
 
@@ -42,5 +43,16 @@ export class EventService {
   // PUT /event/:id/read  →  readingDate = now
   markAsRead(id: number): Observable<Event> {
     return this.http.put<Event>(`${this.apiUrl}/event/${id}/read`, null);
+  }
+
+  // PUT /event/:id/accept  →  le gestionnaire accepte la demande (decisionStatus = ACCEPTED)
+  // Côté back, la date de fin de l'emprunt est mise à jour avec la date demandée
+  accept(id: number): Observable<Event> {
+    return this.http.put<Event>(`${this.apiUrl}/event/${id}/accept`, null);
+  }
+
+  // PUT /event/:id/refuse  →  le gestionnaire refuse la demande (decisionStatus = REFUSED, tracé)
+  refuse(id: number): Observable<Event> {
+    return this.http.put<Event>(`${this.apiUrl}/event/${id}/refuse`, null);
   }
 }

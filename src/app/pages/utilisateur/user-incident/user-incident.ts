@@ -107,16 +107,14 @@ export class UserIncidentComponent {
         return;
       }
       const date  = this.dateForm.value.date!;
-      const motif = this.dateForm.value.motif;
-      const description = motif
-        ? `${date}|${motif}`
-        : date; // Format: "YYYY-MM-DD|motif optionnel" — la date est parsable côté gestionnaire
-
+      const motif = this.dateForm.value.motif?.trim();
+      // La date demandée part dans son champ dédié (requestedDate) ; la description ne porte que le motif
       this.submitting.set(true);
       this.eventService.create({
-        type:        'EARLY_RETURN',
-        description,
-        loanId:      this.loanId
+        type:          'EARLY_RETURN',
+        description:   motif || 'Retour anticipé demandé',
+        requestedDate: date,
+        loanId:        this.loanId
       }).subscribe({
         next:  () => this.router.navigate(['/utilisateur/mes-emprunts']),
         error: (err) => {
@@ -135,16 +133,14 @@ export class UserIncidentComponent {
         return;
       }
       const newEndDate = this.dateForm.value.date!;
-      const motif      = this.dateForm.value.motif;
-      const description = motif
-        ? `${newEndDate}|${motif}`
-        : newEndDate; // Format: "YYYY-MM-DD|motif" — la date est parsable côté gestionnaire
-
+      const motif      = this.dateForm.value.motif?.trim();
+      // La nouvelle date part dans son champ dédié (requestedDate) ; la description ne porte que le motif
       this.submitting.set(true);
       this.eventService.create({
-        type:        'EXTENSION',
-        description,
-        loanId:      this.loanId
+        type:          'EXTENSION',
+        description:   motif || 'Prolongation demandée',
+        requestedDate: newEndDate,
+        loanId:        this.loanId
       }).subscribe({
         next:  () => this.router.navigate(['/utilisateur/mes-emprunts']),
         error: (err) => {
