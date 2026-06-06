@@ -2,7 +2,7 @@ import { inject } from '@angular/core';
 import { CanActivateFn, Router } from '@angular/router';
 import { AuthService } from '../services/auth.service';
 
-// Vérifie qu'il y a une session active → sinon redirige vers /login
+// Laisse passer s'il y a une session active, sinon redirige vers la page de connexion.
 export const authGuard: CanActivateFn = () => {
   const auth   = inject(AuthService);
   const router = inject(Router);

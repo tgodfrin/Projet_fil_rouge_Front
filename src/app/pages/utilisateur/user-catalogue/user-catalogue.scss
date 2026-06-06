@@ -13,7 +13,7 @@
   }
 }
 
-// ── Header ────────────────────────────────────────────
+// Header
 .page-header {
   display: flex;
   align-items: center;
@@ -28,7 +28,7 @@
   @media (min-width: 769px) { font-size: 1.4rem; }
 }
 
-// ── Date picker permanent ─────────────────────────────
+// Date picker permanent
 .date-panel {
   background: var(--primary-xlight);
   border: 1px solid var(--primary-light);
@@ -87,7 +87,7 @@
   font-weight: 500;
 }
 
-// ── Recherche ─────────────────────────────────────────
+// Recherche
 .search-bar {
   display: flex;
   align-items: center;
@@ -115,7 +115,7 @@
   &::placeholder { color: var(--grey-400); }
 }
 
-// ── Chips ─────────────────────────────────────────────
+// Chips
 .chip-row {
   display: flex;
   gap: 0.375rem;
@@ -124,7 +124,7 @@
 
   &::-webkit-scrollbar { display: none; }
 
-  // Desktop : pas de scroll horizontal masqué (inaccessible à la souris) →
+  // Desktop : pas de scroll horizontal masqué (inaccessible à la souris)
   // les chips passent à la ligne pour que toutes les catégories soient visibles.
   @media (min-width: 769px) {
     flex-wrap: wrap;
@@ -160,7 +160,7 @@
   font-size: 0.7rem;
 }
 
-// ── Label disponibilité ───────────────────────────────
+// Label disponibilité
 .availability-label {
   font-size: 0.78rem;
   font-weight: 500;
@@ -168,7 +168,7 @@
   padding: 0 0.25rem;
 }
 
-// ── Liste ─────────────────────────────────────────────
+// Liste
 .items-list {
   display: flex;
   flex-direction: column;
@@ -206,7 +206,7 @@
   }
 }
 
-// ── Checkbox ──────────────────────────────────────────
+// Checkbox
 .item-checkbox {
   width: 22px;
   height: 22px;
@@ -264,7 +264,7 @@
   margin-top: 2px;
 }
 
-// ── Bouton info ───────────────────────────────────────
+// Bouton info
 .btn-info {
   flex-shrink: 0;
   padding: 0.25rem 0.625rem;
@@ -284,7 +284,7 @@
   }
 }
 
-// ── Barre flottante ───────────────────────────────────
+// Barre flottante
 .multi-bar {
   position: fixed;
   bottom: 70px;
@@ -327,7 +327,7 @@
   &:hover { opacity: 0.85; }
 }
 
-// ── Empty state ───────────────────────────────────────
+// Empty state
 .empty-state {
   padding: 2rem;
   text-align: center;
@@ -338,7 +338,7 @@
   box-shadow: var(--shadow-sm);
 }
 
-// ── Submit error ──────────────────────────────────────
+// Submit error
 .submit-error {
   color: var(--danger-text);
   font-size: 0.8rem;

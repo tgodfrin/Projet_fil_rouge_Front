@@ -12,7 +12,7 @@
   }
 }
 
-// ── Greeting ──────────────────────────────────────────
+// Greeting
 .greeting-sub {
   font-size: 0.8rem;
   color: var(--grey-400);
@@ -28,7 +28,7 @@
   }
 }
 
-// ── Bannière retour ───────────────────────────────────
+// Bannière retour
 .return-banner {
   background: var(--warning-bg);
   border-radius: var(--r-md);
@@ -49,7 +49,7 @@
   margin-top: 2px;
 }
 
-// ── KPIs ──────────────────────────────────────────────
+// KPIs
 .kpi-grid {
   display: grid;
   grid-template-columns: 1fr 1fr;
@@ -83,7 +83,7 @@
   margin-top: 2px;
 }
 
-// ── Section label ─────────────────────────────────────
+// Section label
 .section-label {
   font-size: 0.7rem;
   font-weight: 700;
@@ -92,7 +92,7 @@
   color: var(--grey-400);
 }
 
-// ── Loan card ─────────────────────────────────────────
+// Loan card
 .loans-list {
   display: flex;
   flex-direction: column;
@@ -172,7 +172,7 @@
   background: currentColor;
 }
 
-// ── Progress bar ──────────────────────────────────────
+// Progress bar
 .progress-bar {
   height: 4px;
   background: rgba(255, 255, 255, 0.2);
@@ -197,7 +197,7 @@
   }
 }
 
-// ── CTA ───────────────────────────────────────────────
+// CTA
 .btn-new-loan {
   width: 100%;
   height: 40px;

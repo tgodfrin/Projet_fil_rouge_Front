@@ -56,7 +56,7 @@ export class LoginComponent {
         this.forgotLoading.set(false);
       },
       error: () => {
-        // Same generic message — do not reveal whether the email exists
+        // Même message générique : on ne révèle pas si l'email existe.
         this.forgotMessage.set('Si un compte existe pour cet email, un mot de passe temporaire a été envoyé.');
         this.forgotLoading.set(false);
       }
@@ -74,7 +74,7 @@ export class LoginComponent {
 
     const { email, password } = this.form.value;
 
-    // Étape 1 : POST /login → reçoit le token JWT (string brut)
+    // Étape 1 : on appelle POST /login et on reçoit le token JWT brut.
     this.http.post(
       `${this.apiUrl}/login`,
       { email, password },

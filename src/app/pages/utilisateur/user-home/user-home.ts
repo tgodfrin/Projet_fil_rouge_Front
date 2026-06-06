@@ -21,7 +21,7 @@ export class UserHomeComponent {
 
   private currentUserId = this.authService.currentUser()!.id;
 
-  // Load current user via /user/me — getById is @IsGestionnaire only and returns 403 for collaborateurs
+  // On charge l'utilisateur courant via /user/me : getById est réservé aux gestionnaires et renverrait 403 pour un collaborateur.
   private userSig = toSignal(this.userService.getMe());
 
   // Tous les emprunts de l'utilisateur courant

@@ -10,16 +10,16 @@ export type StatusEquipmentType = 'OUT_OF_SERVICE' | 'UNDER_REPAIR';
 
 export interface StatusEquipment {
   id: number;
-  beginStatusDate: string;        // LocalDateTime → ISO string (@CreationTimestamp)
+  beginStatusDate: string;        // LocalDateTime côté back (rempli à la création), chaîne ISO côté front
   endStatusDate: string | null;   // null tant que non résolu
   descriptionStatus: string | null;
   statusEquipmentType: StatusEquipmentType;
   // id, reference, equipmentName exposés via @JsonView(StatusEquipmentView) sur Equipment
-  // location, acquisitionDate, equipmentFamily, status → non exposés dans ce contexte
+  // location, acquisitionDate, equipmentFamily et status ne sont pas exposés dans ce contexte
   equipment: { id: number; reference: string; equipmentName: string };
 }
 
-// Body attendu par POST /status-equipment — aligné avec StatusEquipmentRequest.java
+// Corps attendu par POST /status-equipment — aligné avec StatusEquipmentRequest.java
 export interface StatusEquipmentCreate {
   statusEquipmentType: StatusEquipmentType;
   descriptionStatus: string;

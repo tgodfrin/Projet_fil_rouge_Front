@@ -32,7 +32,7 @@ export class GestionnaireProfileComponent implements OnInit {
     return `${u.name[0]}${u.lastname[0]}`.toUpperCase();
   });
 
-  // ── Formulaires inline ─────────────────────────────────
+  // Formulaires inline
   activeEdit     = signal<'email' | 'password' | null>(null);
   successMessage = signal<string | null>(null);
   errorMessage   = signal<string | null>(null);

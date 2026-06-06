@@ -9,7 +9,7 @@
   }
 }
 
-// ── En-tête ───────────────────────────────────────────
+// En-tête
 .page-header {
   display: flex;
   align-items: center;
@@ -52,7 +52,7 @@
   }
 }
 
-// ── KPI ───────────────────────────────────────────────
+// KPI
 .kpi-grid {
   display: grid;
   grid-template-columns: repeat(3, 1fr);
@@ -100,7 +100,7 @@
   }
 }
 
-// ── Tabs ──────────────────────────────────────────────
+// Tabs
 .tabs {
   display: flex;
   gap: 2px;
@@ -155,7 +155,7 @@
   &.blue    { background: #1565c0;           color: white;               }
 }
 
-// ── Liste alertes ─────────────────────────────────────
+// Liste alertes
 .alert-list {
   display: flex;
   flex-direction: column;
@@ -281,7 +281,7 @@
   flex-shrink: 0;
 }
 
-// ── Badges ────────────────────────────────────────────
+// Badges
 .badge {
   display: inline-flex;
   padding: 0.2rem 0.6rem;
@@ -294,7 +294,7 @@
   &.badge-info    { background: #1565c0;        color: white; }
 }
 
-// ── Bouton ghost ──────────────────────────────────────
+// Bouton ghost
 .btn-ghost {
   height: 28px;
   padding: 0 0.75rem;
@@ -310,7 +310,7 @@
   &:hover { background: var(--grey-100); }
 }
 
-// ── Boutons action valider / refuser ──────────────────────────────────────────
+// Boutons action valider / refuser
 %btn-action-base {
   padding: 0.3rem 0.75rem;
   border: none;
@@ -337,7 +337,7 @@
   &:hover:not(:disabled) { background: #b91c1c; }
 }
 
-// ── État vide ─────────────────────────────────────────
+// État vide
 .empty-state {
   padding: 2rem;
   text-align: center;

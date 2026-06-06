@@ -4,7 +4,7 @@ import { AuthService } from '../services/auth.service';
 
 const USER_ROLES = ['COLLABORATEUR', 'INTERVENANT', 'STAGIAIRE'];
 
-// Vérifie que l'utilisateur est COLLABORATEUR/INTERVENANT/STAGIAIRE → sinon redirige vers /dashboard
+// Laisse passer les collaborateurs, intervenants et stagiaires, sinon redirige vers le tableau de bord.
 export const userGuard: CanActivateFn = () => {
   const auth   = inject(AuthService);
   const router = inject(Router);

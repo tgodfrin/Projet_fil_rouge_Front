@@ -41,7 +41,7 @@ export class EquipmentComponent implements OnInit {
   equipements = signal<Equipment[]>([]);
   families    = signal<EquipmentFamily[]>([]);
 
-  // Initial load: apply the default "single date = today" filter so the list renders
+  // Chargement initial : on applique le filtre par défaut (date du jour) pour afficher la liste.
   // immediately on screen open, without any user interaction.
   ngOnInit(): void {
     this.dateMode.set('unique');
@@ -142,7 +142,7 @@ export class EquipmentComponent implements OnInit {
   ouvrirModal(): void { this.modalOuvert = true; }
   fermerModal(): void { this.modalOuvert = false; }
 
-  // 1. POST /equipment → récupère l'équipement créé avec son id
+  // On crée l'équipement, puis on récupère sa version enregistrée (avec son id).
   // 2. Pour chaque caractéristique : POST /characteristic-value avec l'id de l'équipement
   // forkJoin attend que tous les POSTs soient terminés avant de recharger
   onAjouter(output: EquipmentFormOutput): void {

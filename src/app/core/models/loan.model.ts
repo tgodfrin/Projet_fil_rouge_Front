@@ -37,7 +37,7 @@ export interface LoanEquipment {
 
 export interface Loan {
   id: number;
-  beginDate: string;            // LocalDateTime → ISO string
+  beginDate: string;            // LocalDateTime côté back, chaîne ISO côté front
   endDate: string;
   realEndDate: string | null;   // null jusqu'au retour effectif
   statusType: StatusLoanType;
@@ -48,11 +48,11 @@ export interface Loan {
   groupId: string | null;       // UUID shared by grouped loans, null for individual loans
 }
 
-// Body attendu par POST /loan
+// Corps attendu par POST /loan
 export interface LoanCreate {
   beginDate: string;
   endDate: string;
   requesterId: number;
   equipmentId: number;
-  groupId?: string;             // optional — set when submitting grouped requests
+  groupId?: string;             // optionnel : renseigné lors d'une demande groupée
 }

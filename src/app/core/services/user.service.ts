@@ -17,7 +17,7 @@ export class UserService {
     return this.http.get<AppUser>(`${this.apiUrl}/user/${id}`);
   }
 
-  // GET /user/me → retourne l'utilisateur courant depuis le SecurityContext
+  // Utilisateur courant, déterminé côté back à partir du token.
   getMe(): Observable<AppUser> {
     return this.http.get<AppUser>(`${this.apiUrl}/user/me`);
   }
@@ -26,12 +26,12 @@ export class UserService {
     return this.http.post<AppUser>(`${this.apiUrl}/user`, data);
   }
 
-  // GET /user/search?q= → recherche serveur par nom, prénom ou email
+  // Recherche par nom, prénom ou email.
   search(q: string): Observable<AppUser[]> {
     return this.http.get<AppUser[]>(`${this.apiUrl}/user/search`, { params: { q } });
   }
 
-  // GET /user/profil/{type} → tous les utilisateurs d'un profil donné
+  // Tous les utilisateurs d'un profil donné.
   getByProfil(type: string): Observable<AppUser[]> {
     return this.http.get<AppUser[]>(`${this.apiUrl}/user/profil/${type}`);
   }
@@ -41,7 +41,7 @@ export class UserService {
     return this.http.put<AppUser>(`${this.apiUrl}/user/${id}/email`, { email });
   }
 
-  // PUT /user/:id/password — identifiants dans le corps JSON (gestionnaire only)
+  // PUT /user/:id/password — identifiants dans le corps JSON (gestionnaire uniquement)
   updatePassword(id: number, oldPassword: string, password: string): Observable<AppUser> {
     return this.http.put<AppUser>(`${this.apiUrl}/user/${id}/password`, { oldPassword, password });
   }
@@ -56,12 +56,12 @@ export class UserService {
     return this.http.put<void>(`${this.apiUrl}/user/me/email`, { email });
   }
 
-  // PUT /user/:id — update name/lastname/email/profil (gestionnaire only, no password)
+  // Met à jour nom, prénom, email et profil d'un utilisateur (gestionnaire uniquement, sans mot de passe).
   update(id: number, data: { name: string; lastname: string; email: string; profilId: number }): Observable<AppUser> {
     return this.http.put<AppUser>(`${this.apiUrl}/user/${id}`, data);
   }
 
-  // DELETE /user/:id — gestionnaire only
+  // Suppression d'un utilisateur (gestionnaire uniquement).
   delete(id: number): Observable<void> {
     return this.http.delete<void>(`${this.apiUrl}/user/${id}`);
   }

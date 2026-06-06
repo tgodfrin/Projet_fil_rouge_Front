@@ -1,5 +1,5 @@
-// Canonical equipment-family → emoji icon map, shared across the app.
-// Family names match the back-end seed data (table equipment_family).
+// Association entre le nom d'une famille de matériel et son icône, partagée dans toute l'application.
+// Les noms de famille correspondent au jeu de données du back (table equipment_family).
 const CATEGORY_ICONS: Record<string, string> = {
   'PC':              '💻',
   'Écran':           '🖥️',

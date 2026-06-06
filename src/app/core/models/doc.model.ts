@@ -1,5 +1,5 @@
 // Correspond à l'entité Doc côté back
-// Sérialisé via @JsonView(DocView) → id, title, url, addedDate
+// Sérialisé via la vue DocView : id, title, url, addedDate.
 // Endpoints :
 //   GET    /doc/equipment/:equipmentId
 //   POST   /doc
@@ -9,10 +9,10 @@ export interface Doc {
   id: number;
   title: string;
   url: string;
-  addedDate: string; // LocalDateTime → ISO string
+  addedDate: string; // LocalDateTime côté back, chaîne ISO côté front
 }
 
-// Body attendu par POST /doc
+// Corps attendu par POST /doc
 export interface DocCreate {
   title: string;
   url: string;

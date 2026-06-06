@@ -12,7 +12,7 @@
   }
 }
 
-// ── Header ────────────────────────────────────────────
+// Header
 .page-header {
   display: flex;
   align-items: center;
@@ -40,7 +40,7 @@
   @media (min-width: 769px) { font-size: 1.4rem; }
 }
 
-// ── Cards ─────────────────────────────────────────────
+// Cards
 .section-card {
   background: white;
   border: 1px solid var(--grey-100);
@@ -60,7 +60,7 @@
   color: var(--grey-400);
 }
 
-// ── Période ───────────────────────────────────────────
+// Période
 .period-row {
   display: flex;
   align-items: center;
@@ -104,7 +104,7 @@
   font-weight: 600;
 }
 
-// ── Équipements ───────────────────────────────────────
+// Équipements
 .equipment-list {
   display: flex;
   flex-direction: column;
@@ -141,7 +141,7 @@
   margin-top: 2px;
 }
 
-// ── Erreurs ───────────────────────────────────────────
+// Erreurs
 .error-banner {
   background: var(--danger-bg);
   color: var(--danger-text);
@@ -151,7 +151,7 @@
   font-weight: 500;
 }
 
-// ── Actions ───────────────────────────────────────────
+// Actions
 .actions {
   display: flex;
   flex-direction: column;
@@ -191,7 +191,7 @@
   &:hover { border-color: var(--grey-400); color: var(--grey-700); }
 }
 
-// ── Loading ───────────────────────────────────────────
+// Loading
 .loading-state {
   padding: 2rem;
   text-align: center;

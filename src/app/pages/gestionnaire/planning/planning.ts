@@ -92,7 +92,7 @@ export class PlanningComponent implements OnInit, OnDestroy {
     }
   }
 
-  // Loans groupés par équipement → PlanningRow[]
+  // Emprunts regroupés par équipement pour construire les lignes du planning.
   // Le back renvoie déjà uniquement les loans de la période — pas besoin de filtrer par statut
   rows = computed((): PlanningRow[] => {
     const byEquipment = new Map<string, PlanningRow>();
@@ -119,7 +119,7 @@ export class PlanningComponent implements OnInit, OnDestroy {
     return Array.from(byEquipment.values());
   });
 
-  // ── Semaine ───────────────────────────────────────────
+  // Semaine
 
   weekDays = computed(() => {
     const base   = new Date(this.selectedDate());
@@ -143,7 +143,7 @@ export class PlanningComponent implements OnInit, OnDestroy {
     return `Semaine ${this.getWeekNumber(days[0].date)}`;
   });
 
-  // ── Mois ──────────────────────────────────────────────
+  // Mois
 
   // Base calendaire du mois affiché : on part de selectedDate et on ajoute monthOffset mois
   private monthBase = computed(() => {
@@ -180,7 +180,7 @@ export class PlanningComponent implements OnInit, OnDestroy {
     );
   }
 
-  // ── Filtres ───────────────────────────────────────────
+  // Filtres
 
   filteredRows = computed(() => {
     const cat = this.activeCategory();
@@ -192,7 +192,7 @@ export class PlanningComponent implements OnInit, OnDestroy {
     this.activeCategory.set(cat);
   }
 
-  // ── Navigation — chaque action recharge les données du back ───────────────
+  // Navigation — chaque action recharge les données du back
 
   prevWeek(): void {
     if (this.viewMode() === 'MOIS') {
@@ -227,7 +227,7 @@ export class PlanningComponent implements OnInit, OnDestroy {
     this.loadCurrentRange();
   }
 
-  // ── Utilitaires ───────────────────────────────────────
+  // Utilitaires
 
   getEventAt(row: PlanningRow, date: Date): PlanningEvent | null {
     const dateStr = this.toDateStr(date);

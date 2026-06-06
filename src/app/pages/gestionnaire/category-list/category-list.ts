@@ -31,12 +31,12 @@ export class CategoryListComponent implements OnInit {
   errorMessage = signal<string | null>(null);
   submitting   = signal(false);
 
-  // All profils loaded from /profil/list (used both for the checkboxes and to prefill them)
+  // Profils chargés depuis /profil/list, utilisés pour les cases à cocher et leur pré-remplissage.
   private allProfils = signal<Profil[]>([]);
-  // Roles offered as borrow rights — gestionnaires manage the park, they do not borrow
+  // Rôles proposés pour les droits d'emprunt : le gestionnaire gère le parc et n'emprunte pas.
   borrowableProfils  = computed(() => this.allProfils().filter(p => p.type !== 'GESTIONNAIRE'));
 
-  // Ids of the profils currently checked in the modal
+  // Identifiants des profils cochés dans la fenêtre.
   selectedProfilIds = signal<number[]>([]);
 
   nameForm = this.fb.group({
@@ -124,8 +124,8 @@ export class CategoryListComponent implements OnInit {
     const profilIds = this.selectedProfilIds();
     this.submitting.set(true);
 
-    // Create returns the new family (with its id); update returns 204 (no body),
-    // so in edit mode we reuse the known id rather than the response.
+    // La création renvoie la nouvelle famille (avec son id) ; la mise à jour renvoie 204 sans contenu,
+    // donc en édition on réutilise l'id connu plutôt que la réponse.
     const chain$ = id === null
       ? this.familyService.create(payload).pipe(
           switchMap(family => this.familyService.setProfils(family.id, profilIds)))
@@ -137,7 +137,7 @@ export class CategoryListComponent implements OnInit {
         this.submitting.set(false);
         this.closeModal();
         this.loadFamilies();
-        this.loadProfils(); // associations changed → refresh prefill source
+        this.loadProfils(); // les associations ont changé, on rafraîchit la source de pré-remplissage
       },
       error: () => {
         this.submitting.set(false);
@@ -154,7 +154,7 @@ export class CategoryListComponent implements OnInit {
     this.familyService.delete(family.id).subscribe({
       next: () => this.loadFamilies(),
       error: (err: HttpErrorResponse) => {
-        // 409 = the family still holds equipment (server-side guard)
+        // 409 : la famille contient encore du matériel (garde-fou côté serveur).
         this.errorMessage.set(err.status === 409
           ? `Impossible de supprimer « ${family.nameEquipmentFamily} » : des équipements y sont encore rattachés.`
           : 'Une erreur est survenue lors de la suppression.');

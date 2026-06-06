@@ -19,7 +19,7 @@ export class StatusEquipmentService {
     return this.http.post<StatusEquipment>(`${this.apiUrl}/status-equipment`, data);
   }
 
-  // PUT /status-equipment/:id/resolve  →  endStatusDate = now
+  // Clôture un statut technique en renseignant sa date de fin.
   resolve(id: number): Observable<StatusEquipment> {
     return this.http.put<StatusEquipment>(
       `${this.apiUrl}/status-equipment/${id}/resolve`, null

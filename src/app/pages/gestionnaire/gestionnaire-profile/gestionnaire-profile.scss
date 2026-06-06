@@ -12,7 +12,7 @@
   }
 }
 
-// ── Header profil ─────────────────────────────────────
+// Header profil
 .profile-header {
   display: flex;
   align-items: center;
@@ -60,7 +60,7 @@
   width: fit-content;
 }
 
-// ── Section label ─────────────────────────────────────
+// Section label
 .section-label {
   font-size: 0.7rem;
   font-weight: 700;
@@ -69,7 +69,7 @@
   color: var(--grey-400);
 }
 
-// ── Info card ─────────────────────────────────────────
+// Info card
 .info-card {
   background: white;
   border: 1px solid var(--grey-100);
@@ -100,7 +100,7 @@
   font-weight: 600;
 }
 
-// ── Actions card ──────────────────────────────────────
+// Actions card
 .actions-card {
   background: white;
   border: 1px solid var(--grey-100);
@@ -136,7 +136,7 @@
   color: var(--grey-300);
 }
 
-// ── Formulaire inline ─────────────────────────────────
+// Formulaire inline
 .edit-form {
   display: flex;
   flex-direction: column;
@@ -221,7 +221,7 @@
   &:hover { color: var(--grey-700); }
 }
 
-// ── Messages ──────────────────────────────────────────
+// Messages
 .msg {
   font-size: 0.72rem;
   font-weight: 600;

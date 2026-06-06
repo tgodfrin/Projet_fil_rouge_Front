@@ -71,7 +71,7 @@ export class EquipmentFormComponent implements OnInit {
         location:        this.equipmentToEdit.location ?? '',
         acquisitionDate: this.equipmentToEdit.acquisitionDate ?? '',
       });
-      // Pre-fill lignes with existing characteristics so they appear in edit mode
+      // Pré-remplit les lignes avec les caractéristiques existantes pour qu'elles apparaissent en édition.
       if (this.existingCharacteristics.length > 0) {
         this.lignes.set(this.existingCharacteristics.map(cv => ({
           id:               cv.id,

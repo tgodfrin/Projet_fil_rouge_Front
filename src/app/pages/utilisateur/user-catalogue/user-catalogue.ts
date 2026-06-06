@@ -91,7 +91,7 @@ export class UserCatalogueComponent implements OnInit {
 
   isFamilyAllowed(familyName: string): boolean {
     const family = this.families().find(f => f.nameEquipmentFamily === familyName);
-    if (!family) return true; // 'Tous' ou famille inconnue → pas de restriction
+    if (!family) return true; // 'Tous' ou famille inconnue : pas de restriction
     return this.allowedFamilyIds().includes(family.id);
   }
 

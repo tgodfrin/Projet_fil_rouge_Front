@@ -22,7 +22,7 @@ export class UserProfileComponent implements OnInit {
   private loanService = inject(LoanService);
   private authService = inject(AuthService);
 
-  // Chargement de l'utilisateur courant via subscribe → signal mutable
+  // Chargement de l'utilisateur courant via subscribe, stocké dans un signal modifiable.
   // (permet mise à jour optimiste après PUT email)
   private userSig = signal<AppUser | undefined>(undefined);
   user = this.userSig.asReadonly();
@@ -36,7 +36,7 @@ export class UserProfileComponent implements OnInit {
     this.loanService.getByUser(userId).subscribe(l => this.loansSig.set(l));
   }
 
-  // ── Valeurs dérivées ───────────────────────────────────
+  // Valeurs dérivées
   initials = computed(() => {
     const u = this.user();
     if (!u) return '';
@@ -63,7 +63,7 @@ export class UserProfileComponent implements OnInit {
     ];
   });
 
-  // ── Formulaires inline ─────────────────────────────────
+  // Formulaires inline
   activeEdit     = signal<'email' | 'password' | null>(null);
   successMessage = signal<string | null>(null);
   errorMessage   = signal<string | null>(null);

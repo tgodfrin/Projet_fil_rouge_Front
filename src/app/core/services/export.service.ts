@@ -10,7 +10,7 @@ export class ExportService {
     if (format === 'xml') this.exportXml(data, filename);
   }
 
-  // ── CSV ────────────────────────────────────────────────
+  // CSV
   private exportCsv(data: Record<string, unknown>[], filename: string): void {
     if (!data.length) return;
 
@@ -23,7 +23,7 @@ export class ExportService {
     this.telecharger(content, `${filename}.csv`, 'text/csv;charset=utf-8;');
   }
 
-  // ── XML ────────────────────────────────────────────────
+  // XML
   private exportXml(data: Record<string, unknown>[], filename: string): void {
     const items = data.map(row => {
       const fields = Object.entries(row)
@@ -36,7 +36,7 @@ export class ExportService {
     this.telecharger(content, `${filename}.xml`, 'application/xml;charset=utf-8;');
   }
 
-  // ── Téléchargement ─────────────────────────────────────
+  // Téléchargement
   private telecharger(content: string, filename: string, mimeType: string): void {
     const blob = new Blob(['\uFEFF' + content], { type: mimeType });
     const url  = URL.createObjectURL(blob);

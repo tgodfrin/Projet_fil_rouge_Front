@@ -38,7 +38,7 @@ export class LoanComponent {
   loans   = signal<Loan[]>([]);
   loading = signal(true);
 
-  // Tracks which group detail panel is open (null = aucun)
+  // Indique quel panneau de détail de groupe est ouvert (null si aucun).
   openGroupId = signal<string | null>(null);
 
   constructor() {
@@ -118,7 +118,7 @@ export class LoanComponent {
     return loan.statusType;
   }
 
-  // ── Actions emprunts individuels ─────────────────────
+  // Actions emprunts individuels
 
   validateLoan(loan: Loan): void {
     this.loanService.validate(loan.id).subscribe(() => this.chargerEmprunts());
@@ -132,7 +132,7 @@ export class LoanComponent {
     this.loanService.return(loan.id).subscribe(() => this.chargerEmprunts());
   }
 
-  // ── Actions emprunts groupés ──────────────────────────
+  // Actions emprunts groupés
 
   validateGroup(groupId: string): void {
     this.loanService.validateGroup(groupId).subscribe(() => this.chargerEmprunts());
@@ -146,7 +146,7 @@ export class LoanComponent {
     this.openGroupId.update(v => v === groupId ? null : groupId);
   }
 
-  // ── Export ────────────────────────────────────────────
+  // Export
 
   loansExport = computed(() =>
     this.loans().map(l => ({

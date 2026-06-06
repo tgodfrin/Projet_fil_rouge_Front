@@ -5,12 +5,12 @@
   overflow: hidden;
 }
 
-// ── Overlay mobile ────────────────────────────────────
+// Overlay mobile
 .overlay {
   display: none;
 }
 
-// ── Sidebar ───────────────────────────────────────────
+// Sidebar
 .sidebar {
   width: 220px;
   min-width: 220px;
@@ -125,7 +125,7 @@
   }
 }
 
-// ── Main wrapper ──────────────────────────────────────
+// Main wrapper
 .main-wrapper {
   display: flex;
   flex-direction: column;
@@ -133,7 +133,7 @@
   overflow: hidden;
 }
 
-// ── Topbar mobile uniquement ──────────────────────────
+// Topbar mobile uniquement
 .header {
   display: none;
 
@@ -158,7 +158,7 @@
   color: var(--primary);
 }
 
-// ── Contenu ───────────────────────────────────────────
+// Contenu
 .content {
   flex: 1;
   overflow-y: auto;
@@ -168,7 +168,7 @@
   }
 }
 
-// ── Bottom nav mobile uniquement ──────────────────────
+// Bottom nav mobile uniquement
 .bottom-nav {
   display: none;
 

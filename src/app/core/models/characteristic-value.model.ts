@@ -12,12 +12,12 @@ export interface Characteristic {
 export interface CharacteristicValue {
   id: number;
   value: string;
-  beginDate: string;         // LocalDateTime → ISO string
+  beginDate: string;         // LocalDateTime côté back, chaîne ISO côté front
   endDate: string | null;    // null si toujours en vigueur
   characteristic: Characteristic;
 }
 
-// Body attendu par POST /characteristic-value et PUT /characteristic-value/:id
+// Corps attendu par POST /characteristic-value et PUT /characteristic-value/:id
 // Le DTO back CharacteristicValueRequest attend characteristicId + equipmentId (Integers)
 export interface CharacteristicValueCreate {
   value: string;

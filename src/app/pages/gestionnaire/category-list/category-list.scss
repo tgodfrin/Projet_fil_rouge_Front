@@ -10,7 +10,7 @@
   }
 }
 
-// ── En-tête ───────────────────────────────────────────
+// En-tête
 .page-header {
   display: flex;
   align-items: center;
@@ -30,7 +30,7 @@
   }
 }
 
-// ── Boutons ───────────────────────────────────────────
+// Boutons
 .btn-add {
   height: 36px;
   padding: 0 1.25rem;
@@ -105,7 +105,7 @@
   &:hover { background: var(--grey-200); }
 }
 
-// ── Tableau ───────────────────────────────────────────
+// Tableau
 .table-container {
   background: white;
   border-radius: var(--r-lg);
@@ -167,7 +167,7 @@
   justify-content: flex-end;
 }
 
-// ── État vide ─────────────────────────────────────────
+// État vide
 .empty-state {
   padding: 2rem;
   text-align: center;
@@ -178,7 +178,7 @@
   box-shadow: var(--shadow-sm);
 }
 
-// ── Alerte erreur ─────────────────────────────────────
+// Alerte erreur
 .alert-error {
   padding: 0.75rem 1rem;
   background: var(--danger-bg, #fde8e8);
@@ -187,7 +187,7 @@
   font-size: 0.85rem;
 }
 
-// ── Modal ─────────────────────────────────────────────
+// Modal
 .modal-overlay {
   position: fixed;
   inset: 0;
@@ -253,7 +253,7 @@
   color: var(--danger-text, #a51212);
 }
 
-// ── Cases à cocher des rôles ──────────────────────────
+// Cases à cocher des rôles
 .roles-field {
   border: 1px solid var(--grey-200);
   border-radius: var(--r-md);
@@ -298,7 +298,7 @@
   gap: 0.75rem;
 }
 
-// ── Utilitaire lecteur d'écran ────────────────────────
+// Utilitaire lecteur d'écran
 .sr-only {
   position: absolute;
   width: 1px;

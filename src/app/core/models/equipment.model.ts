@@ -11,10 +11,10 @@
 import { EquipmentFamily } from './equipment-family.model';
 
 // Champ @Transient calculé par EquipmentService.setCalculatedStatus() côté back :
-//   DISPONIBLE     → aucun emprunt VALID en cours + aucun StatusEquipment ouvert
-//   EN_PRET        → emprunt VALID (validé) qui chevauche la date/période consultée
-//   OUT_OF_SERVICE → StatusEquipment de type OUT_OF_SERVICE non résolu
-//   UNDER_REPAIR   → StatusEquipment de type UNDER_REPAIR non résolu
+//   DISPONIBLE : aucun emprunt validé en cours et aucun statut technique ouvert
+//   EN_PRET : un emprunt validé occupe le matériel sur la date ou la période consultée
+//   OUT_OF_SERVICE : statut technique "hors service" non résolu
+//   UNDER_REPAIR : statut technique "en réparation" non résolu
 export type EquipmentStatus = 'DISPONIBLE' | 'EN_PRET' | 'OUT_OF_SERVICE' | 'UNDER_REPAIR';
 
 export interface Equipment {
@@ -22,7 +22,7 @@ export interface Equipment {
   reference: string;
   equipmentName: string;
   location: string | null;
-  acquisitionDate: string | null; // LocalDate → 'YYYY-MM-DD'
+  acquisitionDate: string | null; // LocalDate côté back, 'YYYY-MM-DD'
   equipmentFamily: EquipmentFamily;
   status: EquipmentStatus | null; // @Transient, calculé côté service
 }

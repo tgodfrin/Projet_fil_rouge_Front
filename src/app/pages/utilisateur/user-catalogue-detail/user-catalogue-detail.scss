@@ -11,7 +11,7 @@
   }
 }
 
-// ── Header ────────────────────────────────────────────
+// Header
 .page-header {
   display: flex;
   align-items: center;
@@ -43,7 +43,7 @@
   @media (min-width: 769px) { font-size: 1.4rem; }
 }
 
-// ── Fiche ─────────────────────────────────────────────
+// Fiche
 .fiche {
   background: white;
   border-radius: var(--r-lg);
@@ -93,7 +93,7 @@
   font-family: monospace;
 }
 
-// ── Méta-infos ────────────────────────────────────────
+// Méta-infos
 .fiche-meta {
   display: grid;
   grid-template-columns: repeat(2, 1fr);
@@ -126,7 +126,7 @@
   color: var(--grey-900);
 }
 
-// ── Badges ────────────────────────────────────────────
+// Badges
 .badge {
   display: inline-flex;
   align-items: center;
@@ -162,7 +162,7 @@
   }
 }
 
-// ── Section label ─────────────────────────────────────
+// Section label
 .section-label {
   font-size: 0.7rem;
   font-weight: 700;
@@ -171,7 +171,7 @@
   color: var(--grey-400);
 }
 
-// ── Tableau caractéristiques ──────────────────────────
+// Tableau caractéristiques
 .carac-table {
   background: white;
   border-radius: var(--r-md);
@@ -205,7 +205,7 @@
   text-align: right;
 }
 
-// ── Tableau documents ─────────────────────────────────
+// Tableau documents
 .table-wrapper {
   overflow-x: auto;
   border-radius: var(--r-md);
@@ -273,7 +273,7 @@
   }
 }
 
-// ── Bouton emprunt ────────────────────────────────────
+// Bouton emprunt
 .btn-borrow {
   display: flex;
   align-items: center;
@@ -314,7 +314,7 @@
   }
 }
 
-// ── Empty state ───────────────────────────────────────
+// Empty state
 .empty-state {
   padding: 2rem;
   text-align: center;

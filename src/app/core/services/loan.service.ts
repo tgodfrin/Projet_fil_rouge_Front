@@ -28,17 +28,17 @@ export class LoanService {
     });
   }
 
-  // GET /loan/equipment/{id} → historique des emprunts d'un équipement
+  // Historique des emprunts d'un équipement.
   getByEquipment(equipmentId: number): Observable<Loan[]> {
     return this.http.get<Loan[]>(`${this.apiUrl}/loan/equipment/${equipmentId}`);
   }
 
-  // GET /loan/overdue → emprunts en retard (VALID dont endDate est dépassée)
+  // Emprunts en retard : validés dont la date de fin est dépassée.
   getOverdue(): Observable<Loan[]> {
     return this.http.get<Loan[]>(`${this.apiUrl}/loan/overdue`);
   }
 
-  // GET /loan/pending → demandes en attente de validation (IN_PROGRESS)
+  // Demandes en attente de validation.
   getPending(): Observable<Loan[]> {
     return this.http.get<Loan[]>(`${this.apiUrl}/loan/pending`);
   }
@@ -47,33 +47,31 @@ export class LoanService {
     return this.http.post<Loan>(`${this.apiUrl}/loan`, data);
   }
 
-  // PUT /loan/:id/validate  →  IN_PROGRESS → VALID
-  // Le validatorId est lu depuis le token JWT côté back — aucun paramètre à envoyer
+  // Validation d'une demande : elle passe de "en attente" à "validée".
+  // Le valideur est déterminé côté back à partir du token JWT, aucun paramètre à envoyer.
   validate(id: number): Observable<void> {
     return this.http.put<void>(`${this.apiUrl}/loan/${id}/validate`, null);
   }
 
-  // PUT /loan/:id/invalidate  →  IN_PROGRESS → INVALID
-  // Le back retourne 204 NO_CONTENT → Observable<void>
+  // Refus d'une demande. Le back renvoie 204 sans contenu.
   invalidate(id: number): Observable<void> {
     return this.http.put<void>(`${this.apiUrl}/loan/${id}/invalidate`, null);
   }
 
-  // PUT /loan/:id/return  →  VALID → TERMINE
-  // Le back retourne 204 NO_CONTENT → Observable<void>
+  // Enregistrement du retour : l'emprunt passe à "terminé". Le back renvoie 204 sans contenu.
   return(id: number): Observable<void> {
     return this.http.put<void>(`${this.apiUrl}/loan/${id}/return`, null);
   }
 
-  // La validation/refus des demandes de retour anticipé et de prolongation passe désormais
-  // par EventService.accept() / refuse() (PUT /event/:id/accept et /refuse) qui tracent la décision.
+  // La validation et le refus des demandes de retour anticipé et de prolongation passent par
+  // EventService.accept() et refuse(), qui tracent la décision.
 
-  // PUT /loan/group/:groupId/validate  →  validates all loans in the group at once
+  // Valide tous les emprunts d'un groupe en une fois.
   validateGroup(groupId: string): Observable<void> {
     return this.http.put<void>(`${this.apiUrl}/loan/group/${groupId}/validate`, null);
   }
 
-  // PUT /loan/group/:groupId/refuse  →  refuses all loans in the group at once
+  // Refuse tous les emprunts d'un groupe en une fois.
   refuseGroup(groupId: string): Observable<void> {
     return this.http.put<void>(`${this.apiUrl}/loan/group/${groupId}/refuse`, null);
   }

@@ -39,7 +39,7 @@ export class UserListComponent implements OnInit, OnDestroy {
     });
 
     // Recherche serveur avec debounce 300ms
-    // Si la recherche est vide → rechargement selon le filtre profil actif
+    // Si la recherche est vide, on recharge selon le filtre de profil actif.
     this.sub = this.searchSubject.pipe(
       debounceTime(300),
       distinctUntilChanged(),
@@ -72,7 +72,7 @@ export class UserListComponent implements OnInit, OnDestroy {
     }
   }
 
-  // Si recherche + filtre profil combinés → filtre client-side sur les résultats de recherche
+  // Si une recherche et un filtre de profil sont combinés, on filtre côté client sur les résultats de la recherche.
   filteredUsers = computed(() => {
     const filter = this.activeFilter();
     const q      = this.searchTerm().trim();

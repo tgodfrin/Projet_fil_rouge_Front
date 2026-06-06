@@ -1,5 +1,5 @@
 // Correspond à l'enum ProfilType + l'entité Profil côté back
-// Sérialisé via @JsonView(AppUserView) → id + type + equipmentFamilies
+// Sérialisé via la vue AppUserView : id, type et equipmentFamilies.
 // Endpoint : GET /profil/list
 
 import { EquipmentFamily } from './equipment-family.model';

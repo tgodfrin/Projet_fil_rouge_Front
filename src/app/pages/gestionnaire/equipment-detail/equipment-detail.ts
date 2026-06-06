@@ -72,7 +72,7 @@ export class EquipmentDetailComponent {
     this.familyService.getAll().subscribe(data => this.families.set(data));
   }
 
-  // ── Loaders ──────────────────────────────────────────
+  // Loaders
 
   private loadEquipment(): void {
     this.equipmentService.getById(this.equipmentId).subscribe(data => this.equipment.set(data));
@@ -102,9 +102,9 @@ export class EquipmentDetailComponent {
     );
   }
 
-  // ── Helpers ──────────────────────────────────────────
+  // Helpers
 
-  // Returns the currently open (unresolved) StatusEquipment, if any
+  // Statut technique actuellement ouvert (non résolu), s'il y en a un.
   get currentOpenStatus(): StatusEquipment | null {
     return this.statusList().find(s => s.endStatusDate === null) ?? null;
   }
@@ -122,7 +122,7 @@ export class EquipmentDetailComponent {
     this.ongletActif.set(onglet);
   }
 
-  // Opens the status modal and sets the default option based on current equipment status
+  // Ouvre la fenêtre de statut et choisit l'option par défaut selon le statut actuel de l'équipement.
   openStatusModal(): void {
     const hasOpenStatus = this.currentOpenStatus !== null;
     this.newStatusType.set(hasOpenStatus ? 'DISPONIBLE' : 'OUT_OF_SERVICE');
@@ -130,7 +130,7 @@ export class EquipmentDetailComponent {
     this.modalStatusOpen.set(true);
   }
 
-  // ── Actions ──────────────────────────────────────────
+  // Actions
 
   onEdit(output: EquipmentFormOutput): void {
     this.equipmentService.update(this.equipmentId, output.payload).subscribe(() => {
@@ -210,7 +210,7 @@ export class EquipmentDetailComponent {
     this.docService.delete(docId).subscribe(() => this.loadDocs());
   }
 
-  // ── Label helpers ────────────────────────────────────
+  // Label helpers
 
   getLoanDisplayStatus(loan: Loan): LoanDisplayStatus {
     const now = new Date();

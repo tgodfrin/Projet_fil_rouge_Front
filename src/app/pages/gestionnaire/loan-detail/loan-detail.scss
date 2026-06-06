@@ -7,7 +7,7 @@
   @media (max-width: 768px) { padding: 1rem; }
 }
 
-// ── En-tête ───────────────────────────────────────────
+// En-tête
 .page-header {
   display: flex;
   align-items: center;
@@ -30,7 +30,7 @@
   color: var(--grey-700);
 }
 
-// ── Alerte retard ─────────────────────────────────────
+// Alerte retard
 .alert-retard {
   background: var(--danger-bg);
   color: var(--danger-text);
@@ -41,7 +41,7 @@
   font-weight: 500;
 }
 
-// ── Fiche ─────────────────────────────────────────────
+// Fiche
 .fiche {
   background: white;
   border-radius: var(--r-lg);
@@ -127,7 +127,7 @@
   &.text-danger { color: var(--danger-text); font-weight: 700; }
 }
 
-// ── Badges ────────────────────────────────────────────
+// Badges
 .badge {
   display: inline-flex;
   align-items: center;
@@ -149,7 +149,7 @@
   &.b-neutral  { background: var(--grey-100);   color: var(--grey-500);     .badge-dot { background: var(--grey-400); } }
 }
 
-// ── Cartes emprunteur / équipement ────────────────────
+// Cartes emprunteur / équipement
 .cards-row {
   display: grid;
   grid-template-columns: 1fr 1fr;
@@ -245,7 +245,7 @@
   color: var(--grey-400);
 }
 
-// ── Actions gestionnaire ──────────────────────────────
+// Actions gestionnaire
 .actions-bar {
   display: flex;
   align-items: center;
@@ -291,7 +291,7 @@
   flex: 1;
 }
 
-// ── Empty state ───────────────────────────────────────
+// Empty state
 .empty-state {
   text-align: center;
   padding: 3rem;

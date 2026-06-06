@@ -9,7 +9,7 @@
   }
 }
 
-// ── En-tête ───────────────────────────────────────────
+// En-tête
 .page-header {
   display: flex;
   align-items: center;
@@ -30,7 +30,7 @@
   gap: 0.75rem;
 }
 
-// ── Boutons ───────────────────────────────────────────
+// Boutons
 .btn {
   padding: 8px 16px;
   border-radius: var(--r-sm);
@@ -49,7 +49,7 @@
   &.btn-sm      { padding: 4px 10px; font-size: 11px; }
 }
 
-// ── Filtre par date ───────────────────────────────────
+// Filtre par date
 .date-filter-bar {
   display: flex;
   align-items: center;
@@ -103,7 +103,7 @@
   color: var(--grey-400);
 }
 
-// ── Recherche ─────────────────────────────────────────
+// Recherche
 .search-bar {
   display: flex;
   gap: 8px;
@@ -154,7 +154,7 @@
   }
 }
 
-// ── Badges filtre ─────────────────────────────────────
+// Badges filtre
 .badges-row {
   display: flex;
   gap: 8px;
@@ -210,7 +210,7 @@
   }
 }
 
-// ── Tableau ───────────────────────────────────────────
+// Tableau
 .table-wrapper {
   overflow-x: auto;
   border-radius: var(--r-md);
@@ -263,7 +263,7 @@
   margin-top: 2px;
 }
 
-// ── État vide ─────────────────────────────────────────
+// État vide
 .empty-state {
   padding: 32px;
   text-align: center;
@@ -271,7 +271,7 @@
   color: var(--grey-400);
 }
 
-// ── Pagination ────────────────────────────────────────
+// Pagination
 .pagination {
   display: flex;
   align-items: center;

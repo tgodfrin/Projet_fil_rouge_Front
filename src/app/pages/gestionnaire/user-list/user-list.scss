@@ -10,7 +10,7 @@
   }
 }
 
-// ── En-tête ───────────────────────────────────────────
+// En-tête
 .page-header {
   display: flex;
   align-items: center;
@@ -66,7 +66,7 @@
   }
 }
 
-// ── Toolbar ───────────────────────────────────────────
+// Toolbar
 .toolbar {
   display: flex;
   align-items: center;
@@ -142,7 +142,7 @@
   }
 }
 
-// ── Tableau ───────────────────────────────────────────
+// Tableau
 .table-container {
   background: white;
   border-radius: var(--r-lg);
@@ -185,7 +185,7 @@
   }
 }
 
-// ── Cellule utilisateur ───────────────────────────────
+// Cellule utilisateur
 .user-cell {
   display: flex;
   align-items: center;
@@ -222,7 +222,7 @@
   color: var(--primary);
 }
 
-// ── Badges ────────────────────────────────────────────
+// Badges
 .badge {
   display: inline-flex;
   padding: 0.2rem 0.6rem;
@@ -236,7 +236,7 @@
   &.badge-success { background: var(--success-bg); color: var(--success-text); }
 }
 
-// ── Bouton ghost ──────────────────────────────────────
+// Bouton ghost
 .btn-ghost {
   height: 28px;
   padding: 0 0.75rem;
@@ -255,7 +255,7 @@
   &:hover { background: var(--grey-200); }
 }
 
-// ── État vide ─────────────────────────────────────────
+// État vide
 .empty-state {
   padding: 2rem;
   text-align: center;

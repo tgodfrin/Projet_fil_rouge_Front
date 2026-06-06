@@ -25,7 +25,7 @@ export class AlertListComponent {
   // Loans via toSignal (pas de mutation dessus)
   private loans = toSignal(this.loanService.getAll(), { initialValue: [] as Loan[] });
 
-  // All events (read + unread) — avoids incidents disappearing after markAsRead + navigation
+  // Tous les événements, lus et non lus : évite que les incidents disparaissent après lecture puis navigation.
   private events = signal<Event[]>([]);
 
   // IDs des alertes en cours de traitement (pour désactiver le bouton pendant la requête)
@@ -208,7 +208,7 @@ export class AlertListComponent {
     return this.processingIds().has(alertId);
   }
 
-  // Returns the display label for an alert type
+  // Libellé d'affichage d'un type d'alerte.
   getAlertLabel(type: AlertType): string {
     const labels: Record<AlertType, string> = {
       RETARD:       'Retard',

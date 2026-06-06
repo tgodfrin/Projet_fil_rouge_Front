@@ -21,7 +21,7 @@
   }
 }
 
-// ── Header ────────────────────────────────────────────
+// Header
 .page-header {
   display: flex;
   align-items: center;
@@ -54,7 +54,7 @@
   }
 }
 
-// ── Équipement ────────────────────────────────────────
+// Équipement
 .equipment-card {
   background: var(--grey-100);
   border-radius: var(--r-md);
@@ -81,7 +81,7 @@
   margin-top: 2px;
 }
 
-// ── Section label ─────────────────────────────────────
+// Section label
 .section-label {
   font-size: 0.7rem;
   font-weight: 700;
@@ -90,7 +90,7 @@
   color: var(--grey-400);
 }
 
-// ── Grid incidents ────────────────────────────────────
+// Grid incidents
 .incident-grid {
   display: grid;
   grid-template-columns: 1fr 1fr;
@@ -131,7 +131,7 @@
   color: var(--grey-700);
 }
 
-// ── Formulaire ────────────────────────────────────────
+// Formulaire
 form {
   display: flex;
   flex-direction: column;
@@ -171,7 +171,7 @@ form {
   &::placeholder { color: var(--grey-400); }
 }
 
-// ── Photo upload ──────────────────────────────────────
+// Photo upload
 .photo-upload {
   height: 56px;
   background: var(--grey-50);
@@ -194,7 +194,7 @@ form {
   color: var(--grey-400);
 }
 
-// ── Date picker stylisé ───────────────────────────────
+// Date picker stylisé
 .form-input {
   width: 100%;
   height: 44px;
@@ -224,7 +224,7 @@ form {
   }
 }
 
-// ── Champ motif (textarea optionnel) ─────────────────
+// Champ motif (textarea optionnel)
 .form-motif {
   width: 100%;
   border: 1.5px solid var(--grey-200);
@@ -247,7 +247,7 @@ form {
   &::placeholder { color: var(--grey-400); }
 }
 
-// ── Info contextuelle ─────────────────────────────────
+// Info contextuelle
 .return-info {
   font-size: 0.78rem;
   color: var(--grey-500);
@@ -258,7 +258,7 @@ form {
   line-height: 1.5;
 }
 
-// ── Hint texte ────────────────────────────────────────
+// Hint texte
 .hint-text {
   font-size: 0.8rem;
   color: var(--grey-400);
@@ -266,7 +266,7 @@ form {
   margin: 0.5rem 0;
 }
 
-// ── Submit ────────────────────────────────────────────
+// Submit
 .btn-submit {
   width: 100%;
   height: 44px;

@@ -55,7 +55,7 @@ export class AuthService {
   });
 
   setSession(token: string, user: AuthUser): void {
-    // Update signals first so computed values (fullName, initials) are ready before navigation
+    // On met à jour les signaux d'abord pour que les valeurs calculées (fullName, initials) soient prêtes avant la navigation.
     this._token.set(token);
     this._currentUser.set(user);
     localStorage.setItem(TOKEN_KEY, token);

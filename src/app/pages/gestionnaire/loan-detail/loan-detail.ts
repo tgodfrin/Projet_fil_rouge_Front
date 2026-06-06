@@ -38,7 +38,7 @@ export class LoanDetailComponent {
     this.loan$.pipe(switchMap(l => this.userService.getById(l.requester.id)))
   );
 
-  // Mutable loan signal for reloading after actions
+  // Signal d'emprunt modifiable, pour recharger après une action.
   loanData = signal<Loan | undefined>(undefined);
 
   constructor() {
@@ -49,7 +49,7 @@ export class LoanDetailComponent {
     this.loanService.getById(this.loanId).subscribe(l => this.loanData.set(l));
   }
 
-  // ─── Actions gestionnaire ────────────────────────────────────────────────
+  // Actions gestionnaire
 
   onValidate(): void {
     this.loanService.validate(this.loanId).subscribe(() => this.reload());
@@ -71,12 +71,12 @@ export class LoanDetailComponent {
     this.loanService.refuseGroup(groupId).subscribe(() => this.reload());
   }
 
-  // Marks the loan as returned (VALID → TERMINE) — visible only when loan is VALID or IN_PROGRESS
+  // Enregistre le retour de l'emprunt (il passe à "terminé"). Visible seulement pour un emprunt validé ou en attente.
   onReturn(): void {
     this.loanService.return(this.loanId).subscribe(() => this.reload());
   }
 
-  // ─── Navigation ───────────────────────────────────────────────────────────
+  // Navigation
 
   retour(): void { this.location.back(); }
 
@@ -90,7 +90,7 @@ export class LoanDetailComponent {
     if (u) this.router.navigate(['/utilisateurs', u.id]);
   }
 
-  // ─── Helpers affichage ────────────────────────────────────────────────────
+  // Helpers affichage
 
   fullName(user: AppUser): string {
     return `${user.name} ${user.lastname}`;

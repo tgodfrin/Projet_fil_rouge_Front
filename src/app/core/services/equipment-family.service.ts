@@ -29,7 +29,7 @@ export class EquipmentFamilyService {
     return this.http.delete<void>(`${this.apiUrl}/equipment-family/${id}`);
   }
 
-  // PUT /equipment-family/{id}/profils → sets which roles (profils) can borrow this family
+  // Définit quels profils peuvent emprunter cette famille.
   setProfils(id: number, profilIds: number[]): Observable<void> {
     return this.http.put<void>(`${this.apiUrl}/equipment-family/${id}/profils`, { profilIds });
   }

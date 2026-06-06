@@ -26,7 +26,7 @@ export class UserCreateComponent {
 
   profils = toSignal(this.profilService.getAll(), { initialValue: [] as Profil[] });
 
-  // Edit mode if :id is present in the route (utilisateurs/:id/edit)
+  // Mode édition si un :id est présent dans la route (utilisateurs/:id/edit).
   private editId = this.route.snapshot.paramMap.get('id')
     ? Number(this.route.snapshot.paramMap.get('id'))
     : null;
@@ -64,7 +64,7 @@ export class UserCreateComponent {
   }, { validators: this.isEditMode() ? [] : this.matchPasswords });
 
   constructor() {
-    // In edit mode: load user data and pre-fill the form
+    // En mode édition : on charge les données de l'utilisateur et on pré-remplit le formulaire.
     if (this.editId !== null) {
       this.userService.getById(this.editId).subscribe({
         next: (user) => {
@@ -123,7 +123,7 @@ export class UserCreateComponent {
         }
       });
     } else {
-      // Create mode: call create endpoint (with password)
+      // En mode création : on appelle l'endpoint de création (avec mot de passe).
       const payload: AppUserCreate = {
         name:     val.name!,
         lastname: val.lastname!,

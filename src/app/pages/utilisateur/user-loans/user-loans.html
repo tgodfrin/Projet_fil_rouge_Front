@@ -19,7 +19,7 @@
     <div class="empty-state">Chargement…</div>
   } @else {
 
-    <!-- ══════════════════ TAB EN COURS ══════════════════ -->
+    <!-- Onglet "En cours" -->
     @if (activeTab() === 'EN_COURS') {
       @if (displayItems().length === 0) {
         <div class="empty-state">Aucun emprunt en cours.</div>
@@ -115,7 +115,7 @@
       }
     }
 
-    <!-- ══════════════════ TAB EN ATTENTE ══════════════════ -->
+    <!-- Onglet "En attente" -->
     @if (activeTab() === 'EN_ATTENTE') {
       @if (displayItems().length === 0 && pendingEvents().length === 0) {
         <div class="empty-state">Aucune demande en attente.</div>
@@ -186,7 +186,7 @@
       }
     }
 
-    <!-- ══════════════════ TAB HISTORIQUE ══════════════════ -->
+    <!-- Onglet "Historique" -->
     @if (activeTab() === 'HISTORIQUE') {
       @if (displayItems().length === 0 && processedEvents().length === 0) {
         <div class="empty-state">Aucun historique.</div>

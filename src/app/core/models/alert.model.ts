@@ -1,11 +1,11 @@
-// Interface UI-only — pas d'entité Alert côté back
-// L'alert-list est construite en agrégeant deux sources :
-//   • GET /event/list  → Event de type BREAKDOWN | EARLY_RETURN | EXTENSION
-//   • GET /loan/list   → filtrer les Loan VALID dont endDate est dépassée → RETARD
+// Interface utilisée uniquement côté UI : il n'y a pas d'entité Alert côté back.
+// La liste d'alertes agrège deux sources :
+//   - les événements (incident, retour anticipé, prolongation), via GET /event/list
+//   - les emprunts validés dont la date de fin est dépassée, considérés en retard, via GET /loan/list
 
 import { EventType } from './event.model';
 
-// RETARD n'est pas dans l'enum EventType côté back — c'est un état calculé côté front
+// RETARD ne fait pas partie de l'enum EventType du back : c'est un état calculé côté front.
 export type AlertType = EventType | 'RETARD';
 
 export interface Alert {

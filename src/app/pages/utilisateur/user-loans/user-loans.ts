@@ -8,7 +8,7 @@ import { Loan } from '../../../core/models/loan.model';
 import { Event, EventStatusType } from '../../../core/models/event.model';
 import { getCategoryIcon } from '../../../core/utils/category-icon';
 
-// ── Types d'affichage ─────────────────────────────────────────────────────────
+// Types d'affichage
 interface SingleLoanItem {
   kind: 'single';
   loan: Loan;
@@ -79,7 +79,7 @@ export class UserLoansComponent {
     });
   }
 
-  // ── Tabs ─────────────────────────────────────────────────────────────────────
+  // Tabs
   activeTab = signal<'EN_COURS' | 'EN_ATTENTE' | 'HISTORIQUE'>('EN_COURS');
 
   setTab(tab: 'EN_COURS' | 'EN_ATTENTE' | 'HISTORIQUE') {
@@ -96,7 +96,7 @@ export class UserLoansComponent {
          + this.processedEvents().length;
   }
 
-  // ── Events helpers ────────────────────────────────────────────────────────────
+  // Events helpers
   private buildEventItem(event: Event): RequestEventItem {
     return {
       kind:          'event',
@@ -122,7 +122,7 @@ export class UserLoansComponent {
       .map(e => this.buildEventItem(e))
   );
 
-  // ── Emprunts filtrés ──────────────────────────────────────────────────────────
+  // Emprunts filtrés
   private filteredLoans = computed(() => {
     const tab   = this.activeTab();
     const loans = this.allLoans();
@@ -131,7 +131,7 @@ export class UserLoansComponent {
     return loans.filter(l => l.statusType === 'TERMINE' || l.statusType === 'INVALID');
   });
 
-  // ── Items d'affichage ─────────────────────────────────────────────────────────
+  // Items d'affichage
   displayItems = computed((): LoanItem[] => {
     const loans = this.filteredLoans();
     const items: LoanItem[] = [];
@@ -161,14 +161,14 @@ export class UserLoansComponent {
     return items;
   });
 
-  // ── Groupe dépliable ──────────────────────────────────────────────────────────
+  // Groupe dépliable
   openGroupId = signal<string | null>(null);
 
   toggleGroupDetail(groupId: string): void {
     this.openGroupId.update(v => v === groupId ? null : groupId);
   }
 
-  // ── Statut affiché (RETARD calculé côté front) ────────────────────────────────
+  // Statut affiché (RETARD calculé côté front)
   getDisplayStatus(loan: Loan): string {
     if (loan.statusType === 'VALID' && new Date(loan.endDate) < new Date()) {
       return 'RETARD';
@@ -176,7 +176,7 @@ export class UserLoansComponent {
     return loan.statusType;
   }
 
-  // ── Badges loans ──────────────────────────────────────────────────────────────
+  // Badges loans
   getStatusClass(status: string): string {
     const map: Record<string, string> = {
       VALID:       'badge-success',
@@ -199,7 +199,7 @@ export class UserLoansComponent {
     return map[status] ?? status;
   }
 
-  // ── Badges events ─────────────────────────────────────────────────────────────
+  // Badges events
   getEventStatusClass(status: EventStatusType): string {
     const map: Record<EventStatusType, string> = {
       PENDING:  'badge-warning',
@@ -231,7 +231,7 @@ export class UserLoansComponent {
     return getCategoryIcon(loan.equipment.equipmentFamily.nameEquipmentFamily);
   }
 
-  // ── Dates & progress ──────────────────────────────────────────────────────────
+  // Dates & progress
   formatDate(dateStr: string): string {
     if (!dateStr) return '';
     return new Date(dateStr).toLocaleDateString('fr-FR', { day: 'numeric', month: 'short', year: 'numeric' });

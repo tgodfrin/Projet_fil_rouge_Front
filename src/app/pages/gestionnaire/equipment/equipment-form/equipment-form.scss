@@ -1,4 +1,4 @@
-// ── Overlay ───────────────────────────────────────────
+// Overlay
 .overlay {
   position: fixed;
   inset: 0;
@@ -7,7 +7,7 @@
   animation: fadeIn 0.15s ease;
 }
 
-// ── Modal ─────────────────────────────────────────────
+// Modal
 .modal {
   position: fixed;
   top: 50%;
@@ -44,7 +44,7 @@
   to   { opacity: 1; transform: translate(-50%, -50%); }
 }
 
-// ── Header ────────────────────────────────────────────
+// Header
 .modal-header {
   display: flex;
   align-items: center;
@@ -73,7 +73,7 @@
   &:hover { color: var(--grey-700); }
 }
 
-// ── Body ──────────────────────────────────────────────
+// Body
 .modal-body {
   padding: 1.25rem 1.5rem;
   display: flex;
@@ -81,7 +81,7 @@
   gap: 1rem;
 }
 
-// ── Form ──────────────────────────────────────────────
+// Form
 .form-group {
   display: flex;
   flex-direction: column;
@@ -132,7 +132,7 @@
   font-weight: 500;
 }
 
-// ── Footer ────────────────────────────────────────────
+// Footer
 .modal-footer {
   display: flex;
   justify-content: flex-end;
@@ -159,7 +159,7 @@
   &.btn-ghost   { background: var(--grey-100); color: var(--grey-700); }
 }
 
-// ── Composants ────────────────────────────────────────
+// Composants
 .composants-section {
   display: flex;
   flex-direction: column;

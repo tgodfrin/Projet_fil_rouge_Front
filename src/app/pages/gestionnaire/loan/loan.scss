@@ -9,7 +9,7 @@
   }
 }
 
-// ── En-tête ───────────────────────────────────────────
+// En-tête
 .page-header {
   display: flex;
   align-items: center;
@@ -75,7 +75,7 @@
   }
 }
 
-// ── Section label ─────────────────────────────────────
+// Section label
 .section-label {
   font-size: 0.7rem;
   font-weight: 700;
@@ -84,7 +84,7 @@
   color: var(--grey-400);
 }
 
-// ── Cartes à valider ──────────────────────────────────
+// Cartes à valider
 .cards-list {
   display: grid;
   grid-template-columns: repeat(2, 1fr);
@@ -162,7 +162,7 @@
   margin-top: 0.6rem;
 }
 
-// ── Boutons ───────────────────────────────────────────
+// Boutons
 .btn-validate,
 .btn-refuse,
 .btn-ghost,
@@ -209,7 +209,7 @@
   font-size: 0.85rem;
 }
 
-// ── Tableau en cours ──────────────────────────────────
+// Tableau en cours
 .table-wrapper {
   overflow-x: auto;
   border-radius: var(--r-lg);
@@ -265,7 +265,7 @@
   font-weight: 600;
 }
 
-// ── Badges ────────────────────────────────────────────
+// Badges
 .badge {
   display: inline-flex;
   align-items: center;
@@ -281,7 +281,7 @@
   &.badge-neutral { background: var(--grey-100);   color: var(--grey-500);     }
 }
 
-// ── État vide ─────────────────────────────────────────
+// État vide
 .empty-state {
   padding: 2rem;
   text-align: center;
@@ -292,7 +292,7 @@
   box-shadow: var(--shadow-sm);
 }
 
-// ── Emprunts groupés ──────────────────────────────────
+// Emprunts groupés
 .emprunt-groupe {
   border-left: 3px solid var(--primary);
 }

@@ -12,14 +12,14 @@ export type EventType = 'BREAKDOWN' | 'EARLY_RETURN' | 'EXTENSION';
 // PENDING = en attente ; ACCEPTED = acceptée ; REFUSED = refusée
 export type EventStatusType = 'PENDING' | 'ACCEPTED' | 'REFUSED';
 
-// Seul l'id du Loan est exposé en EventView (évite la boucle Loan → Event → Loan)
+// Seul l'id de l'emprunt est exposé dans EventView, pour éviter une boucle de sérialisation Loan / Event.
 export interface EventLoan {
   id: number;
 }
 
 export interface Event {
   id: number;
-  createdAt: string;             // LocalDateTime → ISO string
+  createdAt: string;             // LocalDateTime côté back, chaîne ISO côté front
   description: string | null;    // motif libre saisi par l'utilisateur
   requestedDate: string | null;  // date demandée (retour anticipé / prolongation) — champ dédié
   decisionStatus: EventStatusType; // statut de décision fiable (plus de déduction par dates)
