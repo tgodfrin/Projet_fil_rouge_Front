@@ -150,6 +150,26 @@
                   </div>
                   <span class="badge badge-warning"><span class="badge-dot"></span>En attente</span>
                 </div>
+                <div class="group-toggle-row">
+                  <button class="btn-group-toggle" (click)="toggleGroupDetail(item.groupId)">
+                    {{ openGroupId() === item.groupId ? '▲ Masquer les équipements' : '▼ Voir les équipements' }}
+                  </button>
+                </div>
+                @if (openGroupId() === item.groupId) {
+                  <div class="group-loans-detail">
+                    @for (loan of item.loans; track loan.id) {
+                      <div class="group-loan-row">
+                        <div class="group-loan-header">
+                          <div class="group-loan-icon">{{ getCategoryIcon(loan) }}</div>
+                          <div class="group-loan-info">
+                            <div class="group-loan-name">{{ loan.equipment.equipmentName }}</div>
+                            <div class="group-loan-dates">{{ formatDateRange(loan.beginDate, loan.endDate) }}</div>
+                          </div>
+                        </div>
+                      </div>
+                    }
+                  </div>
+                }
               </div>
             }
           }
@@ -223,6 +243,29 @@
                     <span class="badge-dot"></span>{{ getStatusLabel(item.statusType) }}
                   </span>
                 </div>
+                <div class="group-toggle-row">
+                  <button class="btn-group-toggle" (click)="toggleGroupDetail(item.groupId)">
+                    {{ openGroupId() === item.groupId ? '▲ Masquer les équipements' : '▼ Voir les équipements' }}
+                  </button>
+                </div>
+                @if (openGroupId() === item.groupId) {
+                  <div class="group-loans-detail">
+                    @for (loan of item.loans; track loan.id) {
+                      <div class="group-loan-row">
+                        <div class="group-loan-header">
+                          <div class="group-loan-icon">{{ getCategoryIcon(loan) }}</div>
+                          <div class="group-loan-info">
+                            <div class="group-loan-name">{{ loan.equipment.equipmentName }}</div>
+                            <div class="group-loan-dates">{{ formatDateRange(loan.beginDate, loan.endDate) }}</div>
+                          </div>
+                          <span class="badge" [ngClass]="getStatusClass(loan.statusType)">
+                            <span class="badge-dot"></span>{{ getStatusLabel(loan.statusType) }}
+                          </span>
+                        </div>
+                      </div>
+                    }
+                  </div>
+                }
               </div>
             }
           }
