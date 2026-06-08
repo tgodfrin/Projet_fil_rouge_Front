@@ -7,6 +7,7 @@ import { IncidentOption } from '../../../core/models/incident.model';
 import { EventType } from '../../../core/models/event.model';
 import { LoanService } from '../../../core/services/loan.service';
 import { EventService, EventCreate } from '../../../core/services/event.service';
+import { getCategoryIcon } from '../../../core/utils/category-icon';
 
 @Component({
   selector: 'app-user-incident',
@@ -25,6 +26,9 @@ export class UserIncidentComponent {
   loanId = Number(this.route.snapshot.paramMap.get('id'));
 
   loan = toSignal(this.loanService.getById(this.loanId));
+
+  // Icône de catégorie réelle (💻 🖥️ 🥽 …) à partir du nom de la famille de l'équipement.
+  protected readonly getCategoryIcon = getCategoryIcon;
 
   dateRange = computed(() => {
     const l = this.loan();

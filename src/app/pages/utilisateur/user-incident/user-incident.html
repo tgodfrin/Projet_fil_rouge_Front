@@ -9,7 +9,7 @@
   <!-- Equipement concerne -->
   @if (loan(); as l) {
     <div class="equipment-card">
-      <div class="equipment-icon">📦</div>
+      <div class="equipment-icon">{{ getCategoryIcon(l.equipment.equipmentFamily.nameEquipmentFamily) }}</div>
       <div class="equipment-info">
         <div class="equipment-name">{{ l.equipment.equipmentName }}</div>
         <div class="equipment-dates">Emprunt du {{ dateRange() }}</div>

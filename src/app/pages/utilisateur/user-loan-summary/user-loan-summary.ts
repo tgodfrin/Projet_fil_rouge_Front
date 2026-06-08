@@ -89,7 +89,6 @@ export class UserLoanSummaryComponent implements OnInit {
       this.loanService.create({
         beginDate:   this.beginDate,
         endDate:     this.endDate,
-        requesterId: user.id,
         equipmentId: id,
         groupId:     groupId,
       })

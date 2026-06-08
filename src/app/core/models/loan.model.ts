@@ -49,10 +49,10 @@ export interface Loan {
 }
 
 // Corps attendu par POST /loan
+// Pas de requesterId : le demandeur est déterminé côté back à partir du token JWT.
 export interface LoanCreate {
   beginDate: string;
   endDate: string;
-  requesterId: number;
   equipmentId: number;
   groupId?: string;             // optionnel : renseigné lors d'une demande groupée
 }
