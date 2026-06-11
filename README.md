@@ -1,89 +1,138 @@
-# LOC MNS — Front-end Angular
+# LOC MNS — Interface web
 
-Application web de gestion du parc informatique et matériel de Metz Numeric School (MNS).
-Développée dans le cadre de la formation Concepteur Développeur d'Applications (CDA) 2025-2026.
+Application web de gestion du parc informatique et matériel de Metz Numeric School (MNS). L'interface permet aux gestionnaires d'administrer les équipements, les familles de matériel, les utilisateurs et les emprunts, et aux collaborateurs, intervenants et stagiaires de consulter le catalogue, demander des emprunts et signaler des événements.
 
----
+Ce dépôt contient la partie front-end du projet fil rouge réalisé dans le cadre du titre Concepteur Développeur d'Applications (CDA), promotion 2025-2026. L'API consommée est développée dans un dépôt distinct (Spring Boot).
 
-## 📋 Description du projet
+## Fonctionnalités
 
-LOC MNS permet de gérer l'ensemble du parc informatique et matériel mis à disposition
-des étudiants, stagiaires et intervenants de MNS.
+L'interface est organisée autour de deux espaces distincts.
 
-### Fonctionnalités principales
-- Authentification JWT et gestion des rôles (Gestionnaire, Collaborateur, Intervenant, Stagiaire)
-- Gestion des équipements (CRUD, états, catégories)
-- Gestion des catégories de matériel et des droits d'emprunt par rôle
-- Gestion des emprunts (demande, validation, refus, retour, emprunts groupés)
-- Signalement d'événements (panne, retour anticipé, prolongation)
-- Système d'alertes et notifications
-- Planning des réservations
-- Export des données (CSV, XML)
-- Gestion documentaire (notices, fiches techniques)
-- Page « Mentions & données personnelles » (RGPD)
+Espace gestionnaire :
 
----
+- Tableau de bord avec indicateurs, alertes et notifications.
+- Gestion des équipements et de leurs caractéristiques, avec calcul de statut.
+- Gestion des familles de matériel et des documents associés.
+- Suivi des emprunts : validation, refus, enregistrement des retours.
+- Planning des emprunts et gestion des utilisateurs.
+- Export des données aux formats CSV et XML.
 
-## 🛠️ Stack technique
+Espace utilisateur :
+
+- Consultation du catalogue filtré selon les droits du profil.
+- Demande d'emprunt avec vérification de disponibilité sur une période.
+- Suivi de ses emprunts en cours et passés.
+- Signalement d'événements (panne, retour anticipé, prolongation).
+
+## Stack technique
 
 | Technologie | Version | Rôle |
 |---|---|---|
-| Angular | 21 (standalone components + signals) | Framework front-end |
+| Angular | 21 | Framework front-end |
 | TypeScript | 5.9 | Langage |
-| RxJS | 7.8 | Programmation réactive (HTTP, observables) |
-| Node.js | 20+ LTS | Environnement d'exécution |
-| npm | 11 | Gestionnaire de paquets |
+| RxJS | 7.8 | Programmation réactive |
+| SCSS | gérée par Angular | Mise en forme, sans bibliothèque de composants externe |
+| Angular Signals | gérée par Angular | Gestion d'état réactive |
+| Vitest | 4 | Tests unitaires |
+| Node.js | 20 | Environnement d'exécution pour la construction |
+| nginx | alpine | Service des fichiers statiques et reverse-proxy en production |
 
-> Pas de librairie de composants UI tierce : l'interface est construite en HTML/SCSS sur mesure.
+L'interface est entièrement réalisée en composants autonomes (standalone) et en SCSS, sans bibliothèque de composants tierce.
 
----
+## Architecture du projet
 
-## ⚙️ Prérequis
+L'arborescence sépare le socle technique, les pages et les éléments partagés :
 
-- Node.js v20+ LTS
-- npm
-- Angular CLI : `npm install -g @angular/cli`
+```
+src/app
+  core
+    models         Modèles TypeScript alignés sur l'API
+    services       Services HTTP, un par ressource, et service d'authentification
+    guards         Contrôle d'accès aux routes
+    interceptors   Injection du jeton et gestion des erreurs
+    utils          Fonctions utilitaires
+  pages
+    login          Page de connexion
+    gestionnaire   Espace gestionnaire (tableau de bord, équipements, emprunts, planning, utilisateurs)
+    utilisateur    Espace utilisateur (accueil, catalogue, demandes, profil)
+    mentions       Pages d'information
+  shared           Composants réutilisables
 
----
+src/environments   Configuration par environnement (développement et production)
+```
 
-## 🚀 Installation et lancement
+L'authentification repose sur un jeton JWT conservé côté client. Un intercepteur ajoute l'en-tête d'autorisation à chaque requête, et des gardes de route protègent les espaces selon le rôle de l'utilisateur connecté.
+
+## Prérequis
+
+- Node.js 20 et npm.
+- Une instance de l'API back-end accessible (voir le dépôt back).
+
+## Configuration
+
+L'adresse de l'API est centralisée dans les fichiers d'environnement. Aucune URL n'est codée en dur dans les services.
+
+| Fichier | Valeur de `apiUrl` | Usage |
+|---|---|---|
+| `src/environments/environment.ts` | http://localhost:8080/api | Développement |
+| `src/environments/environment.prod.ts` | /api | Production |
+
+En production la valeur est relative : les appels visent `/api`, que nginx redirige vers le back-end. Le remplacement du fichier de développement par celui de production est automatique lors de la construction en mode production, par la configuration `fileReplacements` de `angular.json`.
+
+## Lancement en développement
+
+Installer les dépendances :
+
 ```bash
-# Cloner le dépôt
-git clone https://github.com/tgodfrin/Projet_fil_rouge_Front.git
-
-# Aller dans le dossier
-cd Projet_fil_rouge_Front/loc-mns-front
-
-# Installer les dépendances
 npm install
-
-# Lancer le serveur de développement
-ng serve
 ```
 
-Accéder à l'application : **http://localhost:4200**
+Démarrer le serveur de développement :
 
----
-
-## 🌿 Stratégie Git
-```
-main                        → version stable et validée
-  └── develop               → branche de travail principal
-        ├── feature/login
-        ├── feature/equipment
-        └── feature/loan
+```bash
+npm start
 ```
 
----
+L'interface est disponible sur `http://localhost:4200`. Le back-end doit être démarré en parallèle et accessible sur `http://localhost:8080/api`.
 
-## 🔗 Liens utiles
+## Construction pour la production
 
-- Back-end Spring Boot : [lien vers le dépôt back]
-- Maquettes Figma : [lien vers Figma]
-- Tableau Trello : [lien vers Trello]
+```bash
+npm run build
+```
 
----
+Les fichiers compilés sont produits dans `dist/loc-mns-front/browser`. La construction en mode production applique automatiquement le fichier d'environnement de production.
 
-## 👤 Auteur
+## Exécution avec Docker
 
-GODFRIN Thomas — Formation CDA — Metz Numeric School 2025-2026
+Le `Dockerfile` décrit une construction en deux étapes : compilation de l'application avec Node, puis service des fichiers statiques par nginx. La configuration `nginx.conf` assure la redirection des routes de l'application vers `index.html` et le relais des appels `/api` vers le back-end.
+
+Construire l'image :
+
+```bash
+docker build -t locmns-front .
+```
+
+L'image écoute sur le port 80. En production, ce conteneur est orchestré avec le back-end et la base de données par le fichier `docker-compose.prod.yml` situé dans le dépôt back.
+
+## Tests
+
+```bash
+npm test
+```
+
+Les tests unitaires sont exécutés par Vitest et couvrent notamment les services, les gardes et la logique d'affichage des composants.
+
+## Stratégie de gestion de versions
+
+Le projet suit un modèle à trois niveaux de branches :
+
+- `main` : version stable et validée.
+- `develop` : branche d'intégration du travail courant.
+- `feature/*` : une branche par fonctionnalité, fusionnée dans `develop` après revue.
+
+Les messages de commit suivent la convention Conventional Commits.
+
+## Auteur
+
+GODFRIN Thomas, formation Concepteur Développeur d'Applications, Metz Numeric School, promotion 2025-2026.
