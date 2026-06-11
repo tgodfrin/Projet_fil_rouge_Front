@@ -1,17 +1,21 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
+import { provideHttpClient } from '@angular/common/http';
+import { provideHttpClientTesting } from '@angular/common/http/testing';
+import { provideRouter } from '@angular/router';
 
-import { AlertList } from './alert-list';
+import { AlertListComponent } from './alert-list';
 
-describe('AlertList', () => {
-  let component: AlertList;
-  let fixture: ComponentFixture<AlertList>;
+describe('AlertListComponent', () => {
+  let component: AlertListComponent;
+  let fixture: ComponentFixture<AlertListComponent>;
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      imports: [AlertList],
+      imports: [AlertListComponent],
+      providers: [provideHttpClient(), provideHttpClientTesting(), provideRouter([])],
     }).compileComponents();
 
-    fixture = TestBed.createComponent(AlertList);
+    fixture = TestBed.createComponent(AlertListComponent);
     component = fixture.componentInstance;
     await fixture.whenStable();
   });

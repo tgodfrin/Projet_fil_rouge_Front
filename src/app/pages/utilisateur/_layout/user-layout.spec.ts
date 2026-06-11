@@ -1,17 +1,21 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
+import { provideHttpClient } from '@angular/common/http';
+import { provideHttpClientTesting } from '@angular/common/http/testing';
+import { provideRouter } from '@angular/router';
 
-import { UserLayout } from './user-layout';
+import { UserLayoutComponent } from './user-layout';
 
-describe('UserLayout', () => {
-  let component: UserLayout;
-  let fixture: ComponentFixture<UserLayout>;
+describe('UserLayoutComponent', () => {
+  let component: UserLayoutComponent;
+  let fixture: ComponentFixture<UserLayoutComponent>;
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      imports: [UserLayout],
+      imports: [UserLayoutComponent],
+      providers: [provideHttpClient(), provideHttpClientTesting(), provideRouter([])],
     }).compileComponents();
 
-    fixture = TestBed.createComponent(UserLayout);
+    fixture = TestBed.createComponent(UserLayoutComponent);
     component = fixture.componentInstance;
     await fixture.whenStable();
   });
