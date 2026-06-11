@@ -2,12 +2,13 @@ import { Injectable, inject } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Observable } from 'rxjs';
 import { StatusEquipment, StatusEquipmentCreate } from '../models/status-equipment.model';
+import { environment } from '../../../environments/environment';
 
 @Injectable({ providedIn: 'root' })
 export class StatusEquipmentService {
 
   private readonly http   = inject(HttpClient);
-  private readonly apiUrl = 'http://localhost:8080';
+  private readonly apiUrl = environment.apiUrl;
 
   getByEquipment(equipmentId: number): Observable<StatusEquipment[]> {
     return this.http.get<StatusEquipment[]>(

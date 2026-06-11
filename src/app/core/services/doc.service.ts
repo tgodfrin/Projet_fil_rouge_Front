@@ -2,12 +2,13 @@ import { Injectable, inject } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Observable } from 'rxjs';
 import { Doc, DocCreate } from '../models/doc.model';
+import { environment } from '../../../environments/environment';
 
 @Injectable({ providedIn: 'root' })
 export class DocService {
 
   private readonly http   = inject(HttpClient);
-  private readonly apiUrl = 'http://localhost:8080';
+  private readonly apiUrl = environment.apiUrl;
 
   getByEquipment(equipmentId: number): Observable<Doc[]> {
     return this.http.get<Doc[]>(`${this.apiUrl}/doc/equipment/${equipmentId}`);

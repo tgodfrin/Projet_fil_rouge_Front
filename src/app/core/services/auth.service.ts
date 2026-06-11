@@ -1,6 +1,7 @@
 import { Injectable, signal, computed, inject } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Observable } from 'rxjs';
+import { environment } from '../../../environments/environment';
 
 export type UserRole = 'GESTIONNAIRE' | 'COLLABORATEUR' | 'INTERVENANT' | 'STAGIAIRE';
 
@@ -19,7 +20,7 @@ const USER_KEY  = 'loc_mns_user';
 export class AuthService {
 
   private readonly http   = inject(HttpClient);
-  private readonly apiUrl = 'http://localhost:8080';
+  private readonly apiUrl = environment.apiUrl;
 
   private _currentUser = signal<AuthUser | null>(
     JSON.parse(localStorage.getItem(USER_KEY) ?? 'null')

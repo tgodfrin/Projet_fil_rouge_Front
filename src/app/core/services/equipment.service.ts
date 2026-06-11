@@ -2,6 +2,7 @@ import { Injectable, inject } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Observable } from 'rxjs';
 import { Equipment } from '../models/equipment.model';
+import { environment } from '../../../environments/environment';
 
 // Body pour POST /equipment et PUT /equipment/:id
 // Le champ status est calculé côté back (@Transient), on ne l'envoie pas.
@@ -17,7 +18,7 @@ export interface EquipmentPayload {
 export class EquipmentService {
 
   private readonly http   = inject(HttpClient);
-  private readonly apiUrl = 'http://localhost:8080';
+  private readonly apiUrl = environment.apiUrl;
 
   getAll(): Observable<Equipment[]> {
     return this.http.get<Equipment[]>(`${this.apiUrl}/equipment/list`);

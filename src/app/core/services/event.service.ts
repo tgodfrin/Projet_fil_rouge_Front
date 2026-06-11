@@ -2,6 +2,7 @@ import { Injectable, inject } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Observable } from 'rxjs';
 import { Event, EventType } from '../models/event.model';
+import { environment } from '../../../environments/environment';
 
 // Corps attendu par POST /event ; loanId correspond au champ attendu côté back.
 export interface EventCreate {
@@ -15,7 +16,7 @@ export interface EventCreate {
 export class EventService {
 
   private readonly http   = inject(HttpClient);
-  private readonly apiUrl = 'http://localhost:8080';
+  private readonly apiUrl = environment.apiUrl;
 
   getByLoan(loanId: number): Observable<Event[]> {
     return this.http.get<Event[]>(`${this.apiUrl}/event/loan/${loanId}`);
