@@ -1,0 +1,29 @@
+name: Publication image front
+
+# Fabrique l'image Docker du front et la publie sur Docker Hub
+# uniquement lors d'un push sur main (branche de production).
+on:
+  push:
+    branches: [main]
+
+jobs:
+  build-push:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Recuperer le code
+        uses: actions/checkout@v4
+
+      - name: Se connecter a Docker Hub
+        uses: docker/login-action@v3
+        with:
+          username: ${{ secrets.DOCKERHUB_USERNAME }}
+          password: ${{ secrets.DOCKERHUB_TOKEN }}
+
+      - name: Construire et pousser l'image
+        uses: docker/build-push-action@v6
+        with:
+          context: .
+          push: true
+          tags: |
+            ${{ secrets.DOCKERHUB_USERNAME }}/locmns-front:latest
+            ${{ secrets.DOCKERHUB_USERNAME }}/locmns-front:${{ github.sha }}
